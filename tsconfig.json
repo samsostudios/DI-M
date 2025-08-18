@@ -1,0 +1,14 @@
+{
+  "extends": "@finsweet/tsconfig",
+  "compilerOptions": {
+    "ignoreDeprecations": "5.0",
+    "rootDir": ".",
+    "baseUrl": "./",
+    "outDir": "dist",
+    "paths": {
+      "$utils/*": ["src/utils/*"],
+      "$comonents/*": ["src/components/*"],
+      "$animation/*": ["src/animation/*"],
+    }
+  }
+}

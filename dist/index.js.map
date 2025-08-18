@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../bin/live-reload.js", "../src/index.ts"],
+  "sourcesContent": ["new EventSource(`http://localhost:${SERVE_PORT}/esbuild`).addEventListener('change', () =>\r\n  location.reload()\r\n);\r\n", "window.Webflow ||= [];\nwindow.Webflow.push(() => {\n  console.log('/// mainJS ///');\n});\n"],
+  "mappings": ";;;AAAA,MAAI,YAAY,oBAAoB,GAAU,UAAU,EAAE;AAAA,IAAiB;AAAA,IAAU,MACnF,SAAS,OAAO;AAAA,EAClB;;;ACFA,SAAO,YAAY,CAAC;AACpB,SAAO,QAAQ,KAAK,MAAM;AACxB,YAAQ,IAAI,gBAAgB;AAAA,EAC9B,CAAC;",
+  "names": []
+}
