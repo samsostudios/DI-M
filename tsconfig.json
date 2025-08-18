@@ -7,7 +7,7 @@
     "outDir": "dist",
     "paths": {
       "$utils/*": ["src/utils/*"],
-      "$comonents/*": ["src/components/*"],
+      "$components/*": ["src/components/*"],
       "$animation/*": ["src/animation/*"],
     }
   }
