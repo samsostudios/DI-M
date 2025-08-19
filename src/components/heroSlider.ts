@@ -5,12 +5,14 @@ class HeroSlider {
   private images: HTMLImageElement[];
   private placeholder: HTMLElement;
   private currentIndex = 0;
-  private duration = 8;
+  private duration: number;
 
   constructor() {
     this.container = document.querySelector('.hero_bg-slider') as HTMLElement;
     this.images = [...document.querySelectorAll('.hero_bg-slider img')] as HTMLImageElement[];
     this.placeholder = document.querySelector('.hero_bg-place') as HTMLElement;
+
+    this.duration = parseInt(this.container.dataset.sliderDuration as string);
 
     this.setup();
   }
@@ -34,8 +36,6 @@ class HeroSlider {
       gsap.set(img, { autoAlpha: index === this.currentIndex ? 1 : 0 });
     });
 
-    // if (this.sliderIndicators.length !== 0) this.animateProgess(this.currentIndex);
-
     setInterval(() => this.advanceSlider(), this.duration * 1000);
   }
 
@@ -44,10 +44,8 @@ class HeroSlider {
     const next = (this.currentIndex + 1) % this.images.length;
     this.currentIndex = next;
 
-    gsap.to(this.images[previous], { autoAlpha: 0, duration: 1, ease: 'power2.inOut' });
-    gsap.to(this.images[next], { autoAlpha: 1, duration: 1, ease: 'power2.inOut' });
-
-    // if (this.sliderIndicators.length !== 0) this.animateProgess(this.currentIndex);
+    gsap.to(this.images[previous], { autoAlpha: 0, duration: 1.5, ease: 'power2.inOut' });
+    gsap.to(this.images[next], { autoAlpha: 1, duration: 1.5, ease: 'power2.inOut' });
   }
 }
 export const heroSlider = () => {
