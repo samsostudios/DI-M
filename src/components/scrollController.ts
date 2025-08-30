@@ -1,3 +1,4 @@
+import { lenisInstance } from '$utils/smoothScroll';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -20,12 +21,7 @@ class ScrollController {
       return;
     }
 
-    if (window.Webflow) {
-      window.Webflow.push(() => this.setup());
-    } else {
-      window.addEventListener('load', () => this.setup());
-    }
-    // this.setup();
+    this.setup();
     // this.initScroll();
   }
 
@@ -34,9 +30,9 @@ class ScrollController {
     // gsap.set(this.container, { height: '100svh' });
     gsap.set(this.track, {
       display: 'flex',
+      flexFlow: 'nowrap',
       width: '5000px',
-      flexFlow: 'row nowrap',
-      position: 'absolute',
+      // position: 'absolute',
     });
     gsap.set(this.sections, { flexShrink: 0 });
 
@@ -71,6 +67,15 @@ class ScrollController {
         markers: true,
       },
     });
+
+    const lenis = lenisInstance();
+    if (lenis) {
+      requestAnimationFrame(function raf(time) {
+        lenis.raf(time);
+        ScrollTrigger.update();
+        requestAnimationFrame(raf);
+      });
+    }
   }
 }
 export const scrollControler = () => {
