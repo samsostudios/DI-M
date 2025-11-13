@@ -4453,9 +4453,6 @@
 
   // src/components/scrollController.ts
   init_live_reload();
-
-  // src/utils/smoothScroll.ts
-  init_live_reload();
   init_gsap();
 
   // node_modules/gsap/ScrollTrigger.js
@@ -6844,6 +6841,10 @@
   };
   _getGSAP3() && gsap3.registerPlugin(ScrollTrigger2);
 
+  // src/utils/smoothScroll.ts
+  init_live_reload();
+  init_gsap();
+
   // node_modules/lenis/dist/lenis.mjs
   init_live_reload();
   var version = "1.3.4";
@@ -7938,17 +7939,21 @@
   }
 
   // src/components/scrollController.ts
-  init_gsap();
   gsapWithCSS.registerPlugin(ScrollTrigger2);
   var ScrollController = class {
     container;
     track;
     sections;
+    sectionContainers;
+    sectionLayouts;
     constructor() {
       this.container = document.querySelector(".page_horizontal");
       this.track = document.querySelector(".page_scroll-track");
       this.sections = [...this.track.querySelectorAll("section")];
-      console.log("section", this.sections);
+      this.sectionContainers = [
+        ...this.track.querySelectorAll(".section_container")
+      ];
+      this.sectionLayouts = [...this.track.querySelectorAll(".section_layout")];
       if (!this.container || !this.track) {
         console.error("Container or track not found.");
         return;
@@ -7956,14 +7961,30 @@
       this.setup();
     }
     setup() {
-      console.log("setup");
+      console.log("setup", this.sectionLayouts);
+      const frameWidth = this.getFrameSize();
+      console.log(`Frame Size: ${frameWidth}`);
       gsapWithCSS.set(this.track, {
         display: "flex",
-        flexFlow: "nowrap",
-        width: "5000px"
+        flexFlow: "nowrap"
+        // width: '5000px',
         // position: 'absolute',
       });
-      gsapWithCSS.set(this.sections, { flexShrink: 0 });
+      gsapWithCSS.set(this.sectionLayouts, {
+        display: "flex",
+        flexDirection: "horizontal"
+        // flexShrink: 0,
+        // minWidth: '100vw',
+      });
+      this.sectionContainers.forEach((item) => {
+        const element = item;
+        const data = element.dataset.sectionWide;
+        console.log("!", item, data);
+        if (data !== void 0) {
+          console.log("set 200vw", item);
+          gsapWithCSS.set(item, { width: frameWidth * 2 });
+        }
+      });
       this.initScroll();
       setTimeout(() => {
         ScrollTrigger2.refresh(true);
@@ -7995,6 +8016,11 @@
           requestAnimationFrame(raf);
         });
       }
+    }
+    getFrameSize() {
+      const rootElement = document.querySelector(".section_container");
+      const frameWidth = getComputedStyle(rootElement).width;
+      return parseFloat(frameWidth);
     }
   };
   var scrollControler = () => {
