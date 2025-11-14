@@ -48,8 +48,9 @@ class ScrollController {
     // gsap.set(this.sectionContainers, { width: 'auto' });
     // gsap.set(this.sections, { flexShrink: 0 });
     gsap.set(this.sectionLayouts, {
-      display: 'flex',
-      flexDirection: 'horizontal',
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: '2rem',
       // flexShrink: 0,
       // minWidth: '100vw',
     });

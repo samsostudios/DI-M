@@ -7971,8 +7971,9 @@
         // position: 'absolute',
       });
       gsapWithCSS.set(this.sectionLayouts, {
-        display: "flex",
-        flexDirection: "horizontal"
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gap: "2rem"
         // flexShrink: 0,
         // minWidth: '100vw',
       });
