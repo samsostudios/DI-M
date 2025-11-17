@@ -11,17 +11,20 @@ class ScrollController {
   private sections: HTMLElement[];
   private sectionContainers: HTMLElement[];
   private sectionLayouts: HTMLElement[];
+  private horizontalTween: gsap.core.Animation | null = null;
 
   constructor() {
     this.container = document.querySelector('.page_horizontal') as HTMLElement;
     this.track = document.querySelector('.page_scroll-track') as HTMLElement;
     this.sections = [...this.track.querySelectorAll('section')] as HTMLElement[];
+    this.sectionLayouts = [
+      ...this.track.querySelectorAll('[data-section-wide] .section_layout'),
+    ] as HTMLElement[];
     this.sectionContainers = [
       ...this.track.querySelectorAll('.section_container'),
     ] as HTMLElement[];
-    this.sectionLayouts = [...this.track.querySelectorAll('.section_layout')] as HTMLElement[];
 
-    // console.log('section', this.sections);
+    console.log('!!', this.sectionContainers);
 
     if (!this.container || !this.track) {
       console.error('Container or track not found.');
@@ -29,61 +32,42 @@ class ScrollController {
     }
 
     this.setup();
-    // this.initScroll();
   }
 
   private setup() {
-    console.log('setup', this.sectionLayouts);
+    // const frameWidth = this.getFrameSize();
+    // console.log(`Frame Size: ${frameWidth}`);
 
-    const frameWidth = this.getFrameSize();
-    console.log(`Frame Size: ${frameWidth}`);
+    gsap.set(this.sectionContainers, {
+      width: 'auto',
+    });
+    this.sectionLayouts.forEach((e) => {
+      gsap.set(e, {
+        display: 'grid',
+        gridAutoFlow: 'column',
+        gridAutoColumns: 'var(--custom--site-frame)',
+        height: '100%',
+      });
+    });
 
-    // gsap.set(this.container, { height: '100svh' });
     gsap.set(this.track, {
       display: 'flex',
-      flexFlow: 'nowrap',
-      // width: '5000px',
-      // position: 'absolute',
-    });
-    // gsap.set(this.sectionContainers, { width: 'auto' });
-    // gsap.set(this.sections, { flexShrink: 0 });
-    gsap.set(this.sectionLayouts, {
-      display: 'grid',
-      gridTemplateColumns: '1fr 1fr',
-      gap: '2rem',
-      // flexShrink: 0,
-      // minWidth: '100vw',
-    });
-
-    this.sectionContainers.forEach((item) => {
-      const element = item as HTMLElement;
-      const data = element.dataset.sectionWide;
-
-      console.log('!', item, data);
-
-      if (data !== undefined) {
-        console.log('set 200vw', item);
-        gsap.set(item, { width: frameWidth * 2 });
-      }
+      flexFlow: 'row nowrap',
+      width: 'max-content',
     });
 
     this.initScroll();
 
-    // Do a final refresh shortly after layout settles (fixes sticky pin spacing)
     setTimeout(() => {
       ScrollTrigger.refresh(true);
     }, 250);
-
-    // setTimeout(() => {
-    //   this.initScroll();
-    // }, 5000);
   }
   private initScroll() {
     const totalScrollLength = this.track.scrollWidth - window.innerWidth;
 
     console.log('scroll length', this.track.scrollWidth, window.innerWidth, totalScrollLength);
 
-    gsap.to(this.track, {
+    this.horizontalTween = gsap.to(this.track, {
       x: () => `-${totalScrollLength}px`,
       ease: 'none',
       scrollTrigger: {
@@ -92,12 +76,13 @@ class ScrollController {
         end: () => `+=${totalScrollLength}`,
         scrub: true,
         pin: true,
-        // pinSpacing: false,
         anticipatePin: 1,
         invalidateOnRefresh: true,
-        markers: true,
+        // markers: true,
       },
     });
+
+    this.initParallax();
 
     const lenis = lenisInstance();
     if (lenis) {
@@ -107,6 +92,44 @@ class ScrollController {
         requestAnimationFrame(raf);
       });
     }
+  }
+
+  private initParallax() {
+    if (!this.horizontalTween) return;
+
+    const fxSections = [...this.track.querySelectorAll('.section_fx')] as HTMLElement[];
+
+    fxSections.forEach((section) => {
+      const image = section.querySelector('img') as HTMLElement | null;
+      if (!image) return;
+
+      const maxScale = 1.3;
+      const minScale = 1.0;
+      const offset = -(minScale - 1) * 100;
+
+      gsap.set(image, { scale: maxScale, transformOrigin: 'left center' });
+
+      console.log('$$', section.clientWidth);
+
+      gsap.fromTo(
+        image,
+        { xPercent: 0 },
+        {
+          xPercent: offset,
+          scale: minScale,
+          // opacity: 0.2,
+          ease: 'none',
+          scrollTrigger: {
+            containerAnimation: this.horizontalTween || undefined,
+            trigger: section,
+            start: 'left 95%',
+            end: 'right 5%',
+            scrub: true,
+            markers: true,
+          },
+        },
+      );
+    });
   }
 
   private getFrameSize() {

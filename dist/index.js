@@ -7946,14 +7946,18 @@
     sections;
     sectionContainers;
     sectionLayouts;
+    horizontalTween = null;
     constructor() {
       this.container = document.querySelector(".page_horizontal");
       this.track = document.querySelector(".page_scroll-track");
       this.sections = [...this.track.querySelectorAll("section")];
+      this.sectionLayouts = [
+        ...this.track.querySelectorAll("[data-section-wide] .section_layout")
+      ];
       this.sectionContainers = [
         ...this.track.querySelectorAll(".section_container")
       ];
-      this.sectionLayouts = [...this.track.querySelectorAll(".section_layout")];
+      console.log("!!", this.sectionContainers);
       if (!this.container || !this.track) {
         console.error("Container or track not found.");
         return;
@@ -7961,30 +7965,21 @@
       this.setup();
     }
     setup() {
-      console.log("setup", this.sectionLayouts);
-      const frameWidth = this.getFrameSize();
-      console.log(`Frame Size: ${frameWidth}`);
+      gsapWithCSS.set(this.sectionContainers, {
+        width: "auto"
+      });
+      this.sectionLayouts.forEach((e) => {
+        gsapWithCSS.set(e, {
+          display: "grid",
+          gridAutoFlow: "column",
+          gridAutoColumns: "var(--custom--site-frame)",
+          height: "100%"
+        });
+      });
       gsapWithCSS.set(this.track, {
         display: "flex",
-        flexFlow: "nowrap"
-        // width: '5000px',
-        // position: 'absolute',
-      });
-      gsapWithCSS.set(this.sectionLayouts, {
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: "2rem"
-        // flexShrink: 0,
-        // minWidth: '100vw',
-      });
-      this.sectionContainers.forEach((item) => {
-        const element = item;
-        const data = element.dataset.sectionWide;
-        console.log("!", item, data);
-        if (data !== void 0) {
-          console.log("set 200vw", item);
-          gsapWithCSS.set(item, { width: frameWidth * 2 });
-        }
+        flexFlow: "row nowrap",
+        width: "max-content"
       });
       this.initScroll();
       setTimeout(() => {
@@ -7994,7 +7989,7 @@
     initScroll() {
       const totalScrollLength = this.track.scrollWidth - window.innerWidth;
       console.log("scroll length", this.track.scrollWidth, window.innerWidth, totalScrollLength);
-      gsapWithCSS.to(this.track, {
+      this.horizontalTween = gsapWithCSS.to(this.track, {
         x: () => `-${totalScrollLength}px`,
         ease: "none",
         scrollTrigger: {
@@ -8003,12 +7998,12 @@
           end: () => `+=${totalScrollLength}`,
           scrub: true,
           pin: true,
-          // pinSpacing: false,
           anticipatePin: 1,
-          invalidateOnRefresh: true,
-          markers: true
+          invalidateOnRefresh: true
+          // markers: true,
         }
       });
+      this.initParallax();
       const lenis2 = lenisInstance();
       if (lenis2) {
         requestAnimationFrame(function raf(time) {
@@ -8017,6 +8012,37 @@
           requestAnimationFrame(raf);
         });
       }
+    }
+    initParallax() {
+      if (!this.horizontalTween) return;
+      const fxSections = [...this.track.querySelectorAll(".section_fx")];
+      fxSections.forEach((section) => {
+        const image = section.querySelector("img");
+        if (!image) return;
+        const maxScale = 1.3;
+        const minScale = 1;
+        const offset = -(minScale - 1) * 100;
+        gsapWithCSS.set(image, { scale: maxScale, transformOrigin: "left center" });
+        console.log("$$", section.clientWidth);
+        gsapWithCSS.fromTo(
+          image,
+          { xPercent: 0 },
+          {
+            xPercent: offset,
+            scale: minScale,
+            // opacity: 0.2,
+            ease: "none",
+            scrollTrigger: {
+              containerAnimation: this.horizontalTween || void 0,
+              trigger: section,
+              start: "left 95%",
+              end: "right 5%",
+              scrub: true,
+              markers: true
+            }
+          }
+        );
+      });
     }
     getFrameSize() {
       const rootElement = document.querySelector(".section_container");
