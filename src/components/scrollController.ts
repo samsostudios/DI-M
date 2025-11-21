@@ -40,6 +40,7 @@ class ScrollController {
 
     gsap.set(this.sectionContainers, {
       width: 'auto',
+      height: '100vh',
     });
     this.sectionLayouts.forEach((e) => {
       gsap.set(e, {
@@ -62,6 +63,7 @@ class ScrollController {
       ScrollTrigger.refresh(true);
     }, 250);
   }
+
   private initScroll() {
     const totalScrollLength = this.track.scrollWidth - window.innerWidth;
 
@@ -78,7 +80,7 @@ class ScrollController {
         pin: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
-        // markers: true,
+        markers: true,
       },
     });
 
@@ -103,7 +105,7 @@ class ScrollController {
       const image = section.querySelector('img') as HTMLElement | null;
       if (!image) return;
 
-      const maxScale = 1.3;
+      const maxScale = 1.6;
       const minScale = 1.0;
       const offset = -(minScale - 1) * 100;
 
