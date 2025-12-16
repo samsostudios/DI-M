@@ -37,10 +37,12 @@ class ScrollController {
   private setup() {
     // const frameWidth = this.getFrameSize();
     // console.log(`Frame Size: ${frameWidth}`);
+    const navOffset = 'var(--custom--nav-width-plus-gutter)';
 
     gsap.set(this.sectionContainers, {
       width: 'auto',
       height: '100vh',
+      paddingRight: `calc{${navOffset}`,
     });
     this.sectionLayouts.forEach((e) => {
       gsap.set(e, {
