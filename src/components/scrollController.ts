@@ -37,13 +37,19 @@ class ScrollController {
   private setup() {
     // const frameWidth = this.getFrameSize();
     // console.log(`Frame Size: ${frameWidth}`);
-    const navOffset = 'var(--custom--nav-width-plus-gutter)';
+    const root = document.documentElement;
+    const navOffset = getComputedStyle(root)
+      .getPropertyValue('--custom--nav-width-plus-gutter')
+      .trim();
+
+    console.log('OFFSET', navOffset);
 
     gsap.set(this.sectionContainers, {
       width: 'auto',
       height: '100vh',
-      paddingRight: `calc{${navOffset}`,
+      paddingRight: `calc(${navOffset})`,
     });
+    this.sectionContainers.forEach((e) => {});
     this.sectionLayouts.forEach((e) => {
       gsap.set(e, {
         display: 'grid',
