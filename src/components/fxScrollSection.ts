@@ -22,7 +22,7 @@ class FxScroll {
       const image = section.querySelector('img');
 
       gsap.to(image, {
-        x: '-20%',
+        // x: '-20%',
         opacity: 0.2,
         scrollTrigger: {
           trigger: section,

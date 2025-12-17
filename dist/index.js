@@ -7943,21 +7943,20 @@
   var ScrollController = class {
     container;
     track;
-    sections;
-    sectionContainers;
-    sectionLayouts;
+    // private sections: HTMLElement[];
+    wideSections;
+    wideLayouts;
+    fxSections;
     horizontalTween = null;
     constructor() {
       this.container = document.querySelector(".page_horizontal");
       this.track = document.querySelector(".page_scroll-track");
-      this.sections = [...this.track.querySelectorAll("section")];
-      this.sectionLayouts = [
+      this.wideSections = [...this.track.querySelectorAll("[data-section-wide]")];
+      this.wideLayouts = [
         ...this.track.querySelectorAll("[data-section-wide] .section_layout")
       ];
-      this.sectionContainers = [
-        ...this.track.querySelectorAll(".section_container")
-      ];
-      console.log("!!", this.sectionContainers);
+      this.fxSections = [...this.track.querySelectorAll(".section_fx")];
+      console.log("!!", this.wideSections, this.wideLayouts);
       if (!this.container || !this.track) {
         console.error("Container or track not found.");
         return;
@@ -7967,15 +7966,18 @@
     setup() {
       const root = document.documentElement;
       const navOffset = getComputedStyle(root).getPropertyValue("--custom--nav-width-plus-gutter").trim();
-      console.log("OFFSET", navOffset);
-      gsapWithCSS.set(this.sectionContainers, {
+      gsapWithCSS.set(this.track, {
+        display: "flex",
+        flexFlow: "row nowrap",
+        width: "max-content"
+      });
+      gsapWithCSS.set(this.wideSections, {
         width: "auto",
+        minWidth: "100vw",
         height: "100vh",
         paddingRight: `calc(${navOffset})`
       });
-      this.sectionContainers.forEach((e) => {
-      });
-      this.sectionLayouts.forEach((e) => {
+      this.wideLayouts.forEach((e) => {
         gsapWithCSS.set(e, {
           display: "grid",
           gridAutoFlow: "column",
@@ -7983,10 +7985,9 @@
           height: "100%"
         });
       });
-      gsapWithCSS.set(this.track, {
-        display: "flex",
-        flexFlow: "row nowrap",
-        width: "max-content"
+      gsapWithCSS.set(this.fxSections, {
+        flex: "0 0 auto",
+        flexShrink: 0
       });
       this.initScroll();
       setTimeout(() => {
@@ -8010,7 +8011,6 @@
           markers: true
         }
       });
-      this.initParallax();
       const lenis2 = lenisInstance();
       if (lenis2) {
         requestAnimationFrame(function raf(time) {

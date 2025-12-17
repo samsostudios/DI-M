@@ -8,23 +8,24 @@ gsap.registerPlugin(ScrollTrigger);
 class ScrollController {
   private container: HTMLElement;
   private track: HTMLElement;
-  private sections: HTMLElement[];
-  private sectionContainers: HTMLElement[];
-  private sectionLayouts: HTMLElement[];
+  // private sections: HTMLElement[];
+  private wideSections: HTMLElement[];
+  private wideLayouts: HTMLElement[];
+  private fxSections: HTMLElement[];
   private horizontalTween: gsap.core.Animation | null = null;
 
   constructor() {
     this.container = document.querySelector('.page_horizontal') as HTMLElement;
     this.track = document.querySelector('.page_scroll-track') as HTMLElement;
-    this.sections = [...this.track.querySelectorAll('section')] as HTMLElement[];
-    this.sectionLayouts = [
+    // this.sections = [...this.track.querySelectorAll('section')] as HTMLElement[];
+    this.wideSections = [...this.track.querySelectorAll('[data-section-wide]')] as HTMLElement[];
+    this.wideLayouts = [
       ...this.track.querySelectorAll('[data-section-wide] .section_layout'),
     ] as HTMLElement[];
-    this.sectionContainers = [
-      ...this.track.querySelectorAll('.section_container'),
-    ] as HTMLElement[];
 
-    console.log('!!', this.sectionContainers);
+    this.fxSections = [...this.track.querySelectorAll('.section_fx')] as HTMLElement[];
+
+    console.log('!!', this.wideSections, this.wideLayouts);
 
     if (!this.container || !this.track) {
       console.error('Container or track not found.');
@@ -42,15 +43,23 @@ class ScrollController {
       .getPropertyValue('--custom--nav-width-plus-gutter')
       .trim();
 
-    console.log('OFFSET', navOffset);
+    // const hPadding = getComputedStyle(root).getPropertyValue('--h-layout-padding').trim();
+    // const vPadding = getComputedStyle(root).getPropertyValue('--v-layout-padding').trim();
 
-    gsap.set(this.sectionContainers, {
+    // console.log('OFFSET', vPadding, hPadding);
+
+    gsap.set(this.track, {
+      display: 'flex',
+      flexFlow: 'row nowrap',
+      width: 'max-content',
+    });
+    gsap.set(this.wideSections, {
       width: 'auto',
+      minWidth: '100vw',
       height: '100vh',
       paddingRight: `calc(${navOffset})`,
     });
-    this.sectionContainers.forEach((e) => {});
-    this.sectionLayouts.forEach((e) => {
+    this.wideLayouts.forEach((e) => {
       gsap.set(e, {
         display: 'grid',
         gridAutoFlow: 'column',
@@ -59,10 +68,9 @@ class ScrollController {
       });
     });
 
-    gsap.set(this.track, {
-      display: 'flex',
-      flexFlow: 'row nowrap',
-      width: 'max-content',
+    gsap.set(this.fxSections, {
+      flex: '0 0 auto',
+      flexShrink: 0,
     });
 
     this.initScroll();
@@ -92,7 +100,7 @@ class ScrollController {
       },
     });
 
-    this.initParallax();
+    // this.initParallax();
 
     const lenis = lenisInstance();
     if (lenis) {
