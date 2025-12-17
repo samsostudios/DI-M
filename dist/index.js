@@ -7947,6 +7947,7 @@
     wideSections;
     wideLayouts;
     fxSections;
+    heroSection;
     horizontalTween = null;
     constructor() {
       this.container = document.querySelector(".page_horizontal");
@@ -7956,7 +7957,7 @@
         ...this.track.querySelectorAll("[data-section-wide] .section_layout")
       ];
       this.fxSections = [...this.track.querySelectorAll(".section_fx")];
-      console.log("!!", this.wideSections, this.wideLayouts);
+      this.heroSection = document.querySelector(".section_hero");
       if (!this.container || !this.track) {
         console.error("Container or track not found.");
         return;
@@ -7966,11 +7967,15 @@
     setup() {
       const root = document.documentElement;
       const navOffset = getComputedStyle(root).getPropertyValue("--custom--nav-width-plus-gutter").trim();
+      const hPadding = getComputedStyle(root).getPropertyValue("--custom--h-site-height").trim();
+      const vPadding = getComputedStyle(root).getPropertyValue("--custom--v-site-height").trim();
       gsapWithCSS.set(this.track, {
         display: "flex",
         flexFlow: "row nowrap",
         width: "max-content"
       });
+      gsapWithCSS.set(this.fxSections, { flex: "0 0 100vw", height: "100vh" });
+      gsapWithCSS.set(this.heroSection, { flex: "0 0 100vw", height: "100vh" });
       gsapWithCSS.set(this.wideSections, {
         width: "auto",
         minWidth: "100vw",
@@ -7984,10 +7989,6 @@
           gridAutoColumns: "var(--custom--site-frame)",
           height: "100%"
         });
-      });
-      gsapWithCSS.set(this.fxSections, {
-        flex: "0 0 auto",
-        flexShrink: 0
       });
       this.initScroll();
       setTimeout(() => {
@@ -8011,6 +8012,7 @@
           markers: true
         }
       });
+      this.initParallax();
       const lenis2 = lenisInstance();
       if (lenis2) {
         requestAnimationFrame(function raf(time) {
@@ -8023,14 +8025,15 @@
     initParallax() {
       if (!this.horizontalTween) return;
       const fxSections = [...this.track.querySelectorAll(".section_fx")];
+      console.log("paralax", fxSections);
       fxSections.forEach((section) => {
-        const image = section.querySelector("img");
+        const image = section.querySelector(".fx_img");
         if (!image) return;
         const maxScale = 1.6;
         const minScale = 1;
         const offset = -(minScale - 1) * 100;
         gsapWithCSS.set(image, { scale: maxScale, transformOrigin: "left center" });
-        console.log("$$", section.clientWidth);
+        console.log("$$", section);
         gsapWithCSS.fromTo(
           image,
           { xPercent: 0 },
@@ -8042,8 +8045,8 @@
             scrollTrigger: {
               containerAnimation: this.horizontalTween || void 0,
               trigger: section,
-              start: "left 95%",
-              end: "right 5%",
+              start: "left 90%",
+              end: "right 10%",
               scrub: true,
               markers: true
             }

@@ -12,6 +12,7 @@ class ScrollController {
   private wideSections: HTMLElement[];
   private wideLayouts: HTMLElement[];
   private fxSections: HTMLElement[];
+  private heroSection: HTMLElement;
   private horizontalTween: gsap.core.Animation | null = null;
 
   constructor() {
@@ -24,8 +25,9 @@ class ScrollController {
     ] as HTMLElement[];
 
     this.fxSections = [...this.track.querySelectorAll('.section_fx')] as HTMLElement[];
+    this.heroSection = document.querySelector('.section_hero') as HTMLElement;
 
-    console.log('!!', this.wideSections, this.wideLayouts);
+    // console.log('!!', this.wideSections, this.wideLayouts);
 
     if (!this.container || !this.track) {
       console.error('Container or track not found.');
@@ -43,16 +45,18 @@ class ScrollController {
       .getPropertyValue('--custom--nav-width-plus-gutter')
       .trim();
 
-    // const hPadding = getComputedStyle(root).getPropertyValue('--h-layout-padding').trim();
-    // const vPadding = getComputedStyle(root).getPropertyValue('--v-layout-padding').trim();
+    const hPadding = getComputedStyle(root).getPropertyValue('--custom--h-site-height').trim();
+    const vPadding = getComputedStyle(root).getPropertyValue('--custom--v-site-height').trim();
 
-    // console.log('OFFSET', vPadding, hPadding);
+    // console.log('v', vPadding, 'h', hPadding);
 
     gsap.set(this.track, {
       display: 'flex',
       flexFlow: 'row nowrap',
       width: 'max-content',
     });
+    gsap.set(this.fxSections, { flex: '0 0 100vw', height: '100vh' });
+    gsap.set(this.heroSection, { flex: '0 0 100vw', height: '100vh' });
     gsap.set(this.wideSections, {
       width: 'auto',
       minWidth: '100vw',
@@ -68,10 +72,10 @@ class ScrollController {
       });
     });
 
-    gsap.set(this.fxSections, {
-      flex: '0 0 auto',
-      flexShrink: 0,
-    });
+    // gsap.set([this.fxSections, this.heroSection], {
+    //   // flex: '0 0 auto',
+    //   flexShrink: 0,
+    // });
 
     this.initScroll();
 
@@ -100,7 +104,7 @@ class ScrollController {
       },
     });
 
-    // this.initParallax();
+    this.initParallax();
 
     const lenis = lenisInstance();
     if (lenis) {
@@ -116,9 +120,10 @@ class ScrollController {
     if (!this.horizontalTween) return;
 
     const fxSections = [...this.track.querySelectorAll('.section_fx')] as HTMLElement[];
+    console.log('paralax', fxSections);
 
     fxSections.forEach((section) => {
-      const image = section.querySelector('img') as HTMLElement | null;
+      const image = section.querySelector('.fx_img') as HTMLElement | null;
       if (!image) return;
 
       const maxScale = 1.6;
@@ -127,7 +132,7 @@ class ScrollController {
 
       gsap.set(image, { scale: maxScale, transformOrigin: 'left center' });
 
-      console.log('$$', section.clientWidth);
+      console.log('$$', section);
 
       gsap.fromTo(
         image,
@@ -140,8 +145,8 @@ class ScrollController {
           scrollTrigger: {
             containerAnimation: this.horizontalTween || undefined,
             trigger: section,
-            start: 'left 95%',
-            end: 'right 5%',
+            start: 'left 90%',
+            end: 'right 10%',
             scrub: true,
             markers: true,
           },
