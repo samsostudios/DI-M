@@ -13,5 +13,6 @@ window.Webflow.push(() => {
 
   loadComponent('.section_hero', () => import('$components/heroSlider'));
   loadComponent('.section_hero', () => import('$components/landingPageHero'));
+  loadComponent('.component_preloader', () => import('$components/preloader'));
   // loadComponent('.section_fx', () => import('$components/fxScrollSection'));
 });
