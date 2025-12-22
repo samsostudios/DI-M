@@ -4293,114 +4293,6 @@
     }
   });
 
-  // src/components/heroSlider.ts
-  var heroSlider_exports = {};
-  __export(heroSlider_exports, {
-    default: () => heroSlider_default,
-    heroSlider: () => heroSlider
-  });
-  var HeroSlider, heroSlider, heroSlider_default;
-  var init_heroSlider = __esm({
-    "src/components/heroSlider.ts"() {
-      "use strict";
-      init_live_reload();
-      init_gsap();
-      HeroSlider = class {
-        container;
-        images;
-        placeholder;
-        currentIndex = 0;
-        duration;
-        constructor() {
-          this.container = document.querySelector(".hero_bg-slider");
-          this.images = [...document.querySelectorAll(".hero_bg-slider img")];
-          this.placeholder = document.querySelector(".hero_bg-place");
-          this.duration = parseInt(this.container.dataset.sliderDuration);
-          this.setup();
-        }
-        setup() {
-          const tl = gsapWithCSS.timeline({
-            onComplete: () => {
-              this.startSlider();
-            }
-          });
-          tl.set(this.container, { display: "block" });
-          tl.set(this.images, { position: "absolute", opacity: 0 });
-          tl.set(this.images[0], { opacity: 1 });
-          tl.to(this.placeholder, { duration: 2, opacity: 0, ease: "Power4.easeInOut" });
-        }
-        startSlider() {
-          if (this.images.length <= 1) return;
-          this.images.forEach((img, index) => {
-            gsapWithCSS.set(img, { autoAlpha: index === this.currentIndex ? 1 : 0 });
-          });
-          setInterval(() => this.advanceSlider(), this.duration * 1e3);
-        }
-        advanceSlider() {
-          const previous = this.currentIndex;
-          const next = (this.currentIndex + 1) % this.images.length;
-          this.currentIndex = next;
-          gsapWithCSS.to(this.images[previous], { autoAlpha: 0, duration: 1.5, ease: "power2.inOut" });
-          gsapWithCSS.to(this.images[next], { autoAlpha: 1, duration: 1.5, ease: "power2.inOut" });
-        }
-      };
-      heroSlider = () => {
-        new HeroSlider();
-      };
-      heroSlider_default = heroSlider;
-    }
-  });
-
-  // src/components/landingPageHero.ts
-  var landingPageHero_exports = {};
-  __export(landingPageHero_exports, {
-    default: () => landingPageHero_default,
-    lpHero: () => lpHero
-  });
-  var LPHero, lpHero, landingPageHero_default;
-  var init_landingPageHero = __esm({
-    "src/components/landingPageHero.ts"() {
-      "use strict";
-      init_live_reload();
-      init_gsap();
-      LPHero = class {
-        panel;
-        open;
-        close;
-        constructor() {
-          this.panel = document.querySelector(".hero_panel");
-          this.open = document.querySelector("#modalOpen");
-          this.close = document.querySelector("#modalClose");
-          this.setListeners();
-        }
-        setListeners() {
-          this.open.addEventListener("click", () => {
-            console.log("Opening");
-            this.openPanel();
-          });
-          this.close.addEventListener("click", () => {
-            console.log("Closing");
-            this.closePanel();
-          });
-        }
-        openPanel() {
-          const tl = gsapWithCSS.timeline();
-          tl.set(this.panel, { display: "block", x: "100%" });
-          tl.to(this.panel, { x: "0%", ease: "expo.out" });
-        }
-        closePanel() {
-          const tl = gsapWithCSS.timeline();
-          tl.to(this.panel, { x: "100%", ease: "expo.out" });
-          tl.set(this.panel, { display: "none" });
-        }
-      };
-      lpHero = () => {
-        new LPHero();
-      };
-      landingPageHero_default = lpHero;
-    }
-  });
-
   // node_modules/gsap/SplitText.js
   var gsap4, _fonts, _coreInitted4, _initIfNecessary, _charSegmenter, _toArray2, _elements, _emptyArray3, _context4, _spacesRegEx, _emojiSafeRegEx, _emptyBounds, _stretchToFitSpecialChars, _disallowInline, _insertNodeBefore, _getWrapper, _getLineWrapper, _splitWordsAndCharsRecursively, _SplitText, SplitText;
   var init_SplitText = __esm({
@@ -4746,6 +4638,11 @@
         hTracks = [];
         vTracks = [];
         overlayPanel;
+        heroText;
+        split;
+        heroInfo;
+        heroTag;
+        nav;
         constructor() {
           this.component = document.querySelector(".component_preloader");
           this.loaderTracks = [...document.querySelectorAll(".preloader_track")];
@@ -4753,20 +4650,30 @@
           this.tags = [...document.querySelectorAll(".preloader_tag")];
           this.bgImg = document.querySelector(".preloader_img");
           this.overlayPanel = document.querySelector(".preloader_reveal");
+          this.heroText = document.querySelector(".section_hero h1");
+          this.split = SplitText.create(this.heroText, {
+            mask: "lines",
+            type: "lines"
+          });
+          this.heroInfo = document.querySelector(".hero_overview");
+          this.heroTag = document.querySelector(".hero_tag");
+          this.nav = document.querySelector(".component_nav");
           this.setup();
           this.animate();
         }
         setup() {
           gsapWithCSS.set([this.logo, this.tags], { opacity: 0, y: "4rem" });
+          gsapWithCSS.set(this.split.lines, { y: "100%", opacity: 0 });
+          gsapWithCSS.set(this.heroInfo.children, { opacity: 0 });
+          gsapWithCSS.set(this.heroTag, { opacity: 0 });
+          gsapWithCSS.set(this.nav, { x: "-100%" });
           this.loaderTracks.forEach((item) => {
-            console.log(item.classList);
             if (item.classList.contains("is-vert")) {
               this.vTracks.push(item);
             } else if (item.classList.contains("is-hor")) {
               this.hTracks.push(item);
             }
           });
-          console.log("setup", this.hTracks, this.vTracks);
         }
         animate() {
           const tl = gsapWithCSS.timeline({
@@ -4782,7 +4689,12 @@
           tl.to(this.vTracks[1], { y: "0%", duration: 0.5, ease: "power2.inOut" }, "0.5");
           tl.to(this.hTracks[1], { x: "0%", duration: 0.5, ease: "power2.inOut" }, "1");
           tl.to(this.vTracks[0], { y: "0%", duration: 0.5, ease: "power2.inOut" }, "1.5");
-          tl.to(this.overlayPanel, { width: "100%", duration: 1, ease: "expo.inOut" });
+          tl.to(this.overlayPanel, { width: "100%", duration: 1.5, ease: "expo.inOut" });
+          tl.to(
+            [this.tags, this.logo, this.bgImg],
+            { opacity: 0, duration: 1, ease: "power2.inOut" },
+            "<1"
+          );
           tl.to(this.component, {
             opacity: 0,
             duration: 1,
@@ -4791,20 +4703,214 @@
           tl.set(this.component, { display: "none" });
         }
         reveal() {
-          const heroText = document.querySelector(".section_hero h1");
-          const split = SplitText.create(heroText, {
-            mask: "words",
-            type: "words"
-          });
-          console.log("SPLIT", heroText, split);
           const tl = gsapWithCSS.timeline();
-          tl.fromTo(split.words, { y: "2rem", opacity: 0 }, { y: "0rem", opacity: 1 });
+          tl.to(this.nav, { x: "0%", duration: 2, ease: "power4.out" });
+          tl.to(
+            this.split.lines,
+            {
+              y: "0rem",
+              opacity: 1,
+              stagger: 0.1,
+              // rotateY: '0deg',
+              duration: 1.5,
+              ease: "power4.out"
+            },
+            "<"
+          );
+          tl.to(
+            this.heroInfo.children,
+            {
+              opacity: 1,
+              // stagger: 0.2,
+              duration: 2,
+              ease: "power4.inOut"
+            },
+            "0"
+          );
+          tl.to(
+            this.heroTag,
+            {
+              opacity: 1,
+              duration: 2,
+              ease: "power4.inOut"
+            },
+            "<"
+          );
+          console.log("%%", tl.duration());
         }
       };
       prelooader = () => {
         new Preloader();
       };
       preloader_default = prelooader;
+    }
+  });
+
+  // src/components/menu.ts
+  var menu_exports = {};
+  __export(menu_exports, {
+    default: () => menu_default,
+    menu: () => menu
+  });
+  var Menu, menu, menu_default;
+  var init_menu = __esm({
+    "src/components/menu.ts"() {
+      "use strict";
+      init_live_reload();
+      init_gsap();
+      Menu = class {
+        component;
+        links;
+        open;
+        close;
+        constructor() {
+          this.component = document.querySelector(".component_menu");
+          this.links = [...this.component.querySelectorAll(".menu_link")];
+          this.open = document.querySelector("#menuOpen");
+          this.close = document.querySelector("#menuClose");
+          this.setupUI();
+          this.setListeners();
+        }
+        setupUI() {
+          console.log("MENU", this.open, this.close);
+          gsapWithCSS.set(this.component, { x: "-100%" });
+        }
+        setListeners() {
+          this.open.addEventListener("click", () => {
+            this.openMenu();
+          });
+          this.close.addEventListener("click", () => {
+            this.closeMenu();
+          });
+        }
+        openMenu() {
+          console.log("OPEN");
+          const tl = gsapWithCSS.timeline();
+          tl.set(this.component, { display: "block" });
+          tl.to(this.component, { x: "0%", duration: 1, ease: "expo.inOut" });
+          tl.fromTo(this.links, { opacity: 0 }, { opacity: 1 });
+        }
+        closeMenu() {
+          console.log("OPEN");
+          const tl = gsapWithCSS.timeline();
+          tl.to(this.component, { x: "-100%", duration: 1, ease: "expo.inOut" });
+          tl.set(this.component, { display: "none" });
+        }
+      };
+      menu = () => {
+        new Menu();
+      };
+      menu_default = menu;
+    }
+  });
+
+  // src/components/heroSlider.ts
+  var heroSlider_exports = {};
+  __export(heroSlider_exports, {
+    default: () => heroSlider_default,
+    heroSlider: () => heroSlider
+  });
+  var HeroSlider, heroSlider, heroSlider_default;
+  var init_heroSlider = __esm({
+    "src/components/heroSlider.ts"() {
+      "use strict";
+      init_live_reload();
+      init_gsap();
+      HeroSlider = class {
+        container;
+        images;
+        placeholder;
+        currentIndex = 0;
+        duration;
+        constructor() {
+          this.container = document.querySelector(".hero_bg-slider");
+          this.images = [...document.querySelectorAll(".hero_bg-slider img")];
+          this.placeholder = document.querySelector(".hero_bg-place");
+          this.duration = parseInt(this.container.dataset.sliderDuration);
+          this.setup();
+        }
+        setup() {
+          const tl = gsapWithCSS.timeline({
+            onComplete: () => {
+              gsapWithCSS.delayedCall(1, () => {
+                this.startSlider();
+              });
+            }
+          });
+          tl.set(this.container, { display: "block" });
+          tl.set(this.images, { position: "absolute", opacity: 0 });
+          tl.set(this.images[0], { opacity: 1 });
+          tl.to(this.placeholder, { duration: 2, opacity: 0, ease: "Power4.easeInOut" });
+        }
+        startSlider() {
+          if (this.images.length <= 1) return;
+          this.images.forEach((img, index) => {
+            gsapWithCSS.set(img, { autoAlpha: index === this.currentIndex ? 1 : 0 });
+          });
+          setInterval(() => this.advanceSlider(), this.duration * 1500);
+        }
+        advanceSlider() {
+          const previous = this.currentIndex;
+          const next = (this.currentIndex + 1) % this.images.length;
+          this.currentIndex = next;
+          gsapWithCSS.to(this.images[previous], { autoAlpha: 0, duration: 1.5, ease: "power2.inOut" });
+          gsapWithCSS.to(this.images[next], { autoAlpha: 1, duration: 1.5, ease: "power2.inOut" });
+        }
+      };
+      heroSlider = () => {
+        new HeroSlider();
+      };
+      heroSlider_default = heroSlider;
+    }
+  });
+
+  // src/components/landingPageHero.ts
+  var landingPageHero_exports = {};
+  __export(landingPageHero_exports, {
+    default: () => landingPageHero_default,
+    lpHero: () => lpHero
+  });
+  var LPHero, lpHero, landingPageHero_default;
+  var init_landingPageHero = __esm({
+    "src/components/landingPageHero.ts"() {
+      "use strict";
+      init_live_reload();
+      init_gsap();
+      LPHero = class {
+        panel;
+        open;
+        close;
+        constructor() {
+          this.panel = document.querySelector(".hero_panel");
+          this.open = document.querySelector("#modalOpen");
+          this.close = document.querySelector("#modalClose");
+          this.setListeners();
+        }
+        setListeners() {
+          this.open.addEventListener("click", () => {
+            console.log("Opening");
+            this.openPanel();
+          });
+          this.close.addEventListener("click", () => {
+            console.log("Closing");
+            this.closePanel();
+          });
+        }
+        openPanel() {
+          const tl = gsapWithCSS.timeline();
+          tl.set(this.panel, { display: "block", x: "100%" });
+          tl.to(this.panel, { x: "0%", ease: "expo.out" });
+        }
+        closePanel() {
+          const tl = gsapWithCSS.timeline();
+          tl.to(this.panel, { x: "100%", ease: "expo.out" });
+          tl.set(this.panel, { display: "none" });
+        }
+      };
+      lpHero = () => {
+        new LPHero();
+      };
+      landingPageHero_default = lpHero;
     }
   });
 
@@ -8398,13 +8504,13 @@
         });
       });
       this.initScroll();
+      this.initSectionReveals();
       setTimeout(() => {
         ScrollTrigger2.refresh(true);
       }, 250);
     }
     initScroll() {
       const totalScrollLength = this.track.scrollWidth - window.innerWidth;
-      console.log("scroll length", this.track.scrollWidth, window.innerWidth, totalScrollLength);
       this.horizontalTween = gsapWithCSS.to(this.track, {
         x: () => `-${totalScrollLength}px`,
         ease: "none",
@@ -8428,6 +8534,15 @@
           requestAnimationFrame(raf);
         });
       }
+    }
+    initSectionReveals() {
+      if (!this.horizontalTween) return;
+      const sections = [...this.track.querySelectorAll("[data-reveal]")];
+      console.log("reveals", sections);
+      sections.forEach((section) => {
+        const type = section.dataset.reveal;
+        console.log("TT", type);
+      });
     }
     initParallax() {
       if (!this.horizontalTween) return;
@@ -8491,9 +8606,10 @@
     initSmoothScroll();
     navHUD_default();
     scrollController_default();
+    loadComponent_default(".component_preloader", () => Promise.resolve().then(() => (init_preloader(), preloader_exports)));
+    loadComponent_default(".component_menu", () => Promise.resolve().then(() => (init_menu(), menu_exports)));
     loadComponent_default(".section_hero", () => Promise.resolve().then(() => (init_heroSlider(), heroSlider_exports)));
     loadComponent_default(".section_hero", () => Promise.resolve().then(() => (init_landingPageHero(), landingPageHero_exports)));
-    loadComponent_default(".component_preloader", () => Promise.resolve().then(() => (init_preloader(), preloader_exports)));
   });
 })();
 /*! Bundled license information:

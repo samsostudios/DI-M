@@ -20,7 +20,10 @@ class HeroSlider {
   private setup() {
     const tl = gsap.timeline({
       onComplete: () => {
-        this.startSlider();
+        gsap.delayedCall(1, () => {
+          this.startSlider();
+        });
+        // this.startSlider();
       },
     });
     tl.set(this.container, { display: 'block' });
@@ -36,7 +39,7 @@ class HeroSlider {
       gsap.set(img, { autoAlpha: index === this.currentIndex ? 1 : 0 });
     });
 
-    setInterval(() => this.advanceSlider(), this.duration * 1000);
+    setInterval(() => this.advanceSlider(), this.duration * 1500);
   }
 
   private advanceSlider() {

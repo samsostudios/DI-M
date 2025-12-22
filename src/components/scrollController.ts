@@ -78,6 +78,7 @@ class ScrollController {
     // });
 
     this.initScroll();
+    this.initSectionReveals();
 
     setTimeout(() => {
       ScrollTrigger.refresh(true);
@@ -86,8 +87,6 @@ class ScrollController {
 
   private initScroll() {
     const totalScrollLength = this.track.scrollWidth - window.innerWidth;
-
-    console.log('scroll length', this.track.scrollWidth, window.innerWidth, totalScrollLength);
 
     this.horizontalTween = gsap.to(this.track, {
       x: () => `-${totalScrollLength}px`,
@@ -114,6 +113,18 @@ class ScrollController {
         requestAnimationFrame(raf);
       });
     }
+  }
+
+  private initSectionReveals() {
+    if (!this.horizontalTween) return;
+
+    const sections = [...this.track.querySelectorAll('[data-reveal]')] as HTMLElement[];
+    console.log('reveals', sections);
+
+    sections.forEach((section) => {
+      const type = section.dataset.reveal as string;
+      console.log('TT', type);
+    });
   }
 
   private initParallax() {

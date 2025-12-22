@@ -11,8 +11,10 @@ window.Webflow.push(() => {
   navHUD();
   scrollControler();
 
+  loadComponent('.component_preloader', () => import('$components/preloader'));
+  loadComponent('.component_menu', () => import('$components/menu'));
   loadComponent('.section_hero', () => import('$components/heroSlider'));
   loadComponent('.section_hero', () => import('$components/landingPageHero'));
-  loadComponent('.component_preloader', () => import('$components/preloader'));
+
   // loadComponent('.section_fx', () => import('$components/fxScrollSection'));
 });

@@ -13,6 +13,12 @@ class Preloader {
   private vTracks: HTMLElement[] = [];
   private overlayPanel: HTMLElement;
 
+  private heroText: HTMLElement;
+  private split: SplitText;
+  private heroInfo: HTMLElement;
+  private heroTag: HTMLElement;
+  private nav: HTMLElement;
+
   constructor() {
     this.component = document.querySelector('.component_preloader') as HTMLElement;
     this.loaderTracks = [...document.querySelectorAll('.preloader_track')] as HTMLElement[];
@@ -21,15 +27,28 @@ class Preloader {
     this.bgImg = document.querySelector('.preloader_img') as HTMLElement;
     this.overlayPanel = document.querySelector('.preloader_reveal') as HTMLElement;
 
+    this.heroText = document.querySelector('.section_hero h1') as HTMLElement;
+    this.split = SplitText.create(this.heroText, {
+      mask: 'lines',
+      type: 'lines',
+    });
+    this.heroInfo = document.querySelector('.hero_overview') as HTMLElement;
+    this.heroTag = document.querySelector('.hero_tag') as HTMLElement;
+    this.nav = document.querySelector('.component_nav') as HTMLElement;
+
     this.setup();
     this.animate();
   }
 
   private setup() {
     gsap.set([this.logo, this.tags], { opacity: 0, y: '4rem' });
+    gsap.set(this.split.lines, { y: '100%', opacity: 0 });
+    gsap.set(this.heroInfo.children, { opacity: 0 });
+    gsap.set(this.heroTag, { opacity: 0 });
+    gsap.set(this.nav, { x: '-100%' });
 
     this.loaderTracks.forEach((item) => {
-      console.log(item.classList);
+      // console.log(item.classList);
       if (item.classList.contains('is-vert')) {
         this.vTracks.push(item);
       } else if (item.classList.contains('is-hor')) {
@@ -37,7 +56,7 @@ class Preloader {
       }
     });
 
-    console.log('setup', this.hTracks, this.vTracks);
+    // console.log('setup', this.hTracks, this.vTracks);
   }
 
   private animate() {
@@ -60,8 +79,13 @@ class Preloader {
 
     // tl.to(this.hTracks, { y: '-100%', ease: 'power2.out' });
     // tl.to(this.vTracks, { x: '-100%', ease: 'power2.out' });
-    tl.to(this.overlayPanel, { width: '100%', duration: 1, ease: 'expo.inOut' });
+    tl.to(this.overlayPanel, { width: '100%', duration: 1.5, ease: 'expo.inOut' });
 
+    tl.to(
+      [this.tags, this.logo, this.bgImg],
+      { opacity: 0, duration: 1, ease: 'power2.inOut' },
+      '<1',
+    );
     tl.to(this.component, {
       opacity: 0,
       duration: 1,
@@ -71,16 +95,41 @@ class Preloader {
   }
 
   private reveal() {
-    const heroText = document.querySelector('.section_hero h1');
-    const split = SplitText.create(heroText, {
-      mask: 'words',
-      type: 'words',
-    });
-
-    console.log('SPLIT', heroText, split);
     const tl = gsap.timeline();
 
-    tl.fromTo(split.words, { y: '2rem', opacity: 0 }, { y: '0rem', opacity: 1 });
+    tl.to(this.nav, { x: '0%', duration: 2, ease: 'power4.out' });
+    tl.to(
+      this.split.lines,
+      {
+        y: '0rem',
+        opacity: 1,
+        stagger: 0.1,
+        // rotateY: '0deg',
+        duration: 1.5,
+        ease: 'power4.out',
+      },
+      '<',
+    );
+    tl.to(
+      this.heroInfo.children,
+      {
+        opacity: 1,
+        // stagger: 0.2,
+        duration: 2,
+        ease: 'power4.inOut',
+      },
+      '0',
+    );
+    tl.to(
+      this.heroTag,
+      {
+        opacity: 1,
+        duration: 2,
+        ease: 'power4.inOut',
+      },
+      '<',
+    );
+    console.log('%%', tl.duration());
   }
 }
 
