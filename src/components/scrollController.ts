@@ -17,6 +17,11 @@ class ScrollController {
   private footerSection: HTMLElement;
   private horizontalTween: gsap.core.Animation | null = null;
 
+  private ctx: gsap.Context | null = null;
+  private mm: gsap.MatchMedia | null = null;
+  private rafId: number | null = null;
+  private destroyed = false;
+
   constructor() {
     this.container = document.querySelector('.page_horizontal') as HTMLElement;
     this.track = document.querySelector('.page_scroll-track') as HTMLElement;
@@ -38,6 +43,7 @@ class ScrollController {
     }
 
     this.setup();
+    this.bindRefreshListeners();
   }
 
   private setup() {
@@ -51,7 +57,10 @@ class ScrollController {
     // const hPadding = getComputedStyle(root).getPropertyValue('--custom--h-site-height').trim();
     // const vPadding = getComputedStyle(root).getPropertyValue('--custom--v-site-height').trim();
 
-    // console.log('v', vPadding, 'h', hPadding);
+    const off = `calc(${navOffset})`;
+
+    console.log('YO', this.wideSections.length, 'off', navOffset);
+    // console.log(this.wideSections.length * off);
 
     gsap.set(this.track, {
       display: 'flex',
@@ -81,21 +90,113 @@ class ScrollController {
     //   flexShrink: 0,
     // });
 
-    this.initScroll();
-    const cRect = this.container.getBoundingClientRect();
-    console.log('window.innerWidth', window.innerWidth);
-    console.log('container rect width', cRect.width);
-    console.log('diff', window.innerWidth - cRect.width);
-    this.initSectionReveals();
+    // this.initScroll();
+    // const cRect = this.container.getBoundingClientRect();
+    // console.log('window.innerWidth', window.innerWidth);
+    // console.log('container rect width', cRect.width);
+    // console.log('diff', window.innerWidth - cRect.width);
+    // this.initSectionReveals();
+
+    this.build();
 
     // window.addEventListener('load', () => {
     //   console.log('LOAD');
     //   ScrollTrigger.refresh();
     // });
 
-    setTimeout(() => {
-      ScrollTrigger.refresh(true);
-    }, 250);
+    // setTimeout(() => {
+    //   ScrollTrigger.refresh(true);
+    // }, 250);
+  }
+
+  private build() {
+    // prevent building after teardown
+    if (this.destroyed) return;
+
+    // clean any previous build (important for resize / page transitions / re-init)
+    this.destroy(false);
+
+    // Scope all GSAP creations so they can be reverted safely.
+    this.ctx = gsap.context(() => {
+      this.mm = gsap.matchMedia();
+
+      // Desktop horizontal-scroll only (Webflow tablet breakpoint is 991px)
+      this.mm.add('(min-width: 992px)', () => {
+        // If elements got detached (page transition etc), bail safely
+        if (!this.container?.isConnected || !this.track?.isConnected) return;
+
+        this.initScroll();
+        this.initSectionReveals();
+
+        // A refresh after triggers exist but after layout settles
+        requestAnimationFrame(() => ScrollTrigger.refresh());
+
+        // IMPORTANT: matchMedia cleanup callback
+        return () => {
+          this.horizontalTween?.kill();
+          this.horizontalTween = null;
+        };
+      });
+
+      // Optional: mobile/tablet fallback (no pin)
+      this.mm.add('(max-width: 991px)', () => {
+        // If you want, you can reset any transforms on smaller breakpoints:
+        gsap.set(this.track, { clearProps: 'transform' });
+
+        return () => {
+          // nothing special needed
+        };
+      });
+    }, this.container);
+  }
+
+  private destroy(killListeners = true) {
+    this.horizontalTween?.kill();
+    this.horizontalTween = null;
+
+    // Kill Lenis RAF loop so it can't multiply on rebuild
+    if (this.rafId != null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+
+    // Revert matchMedia + context (this kills ScrollTriggers created inside)
+    this.mm?.revert();
+    this.mm = null;
+
+    this.ctx?.revert();
+    this.ctx = null;
+
+    if (killListeners) {
+      this.destroyed = true;
+      window.removeEventListener('resize', this.onResize);
+    }
+  }
+
+  private onResize = () => {
+    // Rebuild on resize (debounced via RAF)
+    if (this.destroyed) return;
+
+    // If we rebuild too eagerly, we can race DOM/layout. RAF keeps it stable.
+    requestAnimationFrame(() => {
+      this.build();
+    });
+  };
+
+  private bindRefreshListeners() {
+    window.addEventListener('resize', this.onResize, { passive: true });
+
+    // Refresh after full load (images, layout)
+    window.addEventListener('load', () => {
+      if (!this.destroyed) ScrollTrigger.refresh();
+    });
+
+    // Refresh after fonts load (common cause of late layout shifts)
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(() => {
+        if (!this.destroyed) ScrollTrigger.refresh();
+      });
+    }
   }
 
   private initScroll() {
@@ -146,12 +247,15 @@ class ScrollController {
     this.initParallax();
 
     const lenis = lenisInstance();
-    if (lenis) {
-      requestAnimationFrame(function raf(time) {
+    if (lenis && this.rafId == null) {
+      const raf = (time: number) => {
+        if (this.destroyed) return;
         lenis.raf(time);
         ScrollTrigger.update();
-        requestAnimationFrame(raf);
-      });
+        this.rafId = requestAnimationFrame(raf);
+      };
+
+      this.rafId = requestAnimationFrame(raf);
     }
   }
 

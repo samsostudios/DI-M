@@ -8461,6 +8461,10 @@
     heroSection;
     footerSection;
     horizontalTween = null;
+    ctx = null;
+    mm = null;
+    rafId = null;
+    destroyed = false;
     constructor() {
       this.container = document.querySelector(".page_horizontal");
       this.track = document.querySelector(".page_scroll-track");
@@ -8476,10 +8480,13 @@
         return;
       }
       this.setup();
+      this.bindRefreshListeners();
     }
     setup() {
       const root = document.documentElement;
       const navOffset = getComputedStyle(root).getPropertyValue("--custom--nav-width-plus-gutter").trim();
+      const off = `calc(${navOffset})`;
+      console.log("YO", this.wideSections.length, "off", navOffset);
       gsapWithCSS.set(this.track, {
         display: "flex",
         flexFlow: "row nowrap",
@@ -8502,15 +8509,62 @@
           height: "100%"
         });
       });
-      this.initScroll();
-      const cRect = this.container.getBoundingClientRect();
-      console.log("window.innerWidth", window.innerWidth);
-      console.log("container rect width", cRect.width);
-      console.log("diff", window.innerWidth - cRect.width);
-      this.initSectionReveals();
-      setTimeout(() => {
-        ScrollTrigger2.refresh(true);
-      }, 250);
+      this.build();
+    }
+    build() {
+      if (this.destroyed) return;
+      this.destroy(false);
+      this.ctx = gsapWithCSS.context(() => {
+        this.mm = gsapWithCSS.matchMedia();
+        this.mm.add("(min-width: 992px)", () => {
+          if (!this.container?.isConnected || !this.track?.isConnected) return;
+          this.initScroll();
+          this.initSectionReveals();
+          requestAnimationFrame(() => ScrollTrigger2.refresh());
+          return () => {
+            this.horizontalTween?.kill();
+            this.horizontalTween = null;
+          };
+        });
+        this.mm.add("(max-width: 991px)", () => {
+          gsapWithCSS.set(this.track, { clearProps: "transform" });
+          return () => {
+          };
+        });
+      }, this.container);
+    }
+    destroy(killListeners = true) {
+      this.horizontalTween?.kill();
+      this.horizontalTween = null;
+      if (this.rafId != null) {
+        cancelAnimationFrame(this.rafId);
+        this.rafId = null;
+      }
+      this.mm?.revert();
+      this.mm = null;
+      this.ctx?.revert();
+      this.ctx = null;
+      if (killListeners) {
+        this.destroyed = true;
+        window.removeEventListener("resize", this.onResize);
+      }
+    }
+    onResize = () => {
+      if (this.destroyed) return;
+      requestAnimationFrame(() => {
+        this.build();
+      });
+    };
+    bindRefreshListeners() {
+      window.addEventListener("resize", this.onResize, { passive: true });
+      window.addEventListener("load", () => {
+        if (!this.destroyed) ScrollTrigger2.refresh();
+      });
+      if (document.fonts?.ready) {
+        document.fonts.ready.then(() => {
+          if (!this.destroyed) ScrollTrigger2.refresh();
+        });
+      }
     }
     initScroll() {
       const getScrollLength = () => this.track.scrollWidth - this.container.clientWidth;
@@ -8551,12 +8605,14 @@
       });
       this.initParallax();
       const lenis2 = lenisInstance();
-      if (lenis2) {
-        requestAnimationFrame(function raf(time) {
+      if (lenis2 && this.rafId == null) {
+        const raf = (time) => {
+          if (this.destroyed) return;
           lenis2.raf(time);
           ScrollTrigger2.update();
-          requestAnimationFrame(raf);
-        });
+          this.rafId = requestAnimationFrame(raf);
+        };
+        this.rafId = requestAnimationFrame(raf);
       }
     }
     initSectionReveals() {
