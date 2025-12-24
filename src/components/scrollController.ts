@@ -1,6 +1,7 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+import { buildRevealTl } from '$animation/revealAnimations';
 import { lenisInstance } from '$utils/smoothScroll';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -13,6 +14,7 @@ class ScrollController {
   private wideLayouts: HTMLElement[];
   private fxSections: HTMLElement[];
   private heroSection: HTMLElement;
+  private footerSection: HTMLElement;
   private horizontalTween: gsap.core.Animation | null = null;
 
   constructor() {
@@ -26,6 +28,7 @@ class ScrollController {
 
     this.fxSections = [...this.track.querySelectorAll('.section_fx')] as HTMLElement[];
     this.heroSection = document.querySelector('.section_hero') as HTMLElement;
+    this.footerSection = document.querySelector('.footer_component') as HTMLElement;
 
     // console.log('!!', this.wideSections, this.wideLayouts);
 
@@ -45,8 +48,8 @@ class ScrollController {
       .getPropertyValue('--custom--nav-width-plus-gutter')
       .trim();
 
-    const hPadding = getComputedStyle(root).getPropertyValue('--custom--h-site-height').trim();
-    const vPadding = getComputedStyle(root).getPropertyValue('--custom--v-site-height').trim();
+    // const hPadding = getComputedStyle(root).getPropertyValue('--custom--h-site-height').trim();
+    // const vPadding = getComputedStyle(root).getPropertyValue('--custom--v-site-height').trim();
 
     // console.log('v', vPadding, 'h', hPadding);
 
@@ -57,6 +60,7 @@ class ScrollController {
     });
     gsap.set(this.fxSections, { flex: '0 0 100vw', height: '100vh' });
     gsap.set(this.heroSection, { flex: '0 0 100vw', height: '100vh' });
+    gsap.set(this.footerSection, { flex: '0 0 100vw', height: '100vh' });
     gsap.set(this.wideSections, {
       width: 'auto',
       minWidth: '100vw',
@@ -78,7 +82,16 @@ class ScrollController {
     // });
 
     this.initScroll();
+    const cRect = this.container.getBoundingClientRect();
+    console.log('window.innerWidth', window.innerWidth);
+    console.log('container rect width', cRect.width);
+    console.log('diff', window.innerWidth - cRect.width);
     this.initSectionReveals();
+
+    // window.addEventListener('load', () => {
+    //   console.log('LOAD');
+    //   ScrollTrigger.refresh();
+    // });
 
     setTimeout(() => {
       ScrollTrigger.refresh(true);
@@ -86,20 +99,47 @@ class ScrollController {
   }
 
   private initScroll() {
-    const totalScrollLength = this.track.scrollWidth - window.innerWidth;
+    // const totalScrollLength = this.track.scrollWidth - window.innerWidth;
+    const getScrollLength = () => this.track.scrollWidth - this.container.clientWidth;
+
+    const debugEnd = () => {
+      const footer = this.footerSection;
+
+      console.log('track', {
+        scrollWidth: this.track.scrollWidth,
+        clientWidth: this.track.clientWidth,
+      });
+
+      console.log('footer', {
+        clientWidth: footer.clientWidth,
+        scrollWidth: footer.scrollWidth,
+        overflow: footer.scrollWidth - footer.clientWidth,
+      });
+
+      const last = this.track.lastElementChild as HTMLElement | null;
+      if (last) {
+        console.log('last child', {
+          offsetLeft: last.offsetLeft,
+          offsetWidth: last.offsetWidth,
+          end: last.offsetLeft + last.offsetWidth,
+        });
+      }
+    };
+
+    debugEnd();
 
     this.horizontalTween = gsap.to(this.track, {
-      x: () => `-${totalScrollLength}px`,
+      x: () => -getScrollLength(),
       ease: 'none',
       scrollTrigger: {
         trigger: this.container,
         start: 'top top',
-        end: () => `+=${totalScrollLength}`,
+        end: () => `+=${getScrollLength()}`,
         scrub: true,
         pin: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
-        markers: true,
+        // markers: true,
       },
     });
 
@@ -119,11 +159,20 @@ class ScrollController {
     if (!this.horizontalTween) return;
 
     const sections = [...this.track.querySelectorAll('[data-reveal]')] as HTMLElement[];
-    console.log('reveals', sections);
+    // console.log('reveals', sections);
 
     sections.forEach((section) => {
       const type = section.dataset.reveal as string;
-      console.log('TT', type);
+      // const start = 'left 75%';
+      // const once = true;
+
+      const tl = buildRevealTl(type, section);
+
+      if (!tl) return;
+
+      // ScrollTrigger.create({});
+
+      // console.log('TT', type, tl);
     });
   }
 
@@ -131,7 +180,7 @@ class ScrollController {
     if (!this.horizontalTween) return;
 
     const fxSections = [...this.track.querySelectorAll('.section_fx')] as HTMLElement[];
-    console.log('paralax', fxSections);
+    // console.log('paralax', fxSections);
 
     fxSections.forEach((section) => {
       const image = section.querySelector('.fx_img') as HTMLElement | null;
@@ -143,7 +192,7 @@ class ScrollController {
 
       gsap.set(image, { scale: maxScale, transformOrigin: 'left center' });
 
-      console.log('$$', section);
+      // console.log('$$', section);
 
       gsap.fromTo(
         image,
@@ -159,7 +208,7 @@ class ScrollController {
             start: 'left 90%',
             end: 'right 10%',
             scrub: true,
-            markers: true,
+            // markers: true,
           },
         },
       );

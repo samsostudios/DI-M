@@ -4643,6 +4643,7 @@
         heroInfo;
         heroTag;
         nav;
+        scrollGlyph;
         constructor() {
           this.component = document.querySelector(".component_preloader");
           this.loaderTracks = [...document.querySelectorAll(".preloader_track")];
@@ -4651,13 +4652,16 @@
           this.bgImg = document.querySelector(".preloader_img");
           this.overlayPanel = document.querySelector(".preloader_reveal");
           this.heroText = document.querySelector(".section_hero h1");
+          document.fonts.ready.then(() => {
+          });
           this.split = SplitText.create(this.heroText, {
             mask: "lines",
             type: "lines"
           });
           this.heroInfo = document.querySelector(".hero_overview");
           this.heroTag = document.querySelector(".hero_tag");
-          this.nav = document.querySelector(".component_nav");
+          this.nav = document.querySelector(".component_nav-ui");
+          this.scrollGlyph = document.querySelector(".hero_scroll-glyph.alt");
           this.setup();
           this.animate();
         }
@@ -4667,6 +4671,7 @@
           gsapWithCSS.set(this.heroInfo.children, { opacity: 0 });
           gsapWithCSS.set(this.heroTag, { opacity: 0 });
           gsapWithCSS.set(this.nav, { x: "-100%" });
+          gsapWithCSS.set(this.scrollGlyph, { x: "5rem" });
           this.loaderTracks.forEach((item) => {
             if (item.classList.contains("is-vert")) {
               this.vTracks.push(item);
@@ -4689,6 +4694,8 @@
           tl.to(this.vTracks[1], { y: "0%", duration: 0.5, ease: "power2.inOut" }, "0.5");
           tl.to(this.hTracks[1], { x: "0%", duration: 0.5, ease: "power2.inOut" }, "1");
           tl.to(this.vTracks[0], { y: "0%", duration: 0.5, ease: "power2.inOut" }, "1.5");
+          tl.to(this.hTracks, { y: "-100%", ease: "power2.inOut" });
+          tl.to(this.vTracks, { x: "-100%", ease: "power2.inOut" }, "<");
           tl.to(this.overlayPanel, { width: "100%", duration: 1.5, ease: "expo.inOut" });
           tl.to(
             [this.tags, this.logo, this.bgImg],
@@ -4705,6 +4712,7 @@
         reveal() {
           const tl = gsapWithCSS.timeline();
           tl.to(this.nav, { x: "0%", duration: 2, ease: "power4.out" });
+          tl.to(this.scrollGlyph, { x: 0, duration: 2, ease: "power4.out" }, "<");
           tl.to(
             this.split.lines,
             {
@@ -4761,19 +4769,23 @@
       Menu = class {
         component;
         links;
+        linkSpans;
+        spanHighlights;
         open;
         close;
         constructor() {
-          this.component = document.querySelector(".component_menu");
-          this.links = [...this.component.querySelectorAll(".menu_link")];
+          this.component = document.querySelector(".component_nav");
+          this.links = [...this.component.querySelectorAll(".nav_link")];
+          this.spanHighlights = [...document.querySelectorAll(".nav_span-highlight")];
+          this.linkSpans = [...document.querySelectorAll(".nav_span")];
           this.open = document.querySelector("#menuOpen");
           this.close = document.querySelector("#menuClose");
           this.setupUI();
           this.setListeners();
         }
         setupUI() {
-          console.log("MENU", this.open, this.close);
           gsapWithCSS.set(this.component, { x: "-100%" });
+          gsapWithCSS.set([this.linkSpans, this.spanHighlights], { width: 0 });
         }
         setListeners() {
           this.open.addEventListener("click", () => {
@@ -4782,13 +4794,31 @@
           this.close.addEventListener("click", () => {
             this.closeMenu();
           });
+          this.links.forEach((element) => {
+            const highlight = element.querySelector(".nav_span-highlight");
+            const imgWrap = element.querySelector(".nav_link-img-wrap");
+            element.addEventListener("mouseover", () => {
+              console.log("over");
+              gsapWithCSS.to(highlight, { width: "50%", ease: "circ.out" });
+              gsapWithCSS.to(imgWrap, { height: "100%", ease: "circ.out" });
+            });
+            element.addEventListener("mouseout", () => {
+              gsapWithCSS.to(highlight, { width: "0%", ease: "circ.out" });
+              gsapWithCSS.to(imgWrap, { height: "0%", ease: "circ.out" });
+            });
+          });
         }
         openMenu() {
           console.log("OPEN");
           const tl = gsapWithCSS.timeline();
           tl.set(this.component, { display: "block" });
-          tl.to(this.component, { x: "0%", duration: 1, ease: "expo.inOut" });
-          tl.fromTo(this.links, { opacity: 0 }, { opacity: 1 });
+          tl.to(this.component, { x: "0%", duration: 1.5, ease: "expo.inOut" });
+          tl.fromTo(
+            this.links,
+            { opacity: 0, y: "4rem" },
+            { opacity: 1, y: "0rem", duartion: 1, stagger: 0.2, ease: "power1.out" }
+          );
+          tl.to(this.linkSpans, { width: "100%", duration: 1, stagger: 0.2, ease: "expo.out" }, "<0.1");
         }
         closeMenu() {
           console.log("OPEN");
@@ -4861,56 +4891,6 @@
         new HeroSlider();
       };
       heroSlider_default = heroSlider;
-    }
-  });
-
-  // src/components/landingPageHero.ts
-  var landingPageHero_exports = {};
-  __export(landingPageHero_exports, {
-    default: () => landingPageHero_default,
-    lpHero: () => lpHero
-  });
-  var LPHero, lpHero, landingPageHero_default;
-  var init_landingPageHero = __esm({
-    "src/components/landingPageHero.ts"() {
-      "use strict";
-      init_live_reload();
-      init_gsap();
-      LPHero = class {
-        panel;
-        open;
-        close;
-        constructor() {
-          this.panel = document.querySelector(".hero_panel");
-          this.open = document.querySelector("#modalOpen");
-          this.close = document.querySelector("#modalClose");
-          this.setListeners();
-        }
-        setListeners() {
-          this.open.addEventListener("click", () => {
-            console.log("Opening");
-            this.openPanel();
-          });
-          this.close.addEventListener("click", () => {
-            console.log("Closing");
-            this.closePanel();
-          });
-        }
-        openPanel() {
-          const tl = gsapWithCSS.timeline();
-          tl.set(this.panel, { display: "block", x: "100%" });
-          tl.to(this.panel, { x: "0%", ease: "expo.out" });
-        }
-        closePanel() {
-          const tl = gsapWithCSS.timeline();
-          tl.to(this.panel, { x: "100%", ease: "expo.out" });
-          tl.set(this.panel, { display: "none" });
-        }
-      };
-      lpHero = () => {
-        new LPHero();
-      };
-      landingPageHero_default = lpHero;
     }
   });
 
@@ -7354,6 +7334,24 @@
   };
   _getGSAP3() && gsap3.registerPlugin(ScrollTrigger2);
 
+  // src/animation/revealAnimations.ts
+  init_live_reload();
+  init_gsap();
+  var buildRevealTl = (type, section) => {
+    switch (type) {
+      case "mosaic":
+        return mosaicReveal(section);
+      default:
+        return null;
+    }
+  };
+  var mosaicReveal = (section) => {
+    const glyphs = [...section.querySelectorAll(".typo-grid_glyph.main")];
+    const tl = gsapWithCSS.timeline();
+    tl.fromTo(glyphs, { opacity: 0 }, { opacity: 1 });
+    return tl;
+  };
+
   // src/utils/smoothScroll.ts
   init_live_reload();
   init_gsap();
@@ -8461,6 +8459,7 @@
     wideLayouts;
     fxSections;
     heroSection;
+    footerSection;
     horizontalTween = null;
     constructor() {
       this.container = document.querySelector(".page_horizontal");
@@ -8471,6 +8470,7 @@
       ];
       this.fxSections = [...this.track.querySelectorAll(".section_fx")];
       this.heroSection = document.querySelector(".section_hero");
+      this.footerSection = document.querySelector(".footer_component");
       if (!this.container || !this.track) {
         console.error("Container or track not found.");
         return;
@@ -8480,8 +8480,6 @@
     setup() {
       const root = document.documentElement;
       const navOffset = getComputedStyle(root).getPropertyValue("--custom--nav-width-plus-gutter").trim();
-      const hPadding = getComputedStyle(root).getPropertyValue("--custom--h-site-height").trim();
-      const vPadding = getComputedStyle(root).getPropertyValue("--custom--v-site-height").trim();
       gsapWithCSS.set(this.track, {
         display: "flex",
         flexFlow: "row nowrap",
@@ -8489,6 +8487,7 @@
       });
       gsapWithCSS.set(this.fxSections, { flex: "0 0 100vw", height: "100vh" });
       gsapWithCSS.set(this.heroSection, { flex: "0 0 100vw", height: "100vh" });
+      gsapWithCSS.set(this.footerSection, { flex: "0 0 100vw", height: "100vh" });
       gsapWithCSS.set(this.wideSections, {
         width: "auto",
         minWidth: "100vw",
@@ -8504,25 +8503,50 @@
         });
       });
       this.initScroll();
+      const cRect = this.container.getBoundingClientRect();
+      console.log("window.innerWidth", window.innerWidth);
+      console.log("container rect width", cRect.width);
+      console.log("diff", window.innerWidth - cRect.width);
       this.initSectionReveals();
       setTimeout(() => {
         ScrollTrigger2.refresh(true);
       }, 250);
     }
     initScroll() {
-      const totalScrollLength = this.track.scrollWidth - window.innerWidth;
+      const getScrollLength = () => this.track.scrollWidth - this.container.clientWidth;
+      const debugEnd = () => {
+        const footer = this.footerSection;
+        console.log("track", {
+          scrollWidth: this.track.scrollWidth,
+          clientWidth: this.track.clientWidth
+        });
+        console.log("footer", {
+          clientWidth: footer.clientWidth,
+          scrollWidth: footer.scrollWidth,
+          overflow: footer.scrollWidth - footer.clientWidth
+        });
+        const last = this.track.lastElementChild;
+        if (last) {
+          console.log("last child", {
+            offsetLeft: last.offsetLeft,
+            offsetWidth: last.offsetWidth,
+            end: last.offsetLeft + last.offsetWidth
+          });
+        }
+      };
+      debugEnd();
       this.horizontalTween = gsapWithCSS.to(this.track, {
-        x: () => `-${totalScrollLength}px`,
+        x: () => -getScrollLength(),
         ease: "none",
         scrollTrigger: {
           trigger: this.container,
           start: "top top",
-          end: () => `+=${totalScrollLength}`,
+          end: () => `+=${getScrollLength()}`,
           scrub: true,
           pin: true,
           anticipatePin: 1,
-          invalidateOnRefresh: true,
-          markers: true
+          invalidateOnRefresh: true
+          // markers: true,
         }
       });
       this.initParallax();
@@ -8538,16 +8562,15 @@
     initSectionReveals() {
       if (!this.horizontalTween) return;
       const sections = [...this.track.querySelectorAll("[data-reveal]")];
-      console.log("reveals", sections);
       sections.forEach((section) => {
         const type = section.dataset.reveal;
-        console.log("TT", type);
+        const tl = buildRevealTl(type, section);
+        if (!tl) return;
       });
     }
     initParallax() {
       if (!this.horizontalTween) return;
       const fxSections = [...this.track.querySelectorAll(".section_fx")];
-      console.log("paralax", fxSections);
       fxSections.forEach((section) => {
         const image = section.querySelector(".fx_img");
         if (!image) return;
@@ -8555,7 +8578,6 @@
         const minScale = 1;
         const offset = -(minScale - 1) * 100;
         gsapWithCSS.set(image, { scale: maxScale, transformOrigin: "left center" });
-        console.log("$$", section);
         gsapWithCSS.fromTo(
           image,
           { xPercent: 0 },
@@ -8569,8 +8591,8 @@
               trigger: section,
               start: "left 90%",
               end: "right 10%",
-              scrub: true,
-              markers: true
+              scrub: true
+              // markers: true,
             }
           }
         );
@@ -8607,9 +8629,8 @@
     navHUD_default();
     scrollController_default();
     loadComponent_default(".component_preloader", () => Promise.resolve().then(() => (init_preloader(), preloader_exports)));
-    loadComponent_default(".component_menu", () => Promise.resolve().then(() => (init_menu(), menu_exports)));
+    loadComponent_default(".component_nav", () => Promise.resolve().then(() => (init_menu(), menu_exports)));
     loadComponent_default(".section_hero", () => Promise.resolve().then(() => (init_heroSlider(), heroSlider_exports)));
-    loadComponent_default(".section_hero", () => Promise.resolve().then(() => (init_landingPageHero(), landingPageHero_exports)));
   });
 })();
 /*! Bundled license information:

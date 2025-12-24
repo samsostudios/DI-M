@@ -18,6 +18,7 @@ class Preloader {
   private heroInfo: HTMLElement;
   private heroTag: HTMLElement;
   private nav: HTMLElement;
+  private scrollGlyph: HTMLElement;
 
   constructor() {
     this.component = document.querySelector('.component_preloader') as HTMLElement;
@@ -28,13 +29,15 @@ class Preloader {
     this.overlayPanel = document.querySelector('.preloader_reveal') as HTMLElement;
 
     this.heroText = document.querySelector('.section_hero h1') as HTMLElement;
+    document.fonts.ready.then(() => {});
     this.split = SplitText.create(this.heroText, {
       mask: 'lines',
       type: 'lines',
     });
     this.heroInfo = document.querySelector('.hero_overview') as HTMLElement;
     this.heroTag = document.querySelector('.hero_tag') as HTMLElement;
-    this.nav = document.querySelector('.component_nav') as HTMLElement;
+    this.nav = document.querySelector('.component_nav-ui') as HTMLElement;
+    this.scrollGlyph = document.querySelector('.hero_scroll-glyph.alt') as HTMLElement;
 
     this.setup();
     this.animate();
@@ -46,6 +49,7 @@ class Preloader {
     gsap.set(this.heroInfo.children, { opacity: 0 });
     gsap.set(this.heroTag, { opacity: 0 });
     gsap.set(this.nav, { x: '-100%' });
+    gsap.set(this.scrollGlyph, { x: '5rem' });
 
     this.loaderTracks.forEach((item) => {
       // console.log(item.classList);
@@ -77,8 +81,8 @@ class Preloader {
     tl.to(this.hTracks[1], { x: '0%', duration: 0.5, ease: 'power2.inOut' }, '1');
     tl.to(this.vTracks[0], { y: '0%', duration: 0.5, ease: 'power2.inOut' }, '1.5');
 
-    // tl.to(this.hTracks, { y: '-100%', ease: 'power2.out' });
-    // tl.to(this.vTracks, { x: '-100%', ease: 'power2.out' });
+    tl.to(this.hTracks, { y: '-100%', ease: 'power2.inOut' });
+    tl.to(this.vTracks, { x: '-100%', ease: 'power2.inOut' }, '<');
     tl.to(this.overlayPanel, { width: '100%', duration: 1.5, ease: 'expo.inOut' });
 
     tl.to(
@@ -98,6 +102,7 @@ class Preloader {
     const tl = gsap.timeline();
 
     tl.to(this.nav, { x: '0%', duration: 2, ease: 'power4.out' });
+    tl.to(this.scrollGlyph, { x: 0, duration: 2, ease: 'power4.out' }, '<');
     tl.to(
       this.split.lines,
       {
