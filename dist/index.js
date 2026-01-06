@@ -4894,6 +4894,56 @@
     }
   });
 
+  // src/components/landingPageHero.ts
+  var landingPageHero_exports = {};
+  __export(landingPageHero_exports, {
+    default: () => landingPageHero_default,
+    lpHero: () => lpHero
+  });
+  var LPHero, lpHero, landingPageHero_default;
+  var init_landingPageHero = __esm({
+    "src/components/landingPageHero.ts"() {
+      "use strict";
+      init_live_reload();
+      init_gsap();
+      LPHero = class {
+        panel;
+        open;
+        close;
+        constructor() {
+          this.panel = document.querySelector(".hero_panel");
+          this.open = document.querySelector("#modalOpen");
+          this.close = document.querySelector("#modalClose");
+          this.setListeners();
+        }
+        setListeners() {
+          this.open.addEventListener("click", () => {
+            console.log("Opening");
+            this.openPanel();
+          });
+          this.close.addEventListener("click", () => {
+            console.log("Closing");
+            this.closePanel();
+          });
+        }
+        openPanel() {
+          const tl = gsapWithCSS.timeline();
+          tl.set(this.panel, { display: "block", x: "100%" });
+          tl.to(this.panel, { x: "0%", ease: "expo.out" });
+        }
+        closePanel() {
+          const tl = gsapWithCSS.timeline();
+          tl.to(this.panel, { x: "100%", ease: "expo.out" });
+          tl.set(this.panel, { display: "none" });
+        }
+      };
+      lpHero = () => {
+        new LPHero();
+      };
+      landingPageHero_default = lpHero;
+    }
+  });
+
   // src/index.ts
   init_live_reload();
 
@@ -7352,6 +7402,9 @@
     return tl;
   };
 
+  // src/utils/deviceInfo.ts
+  init_live_reload();
+
   // src/utils/smoothScroll.ts
   init_live_reload();
   init_gsap();
@@ -8482,6 +8535,8 @@
       this.setup();
       this.bindRefreshListeners();
     }
+    checkDevice() {
+    }
     setup() {
       const root = document.documentElement;
       const navOffset = getComputedStyle(root).getPropertyValue("--custom--nav-width-plus-gutter").trim();
@@ -8687,6 +8742,7 @@
     loadComponent_default(".component_preloader", () => Promise.resolve().then(() => (init_preloader(), preloader_exports)));
     loadComponent_default(".component_nav", () => Promise.resolve().then(() => (init_menu(), menu_exports)));
     loadComponent_default(".section_hero", () => Promise.resolve().then(() => (init_heroSlider(), heroSlider_exports)));
+    loadComponent_default(".section_hero", () => Promise.resolve().then(() => (init_landingPageHero(), landingPageHero_exports)));
   });
 })();
 /*! Bundled license information:

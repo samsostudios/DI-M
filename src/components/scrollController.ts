@@ -2,6 +2,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import { buildRevealTl } from '$animation/revealAnimations';
+import { breakpoints, isTouchDevice } from '$utils/deviceInfo';
 import { lenisInstance } from '$utils/smoothScroll';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -45,6 +46,8 @@ class ScrollController {
     this.setup();
     this.bindRefreshListeners();
   }
+
+  private checkDevice() {}
 
   private setup() {
     // const frameWidth = this.getFrameSize();

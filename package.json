@@ -1,7 +1,7 @@
 {
-  "name": "ss-three-starter",
+  "name": "DI&M",
   "version": "1.0.0",
-  "description": "Starter file with basic threejs scene",
+  "description": "Website codebase for the Denim Institute & Museum",
   "main": "index.js",
   "type": "module",
   "scripts": {
