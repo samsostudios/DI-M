@@ -1,4 +1,7 @@
 import { gsap } from 'gsap';
+import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin';
+
+gsap.registerPlugin(MorphSVGPlugin);
 
 class Menu {
   private component: HTMLElement;
@@ -7,6 +10,9 @@ class Menu {
   private spanHighlights: HTMLElement[];
   private open: HTMLElement;
   private close: HTMLElement;
+  private iconLeft: HTMLElement;
+  private iconRight: HTMLElement;
+  private isOpen: boolean = false;
 
   constructor() {
     this.component = document.querySelector('.component_nav') as HTMLElement;
@@ -15,6 +21,8 @@ class Menu {
     this.linkSpans = [...document.querySelectorAll('.nav_span')] as HTMLElement[];
     this.open = document.querySelector('#menuOpen') as HTMLElement;
     this.close = document.querySelector('#menuClose') as HTMLElement;
+    this.iconLeft = document.querySelector('.nav-ui_svg-left') as HTMLElement;
+    this.iconRight = document.querySelector('.nav-ui_svg-right') as HTMLElement;
 
     this.setupUI();
     this.setListeners();
@@ -29,10 +37,17 @@ class Menu {
 
   private setListeners() {
     this.open.addEventListener('click', () => {
-      this.openMenu();
+      if (this.isOpen === false) {
+        this.openMenu();
+        this.isOpen = true;
+      } else {
+        this.closeMenu();
+        this.isOpen = false;
+      }
     });
     this.close.addEventListener('click', () => {
       this.closeMenu();
+      this.isOpen = false;
     });
 
     this.links.forEach((element) => {
@@ -51,10 +66,12 @@ class Menu {
   }
 
   private openMenu() {
-    console.log('OPEN');
+    // console.log('OPEN');
     const tl = gsap.timeline();
     tl.set(this.component, { display: 'block' });
-    tl.to(this.component, { x: '0%', duration: 1.5, ease: 'expo.inOut' });
+    tl.to(this.iconLeft, { x: '-6', ease: 'expo.out' });
+    tl.to(this.iconRight, { x: '6', ease: 'expo.out' }, '<');
+    tl.to(this.component, { x: '0%', duration: 1.5, ease: 'expo.inOut' }, '<');
     tl.fromTo(
       this.links,
       { opacity: 0, y: '4rem' },
@@ -64,9 +81,11 @@ class Menu {
   }
 
   private closeMenu() {
-    console.log('OPEN');
+    // console.log('OPEN');
     const tl = gsap.timeline();
     tl.to(this.component, { x: '-100%', duration: 1, ease: 'expo.inOut' });
+    tl.to(this.iconLeft, { x: '0', ease: 'expo.out' }, '<');
+    tl.to(this.iconRight, { x: '0', ease: 'expo.out' }, '<');
     tl.set(this.component, { display: 'none' });
   }
 }

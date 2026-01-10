@@ -19,6 +19,7 @@ class Preloader {
   private heroTag: HTMLElement;
   private nav: HTMLElement;
   private scrollGlyph: HTMLElement;
+  private bypass: boolean = true;
 
   constructor() {
     this.component = document.querySelector('.component_preloader') as HTMLElement;
@@ -39,8 +40,12 @@ class Preloader {
     this.nav = document.querySelector('.component_nav-ui') as HTMLElement;
     this.scrollGlyph = document.querySelector('.hero_scroll-glyph.alt') as HTMLElement;
 
-    this.setup();
-    this.animate();
+    if (this.bypass === false) {
+      this.setup();
+      this.animate();
+    } else {
+      gsap.to(this.component, { opacity: 0, display: 'none' });
+    }
   }
 
   private setup() {

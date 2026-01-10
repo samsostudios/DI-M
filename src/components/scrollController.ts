@@ -1,7 +1,6 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-import { buildRevealTl } from '$animation/revealAnimations';
 import { breakpoints, isTouchDevice } from '$utils/deviceInfo';
 import { lenisInstance } from '$utils/smoothScroll';
 
@@ -10,23 +9,17 @@ gsap.registerPlugin(ScrollTrigger);
 class ScrollController {
   private container: HTMLElement;
   private track: HTMLElement;
-  // private sections: HTMLElement[];
   private wideSections: HTMLElement[];
   private wideLayouts: HTMLElement[];
   private fxSections: HTMLElement[];
   private heroSection: HTMLElement;
+  private contactSection: HTMLElement;
   private footerSection: HTMLElement;
   private horizontalTween: gsap.core.Animation | null = null;
-
-  private ctx: gsap.Context | null = null;
-  private mm: gsap.MatchMedia | null = null;
-  private rafId: number | null = null;
-  private destroyed = false;
 
   constructor() {
     this.container = document.querySelector('.page_horizontal') as HTMLElement;
     this.track = document.querySelector('.page_scroll-track') as HTMLElement;
-    // this.sections = [...this.track.querySelectorAll('section')] as HTMLElement[];
     this.wideSections = [...this.track.querySelectorAll('[data-section-wide]')] as HTMLElement[];
     this.wideLayouts = [
       ...this.track.querySelectorAll('[data-section-wide] .section_layout'),
@@ -34,36 +27,37 @@ class ScrollController {
 
     this.fxSections = [...this.track.querySelectorAll('.section_fx')] as HTMLElement[];
     this.heroSection = document.querySelector('.section_hero') as HTMLElement;
+    this.contactSection = document.querySelector('.section_contact') as HTMLElement;
     this.footerSection = document.querySelector('.footer_component') as HTMLElement;
 
-    // console.log('!!', this.wideSections, this.wideLayouts);
+    const bp = breakpoints();
+    const isTouch = isTouchDevice();
+    console.log('BP', bp, 'touch', isTouch);
 
     if (!this.container || !this.track) {
       console.error('Container or track not found.');
       return;
     }
 
+    if (isTouch) {
+      console.log('[Scroller] Touch Device - Bypassing scroller setup');
+      return;
+    }
+
+    if (bp[0] !== 'Desktop') {
+      console.log('[Scroller] Non Desktop Device - Bypassing scroller setup');
+    }
+
     this.setup();
-    this.bindRefreshListeners();
+    this.bindResize();
   }
 
-  private checkDevice() {}
-
   private setup() {
-    // const frameWidth = this.getFrameSize();
-    // console.log(`Frame Size: ${frameWidth}`);
     const root = document.documentElement;
-    const navOffset = getComputedStyle(root)
+    const navMargin = getComputedStyle(root)
       .getPropertyValue('--custom--nav-width-plus-gutter')
       .trim();
-
-    // const hPadding = getComputedStyle(root).getPropertyValue('--custom--h-site-height').trim();
-    // const vPadding = getComputedStyle(root).getPropertyValue('--custom--v-site-height').trim();
-
-    const off = `calc(${navOffset})`;
-
-    console.log('YO', this.wideSections.length, 'off', navOffset);
-    // console.log(this.wideSections.length * off);
+    const siteMargin = getComputedStyle(root).getPropertyValue('--site--margin').trim();
 
     gsap.set(this.track, {
       display: 'flex',
@@ -72,12 +66,17 @@ class ScrollController {
     });
     gsap.set(this.fxSections, { flex: '0 0 100vw', height: '100vh' });
     gsap.set(this.heroSection, { flex: '0 0 100vw', height: '100vh' });
-    gsap.set(this.footerSection, { flex: '0 0 100vw', height: '100vh' });
+    gsap.set(this.contactSection, { flex: '0 0 133vw', height: '100vh' });
+    gsap.set(this.contactSection.children[0], {
+      width: 'auto',
+      paddingRight: `calc(${navMargin})`,
+    });
+    gsap.set(this.footerSection, { paddingRight: `calc(${siteMargin})` });
     gsap.set(this.wideSections, {
       width: 'auto',
       minWidth: '100vw',
       height: '100vh',
-      paddingRight: `calc(${navOffset})`,
+      paddingRight: `calc(${navMargin})`,
     });
     this.wideLayouts.forEach((e) => {
       gsap.set(e, {
@@ -88,149 +87,79 @@ class ScrollController {
       });
     });
 
-    // gsap.set([this.fxSections, this.heroSection], {
-    //   // flex: '0 0 auto',
-    //   flexShrink: 0,
-    // });
-
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.initScroll();
+        ScrollTrigger.refresh();
+      });
+    });
     // this.initScroll();
-    // const cRect = this.container.getBoundingClientRect();
-    // console.log('window.innerWidth', window.innerWidth);
-    // console.log('container rect width', cRect.width);
-    // console.log('diff', window.innerWidth - cRect.width);
-    // this.initSectionReveals();
-
-    this.build();
-
-    // window.addEventListener('load', () => {
-    //   console.log('LOAD');
-    //   ScrollTrigger.refresh();
-    // });
-
     // setTimeout(() => {
     //   ScrollTrigger.refresh(true);
     // }, 250);
   }
 
-  private build() {
-    // prevent building after teardown
-    if (this.destroyed) return;
-
-    // clean any previous build (important for resize / page transitions / re-init)
-    this.destroy(false);
-
-    // Scope all GSAP creations so they can be reverted safely.
-    this.ctx = gsap.context(() => {
-      this.mm = gsap.matchMedia();
-
-      // Desktop horizontal-scroll only (Webflow tablet breakpoint is 991px)
-      this.mm.add('(min-width: 992px)', () => {
-        // If elements got detached (page transition etc), bail safely
-        if (!this.container?.isConnected || !this.track?.isConnected) return;
-
-        this.initScroll();
-        this.initSectionReveals();
-
-        // A refresh after triggers exist but after layout settles
-        requestAnimationFrame(() => ScrollTrigger.refresh());
-
-        // IMPORTANT: matchMedia cleanup callback
-        return () => {
-          this.horizontalTween?.kill();
-          this.horizontalTween = null;
-        };
-      });
-
-      // Optional: mobile/tablet fallback (no pin)
-      this.mm.add('(max-width: 991px)', () => {
-        // If you want, you can reset any transforms on smaller breakpoints:
-        gsap.set(this.track, { clearProps: 'transform' });
-
-        return () => {
-          // nothing special needed
-        };
-      });
-    }, this.container);
-  }
-
-  private destroy(killListeners = true) {
-    this.horizontalTween?.kill();
-    this.horizontalTween = null;
-
-    // Kill Lenis RAF loop so it can't multiply on rebuild
-    if (this.rafId != null) {
-      cancelAnimationFrame(this.rafId);
-      this.rafId = null;
-    }
-
-    // Revert matchMedia + context (this kills ScrollTriggers created inside)
-    this.mm?.revert();
-    this.mm = null;
-
-    this.ctx?.revert();
-    this.ctx = null;
-
-    if (killListeners) {
-      this.destroyed = true;
-      window.removeEventListener('resize', this.onResize);
-    }
-  }
-
-  private onResize = () => {
-    // Rebuild on resize (debounced via RAF)
-    if (this.destroyed) return;
-
-    // If we rebuild too eagerly, we can race DOM/layout. RAF keeps it stable.
-    requestAnimationFrame(() => {
-      this.build();
-    });
-  };
-
-  private bindRefreshListeners() {
-    window.addEventListener('resize', this.onResize, { passive: true });
-
-    // Refresh after full load (images, layout)
-    window.addEventListener('load', () => {
-      if (!this.destroyed) ScrollTrigger.refresh();
-    });
-
-    // Refresh after fonts load (common cause of late layout shifts)
-    if (document.fonts?.ready) {
-      document.fonts.ready.then(() => {
-        if (!this.destroyed) ScrollTrigger.refresh();
-      });
-    }
+  private bindResize() {
+    window.addEventListener(
+      'resize',
+      () => {
+        // Let ScrollTrigger recalc distances
+        ScrollTrigger.refresh();
+      },
+      { passive: true },
+    );
   }
 
   private initScroll() {
     // const totalScrollLength = this.track.scrollWidth - window.innerWidth;
-    const getScrollLength = () => this.track.scrollWidth - this.container.clientWidth;
-
-    const debugEnd = () => {
-      const footer = this.footerSection;
-
-      console.log('track', {
-        scrollWidth: this.track.scrollWidth,
-        clientWidth: this.track.clientWidth,
-      });
-
-      console.log('footer', {
-        clientWidth: footer.clientWidth,
-        scrollWidth: footer.scrollWidth,
-        overflow: footer.scrollWidth - footer.clientWidth,
-      });
-
+    const getScrollLength = () => {
       const last = this.track.lastElementChild as HTMLElement | null;
-      if (last) {
-        console.log('last child', {
-          offsetLeft: last.offsetLeft,
-          offsetWidth: last.offsetWidth,
-          end: last.offsetLeft + last.offsetWidth,
-        });
-      }
-    };
+      if (!last) return 0;
 
-    debugEnd();
+      const len = last.offsetLeft + last.offsetWidth - this.container.clientWidth;
+      return Math.max(0, Math.round(len));
+    };
+    // DEBUG
+    // const getLastMetrics = () => {
+    //   const last = this.track.lastElementChild as HTMLElement | null;
+    //   if (!last) return null;
+
+    //   return {
+    //     trackScrollWidth: this.track.scrollWidth,
+    //     lastEnd: last.offsetLeft + last.offsetWidth,
+    //     containerW: this.container.clientWidth,
+    //     len: last.offsetLeft + last.offsetWidth - this.container.clientWidth,
+    //   };
+    // };
+
+    // let prev = getLastMetrics();
+    // console.log('[metrics init]', prev);
+
+    // let frames = 0;
+    // const watch = () => {
+    //   const next = getLastMetrics();
+    //   if (prev && next && next.len !== prev.len) {
+    //     console.log('[metrics changed]', { frames, prev, next });
+    //   }
+    //   prev = next ?? prev;
+    //   frames++;
+    //   if (frames < 240) requestAnimationFrame(watch); // ~4s
+    // };
+    // requestAnimationFrame(watch);
+
+    // const footer = this.track.querySelector('.footer_component') as HTMLElement | null;
+    // console.log('[len]', {
+    //   len: getScrollLength(),
+    //   footerEnd: footer ? footer.offsetLeft + footer.offsetWidth : null,
+    //   lastEnd: (this.track.lastElementChild as HTMLElement | null)
+    //     ? (this.track.lastElementChild as HTMLElement).offsetLeft +
+    //       (this.track.lastElementChild as HTMLElement).offsetWidth
+    //     : null,
+    //   containerW: this.container.clientWidth,
+    // });
+    // END DEBUG
+
+    // console.log('scroll length', totalScrollLength, getScrollLength());ca
 
     this.horizontalTween = gsap.to(this.track, {
       x: () => -getScrollLength(),
@@ -243,44 +172,20 @@ class ScrollController {
         pin: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
-        // markers: true,
+        markers: true,
       },
     });
 
     this.initParallax();
 
     const lenis = lenisInstance();
-    if (lenis && this.rafId == null) {
-      const raf = (time: number) => {
-        if (this.destroyed) return;
+    if (lenis) {
+      requestAnimationFrame(function raf(time) {
         lenis.raf(time);
         ScrollTrigger.update();
-        this.rafId = requestAnimationFrame(raf);
-      };
-
-      this.rafId = requestAnimationFrame(raf);
+        requestAnimationFrame(raf);
+      });
     }
-  }
-
-  private initSectionReveals() {
-    if (!this.horizontalTween) return;
-
-    const sections = [...this.track.querySelectorAll('[data-reveal]')] as HTMLElement[];
-    // console.log('reveals', sections);
-
-    sections.forEach((section) => {
-      const type = section.dataset.reveal as string;
-      // const start = 'left 75%';
-      // const once = true;
-
-      const tl = buildRevealTl(type, section);
-
-      if (!tl) return;
-
-      // ScrollTrigger.create({});
-
-      // console.log('TT', type, tl);
-    });
   }
 
   private initParallax() {
@@ -294,20 +199,26 @@ class ScrollController {
       if (!image) return;
 
       const maxScale = 1.6;
-      const minScale = 1.0;
+      const minScale = 1.4;
       const offset = -(minScale - 1) * 100;
+      const beforeWidth = image.getBoundingClientRect().width;
 
-      gsap.set(image, { scale: maxScale, transformOrigin: 'left center' });
+      gsap.set(image, { scale: maxScale });
 
-      // console.log('$$', section);
+      const afterWidth = image.getBoundingClientRect().width;
+      const offsetWidth = (afterWidth - beforeWidth) / 2;
+
+      console.log('before', beforeWidth, 'after', afterWidth, 'offset', offsetWidth);
+
+      gsap.set(image, { x: offsetWidth });
 
       gsap.fromTo(
         image,
         { xPercent: 0 },
         {
-          xPercent: offset,
           scale: minScale,
           // opacity: 0.2,
+          x: offset,
           ease: 'none',
           scrollTrigger: {
             containerAnimation: this.horizontalTween || undefined,
@@ -320,13 +231,6 @@ class ScrollController {
         },
       );
     });
-  }
-
-  private getFrameSize() {
-    const rootElement = document.querySelector('.section_container') as HTMLElement;
-    const frameWidth = getComputedStyle(rootElement).width;
-
-    return parseFloat(frameWidth);
   }
 }
 export const scrollControler = () => {
