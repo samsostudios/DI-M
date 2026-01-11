@@ -17,6 +17,10 @@ class ScrollController {
   private footerSection: HTMLElement;
   private horizontalTween: gsap.core.Animation | null = null;
 
+  private menuSections: HTMLElement[] = [];
+  private menuSectionIndex: Map<string, number> = new Map();
+  private getScrollLengthFn: (() => number) | null = null;
+
   constructor() {
     this.container = document.querySelector('.page_horizontal') as HTMLElement;
     this.track = document.querySelector('.page_scroll-track') as HTMLElement;
@@ -46,6 +50,7 @@ class ScrollController {
 
     if (bp[0] !== 'Desktop') {
       console.log('[Scroller] Non Desktop Device - Bypassing scroller setup');
+      return;
     }
 
     this.setup();
@@ -119,6 +124,9 @@ class ScrollController {
       const len = last.offsetLeft + last.offsetWidth - this.container.clientWidth;
       return Math.max(0, Math.round(len));
     };
+
+    // Store scroll length for menu movement
+    this.getScrollLengthFn = getScrollLength;
     // DEBUG
     // const getLastMetrics = () => {
     //   const last = this.track.lastElementChild as HTMLElement | null;
@@ -173,9 +181,11 @@ class ScrollController {
         anticipatePin: 1,
         invalidateOnRefresh: true,
         markers: true,
+        onRefresh: () => this.rebuildMenuIndex(),
       },
     });
 
+    this.rebuildMenuIndex();
     this.initParallax();
 
     const lenis = lenisInstance();
@@ -232,8 +242,78 @@ class ScrollController {
       );
     });
   }
+
+  private clamp(n: number, min: number, max: number) {
+    return Math.max(min, Math.min(max, n));
+  }
+
+  private buildMenuIndex(): Map<string, number> {
+    const index = new Map<string, number>();
+
+    // choose the selector you want; you mentioned data-menu-section
+    this.menuSections = [...this.track.querySelectorAll<HTMLElement>('[data-menu-section]')];
+
+    const max = this.getScrollLengthFn ? this.getScrollLengthFn() : 0;
+
+    for (const el of this.menuSections) {
+      const id = el.getAttribute('data-menu-section')?.trim();
+      if (!id) continue;
+
+      // The vertical scroll amount that moves the track to this element’s left edge
+      const target = this.clamp(Math.round(el.offsetLeft), 0, max);
+      index.set(id, target);
+    }
+
+    return index;
+  }
+
+  public scrollToMenuSection(
+    id: string,
+    opts?: { duration?: number; easing?: (t: number) => number; onComplete?: () => void },
+  ) {
+    const x = this.getMenuSectionX(id);
+    if (x == null) return;
+
+    const lenis = lenisInstance();
+    if (lenis) {
+      // Lenis accepts duration + easing in common setups
+      lenis.scrollTo(x, {
+        duration: opts?.duration ?? 1.1,
+        easing: opts?.easing,
+        onComplete: opts?.onComplete,
+      });
+    } else {
+      // fallback
+      window.scrollTo({ top: x, behavior: 'smooth' });
+      opts?.onComplete?.();
+    }
+  }
+
+  public isHorizontalEnabled(): boolean {
+    const bp = breakpoints();
+    const isTouch = isTouchDevice();
+    return !isTouch && bp[0] === 'Desktop';
+  }
+
+  public rebuildMenuIndex(): void {
+    this.menuSectionIndex = this.buildMenuIndex();
+  }
+
+  public getMenuSectionX(id: string): number | null {
+    return this.menuSectionIndex.get(id) ?? null;
+  }
+
+  public getMenuSectionMap(): Record<string, number> {
+    return Object.fromEntries(this.menuSectionIndex.entries());
+  }
 }
+
+let scrollControllerInstance: ScrollController | null = null;
+
 export const scrollControler = () => {
-  new ScrollController();
+  scrollControllerInstance = new ScrollController();
+  return scrollControllerInstance;
 };
+
+export const getScrollController = () => scrollControllerInstance;
 export default scrollControler;

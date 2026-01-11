@@ -1,7 +1,8 @@
 import { gsap } from 'gsap';
-import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin';
 
-gsap.registerPlugin(MorphSVGPlugin);
+import { getScrollController } from '$components/scrollController';
+
+import { lenisInstance } from '$utils/smoothScroll';
 
 class Menu {
   private component: HTMLElement;
@@ -23,6 +24,9 @@ class Menu {
     this.close = document.querySelector('#menuClose') as HTMLElement;
     this.iconLeft = document.querySelector('.nav-ui_svg-left') as HTMLElement;
     this.iconRight = document.querySelector('.nav-ui_svg-right') as HTMLElement;
+
+    // const scroller = getScrollController();
+    // console.log('HERE', scroller);
 
     this.setupUI();
     this.setListeners();
@@ -54,13 +58,62 @@ class Menu {
       const highlight = element.querySelector('.nav_span-highlight');
       const imgWrap = element.querySelector('.nav_link-img-wrap');
       element.addEventListener('mouseover', () => {
-        console.log('over');
         gsap.to(highlight, { width: '50%', ease: 'circ.out' });
         gsap.to(imgWrap, { height: '100%', ease: 'circ.out' });
       });
       element.addEventListener('mouseout', () => {
         gsap.to(highlight, { width: '0%', ease: 'circ.out' });
         gsap.to(imgWrap, { height: '0%', ease: 'circ.out' });
+      });
+      element.addEventListener('click', (e) => {
+        const target = element.dataset.menuTarget;
+        const scroller = getScrollController();
+
+        console.log('^^', target, scroller);
+
+        if (!target || !scroller) return;
+
+        // console.log('%%', scroller.isHorizontalEnabled());
+
+        if (scroller.isHorizontalEnabled()) {
+          e.preventDefault();
+
+          scroller.scrollToMenuSection(target, {
+            duration: 1.1,
+            onComplete: () => this.closeMenu(),
+          });
+
+          return;
+        }
+
+        e.preventDefault();
+
+        const el = document.querySelector<HTMLElement>(`[data-menu-section="${target}"]`);
+        if (!el) return;
+
+        const lenis = lenisInstance();
+        if (lenis) {
+          lenis.scrollTo(el, {
+            duration: 1.1,
+            onComplete: () => this.closeMenu(),
+          });
+        } else {
+          // fallback
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          gsap.delayedCall(0.2, () => this.closeMenu());
+        }
+
+        // gsap.delayedCall(0.15, () => this.closeMenu());
+
+        // console.log('TARGET', target);
+        // scroller?.scrollToMenuSection(target as string, {
+        //   onComplete: () => {
+        //     {
+        //       console.log('DONE');
+        //       this.closeMenu();
+        //     }
+        //   },
+        // });
       });
     });
   }
@@ -75,7 +128,7 @@ class Menu {
     tl.fromTo(
       this.links,
       { opacity: 0, y: '4rem' },
-      { opacity: 1, y: '0rem', duartion: 1, stagger: 0.2, ease: 'power1.out' },
+      { opacity: 1, y: '0rem', stagger: 0.2, ease: 'power1.out' },
     );
     tl.to(this.linkSpans, { width: '100%', duration: 1, stagger: 0.2, ease: 'expo.out' }, '<0.1');
   }

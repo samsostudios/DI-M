@@ -1441,7 +1441,7 @@
             }
           });
         };
-        _proto.kill = function kill2() {
+        _proto.kill = function kill() {
           _interrupt(this);
         };
         return Animation2;
@@ -1527,7 +1527,7 @@
           _inheritDefaults(toVars).immediateRender = _isNotFalse(toVars.immediateRender);
           return this.staggerTo(targets, duration, toVars, stagger, position, onCompleteAll, onCompleteAllParams);
         };
-        _proto2.render = function render4(totalTime, suppressEvents, force) {
+        _proto2.render = function render3(totalTime, suppressEvents, force) {
           var prevTime = this._time, tDur = this._dirty ? this.totalDuration() : this._tDur, dur = this._dur, tTime = totalTime <= 0 ? 0 : _roundPrecise(totalTime), crossingStart = this._zTime < 0 !== totalTime < 0 && (this._initted || !dur), time, child, next, iteration, cycleDuration, prevPaused, pauseTween, timeScale, prevStart, prevIteration, yoyo, isYoyo;
           this !== _globalTimeline && tTime > tDur && totalTime >= 0 && (tTime = tDur);
           if (tTime !== this._tTime || force || crossingStart) {
@@ -2347,7 +2347,7 @@
           return _this3;
         }
         var _proto3 = Tween2.prototype;
-        _proto3.render = function render4(totalTime, suppressEvents, force) {
+        _proto3.render = function render3(totalTime, suppressEvents, force) {
           var prevTime = this._time, tDur = this._tDur, dur = this._dur, isNegative = totalTime < 0, tTime = totalTime > tDur - _tinyNum && !isNegative ? tDur : totalTime < _tinyNum ? 0 : totalTime, time, pt, iteration, cycleDuration, prevIteration, isYoyo, ratio, timeline2, yoyoEase;
           if (!dur) {
             _renderZeroDurationTween(this, totalTime, suppressEvents, force);
@@ -2464,7 +2464,7 @@
           this.parent || _addLinkedListItem(this._dp, this, "_first", "_last", this._dp._sort ? "_start" : 0);
           return this.render(0);
         };
-        _proto3.kill = function kill2(targets, vars) {
+        _proto3.kill = function kill(targets, vars) {
           if (vars === void 0) {
             vars = "all";
           }
@@ -2785,7 +2785,7 @@
         _proto5.clear = function clear() {
           this._r.length = this.data.length = 0;
         };
-        _proto5.kill = function kill2(revert, matchMedia2) {
+        _proto5.kill = function kill(revert, matchMedia2) {
           var _this4 = this;
           if (revert) {
             (function() {
@@ -2880,7 +2880,7 @@
         _proto6.revert = function revert(config3) {
           this.kill(config3 || {});
         };
-        _proto6.kill = function kill2(revert) {
+        _proto6.kill = function kill(revert) {
           this.contexts.forEach(function(c) {
             return c.kill(revert, true);
           });
@@ -3104,7 +3104,7 @@
           headless: 1,
           rawVars: 1,
           //don't pre-process function-based values or "random()" strings.
-          init: function init5(target, vars, tween) {
+          init: function init4(target, vars, tween) {
             tween._onInit = function(tween2) {
               var temp, p;
               if (_isString(vars)) {
@@ -4293,6 +4293,3849 @@
     }
   });
 
+  // node_modules/gsap/Observer.js
+  function _defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+  function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
+    return Constructor;
+  }
+  var gsap2, _coreInitted2, _clamp3, _win3, _doc3, _docEl, _body, _isTouch, _pointerType, ScrollTrigger, _root, _normalizer, _eventTypes, _context2, _getGSAP, _startup, _observers, _scrollers, _proxies, _getTime, _bridge, _integrate, _getProxyProp, _isViewport, _addListener, _removeListener, _scrollLeft, _scrollTop, _onScroll, _scrollCacheFunc, _horizontal, _vertical, _getTarget, _isWithin, _getScrollFunc, _getVelocityProp, _getEvent, _getAbsoluteMax, _setScrollTrigger, _initCore3, Observer;
+  var init_Observer = __esm({
+    "node_modules/gsap/Observer.js"() {
+      init_live_reload();
+      _getGSAP = function _getGSAP2() {
+        return gsap2 || typeof window !== "undefined" && (gsap2 = window.gsap) && gsap2.registerPlugin && gsap2;
+      };
+      _startup = 1;
+      _observers = [];
+      _scrollers = [];
+      _proxies = [];
+      _getTime = Date.now;
+      _bridge = function _bridge2(name, value) {
+        return value;
+      };
+      _integrate = function _integrate2() {
+        var core = ScrollTrigger.core, data = core.bridge || {}, scrollers = core._scrollers, proxies = core._proxies;
+        scrollers.push.apply(scrollers, _scrollers);
+        proxies.push.apply(proxies, _proxies);
+        _scrollers = scrollers;
+        _proxies = proxies;
+        _bridge = function _bridge3(name, value) {
+          return data[name](value);
+        };
+      };
+      _getProxyProp = function _getProxyProp2(element, property) {
+        return ~_proxies.indexOf(element) && _proxies[_proxies.indexOf(element) + 1][property];
+      };
+      _isViewport = function _isViewport2(el) {
+        return !!~_root.indexOf(el);
+      };
+      _addListener = function _addListener2(element, type, func, passive, capture) {
+        return element.addEventListener(type, func, {
+          passive: passive !== false,
+          capture: !!capture
+        });
+      };
+      _removeListener = function _removeListener2(element, type, func, capture) {
+        return element.removeEventListener(type, func, !!capture);
+      };
+      _scrollLeft = "scrollLeft";
+      _scrollTop = "scrollTop";
+      _onScroll = function _onScroll2() {
+        return _normalizer && _normalizer.isPressed || _scrollers.cache++;
+      };
+      _scrollCacheFunc = function _scrollCacheFunc2(f, doNotCache) {
+        var cachingFunc = function cachingFunc2(value) {
+          if (value || value === 0) {
+            _startup && (_win3.history.scrollRestoration = "manual");
+            var isNormalizing = _normalizer && _normalizer.isPressed;
+            value = cachingFunc2.v = Math.round(value) || (_normalizer && _normalizer.iOS ? 1 : 0);
+            f(value);
+            cachingFunc2.cacheID = _scrollers.cache;
+            isNormalizing && _bridge("ss", value);
+          } else if (doNotCache || _scrollers.cache !== cachingFunc2.cacheID || _bridge("ref")) {
+            cachingFunc2.cacheID = _scrollers.cache;
+            cachingFunc2.v = f();
+          }
+          return cachingFunc2.v + cachingFunc2.offset;
+        };
+        cachingFunc.offset = 0;
+        return f && cachingFunc;
+      };
+      _horizontal = {
+        s: _scrollLeft,
+        p: "left",
+        p2: "Left",
+        os: "right",
+        os2: "Right",
+        d: "width",
+        d2: "Width",
+        a: "x",
+        sc: _scrollCacheFunc(function(value) {
+          return arguments.length ? _win3.scrollTo(value, _vertical.sc()) : _win3.pageXOffset || _doc3[_scrollLeft] || _docEl[_scrollLeft] || _body[_scrollLeft] || 0;
+        })
+      };
+      _vertical = {
+        s: _scrollTop,
+        p: "top",
+        p2: "Top",
+        os: "bottom",
+        os2: "Bottom",
+        d: "height",
+        d2: "Height",
+        a: "y",
+        op: _horizontal,
+        sc: _scrollCacheFunc(function(value) {
+          return arguments.length ? _win3.scrollTo(_horizontal.sc(), value) : _win3.pageYOffset || _doc3[_scrollTop] || _docEl[_scrollTop] || _body[_scrollTop] || 0;
+        })
+      };
+      _getTarget = function _getTarget2(t, self) {
+        return (self && self._ctx && self._ctx.selector || gsap2.utils.toArray)(t)[0] || (typeof t === "string" && gsap2.config().nullTargetWarn !== false ? console.warn("Element not found:", t) : null);
+      };
+      _isWithin = function _isWithin2(element, list) {
+        var i = list.length;
+        while (i--) {
+          if (list[i] === element || list[i].contains(element)) {
+            return true;
+          }
+        }
+        return false;
+      };
+      _getScrollFunc = function _getScrollFunc2(element, _ref) {
+        var s = _ref.s, sc = _ref.sc;
+        _isViewport(element) && (element = _doc3.scrollingElement || _docEl);
+        var i = _scrollers.indexOf(element), offset = sc === _vertical.sc ? 1 : 2;
+        !~i && (i = _scrollers.push(element) - 1);
+        _scrollers[i + offset] || _addListener(element, "scroll", _onScroll);
+        var prev = _scrollers[i + offset], func = prev || (_scrollers[i + offset] = _scrollCacheFunc(_getProxyProp(element, s), true) || (_isViewport(element) ? sc : _scrollCacheFunc(function(value) {
+          return arguments.length ? element[s] = value : element[s];
+        })));
+        func.target = element;
+        prev || (func.smooth = gsap2.getProperty(element, "scrollBehavior") === "smooth");
+        return func;
+      };
+      _getVelocityProp = function _getVelocityProp2(value, minTimeRefresh, useDelta) {
+        var v1 = value, v2 = value, t1 = _getTime(), t2 = t1, min = minTimeRefresh || 50, dropToZeroTime = Math.max(500, min * 3), update = function update2(value2, force) {
+          var t = _getTime();
+          if (force || t - t1 > min) {
+            v2 = v1;
+            v1 = value2;
+            t2 = t1;
+            t1 = t;
+          } else if (useDelta) {
+            v1 += value2;
+          } else {
+            v1 = v2 + (value2 - v2) / (t - t2) * (t1 - t2);
+          }
+        }, reset = function reset2() {
+          v2 = v1 = useDelta ? 0 : v1;
+          t2 = t1 = 0;
+        }, getVelocity = function getVelocity2(latestValue) {
+          var tOld = t2, vOld = v2, t = _getTime();
+          (latestValue || latestValue === 0) && latestValue !== v1 && update(latestValue);
+          return t1 === t2 || t - t2 > dropToZeroTime ? 0 : (v1 + (useDelta ? vOld : -vOld)) / ((useDelta ? t : t1) - tOld) * 1e3;
+        };
+        return {
+          update,
+          reset,
+          getVelocity
+        };
+      };
+      _getEvent = function _getEvent2(e, preventDefault) {
+        preventDefault && !e._gsapAllow && e.preventDefault();
+        return e.changedTouches ? e.changedTouches[0] : e;
+      };
+      _getAbsoluteMax = function _getAbsoluteMax2(a) {
+        var max = Math.max.apply(Math, a), min = Math.min.apply(Math, a);
+        return Math.abs(max) >= Math.abs(min) ? max : min;
+      };
+      _setScrollTrigger = function _setScrollTrigger2() {
+        ScrollTrigger = gsap2.core.globals().ScrollTrigger;
+        ScrollTrigger && ScrollTrigger.core && _integrate();
+      };
+      _initCore3 = function _initCore4(core) {
+        gsap2 = core || _getGSAP();
+        if (!_coreInitted2 && gsap2 && typeof document !== "undefined" && document.body) {
+          _win3 = window;
+          _doc3 = document;
+          _docEl = _doc3.documentElement;
+          _body = _doc3.body;
+          _root = [_win3, _doc3, _docEl, _body];
+          _clamp3 = gsap2.utils.clamp;
+          _context2 = gsap2.core.context || function() {
+          };
+          _pointerType = "onpointerenter" in _body ? "pointer" : "mouse";
+          _isTouch = Observer.isTouch = _win3.matchMedia && _win3.matchMedia("(hover: none), (pointer: coarse)").matches ? 1 : "ontouchstart" in _win3 || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0 ? 2 : 0;
+          _eventTypes = Observer.eventTypes = ("ontouchstart" in _docEl ? "touchstart,touchmove,touchcancel,touchend" : !("onpointerdown" in _docEl) ? "mousedown,mousemove,mouseup,mouseup" : "pointerdown,pointermove,pointercancel,pointerup").split(",");
+          setTimeout(function() {
+            return _startup = 0;
+          }, 500);
+          _setScrollTrigger();
+          _coreInitted2 = 1;
+        }
+        return _coreInitted2;
+      };
+      _horizontal.op = _vertical;
+      _scrollers.cache = 0;
+      Observer = /* @__PURE__ */ function() {
+        function Observer2(vars) {
+          this.init(vars);
+        }
+        var _proto = Observer2.prototype;
+        _proto.init = function init4(vars) {
+          _coreInitted2 || _initCore3(gsap2) || console.warn("Please gsap.registerPlugin(Observer)");
+          ScrollTrigger || _setScrollTrigger();
+          var tolerance = vars.tolerance, dragMinimum = vars.dragMinimum, type = vars.type, target = vars.target, lineHeight = vars.lineHeight, debounce2 = vars.debounce, preventDefault = vars.preventDefault, onStop = vars.onStop, onStopDelay = vars.onStopDelay, ignore = vars.ignore, wheelSpeed = vars.wheelSpeed, event = vars.event, onDragStart = vars.onDragStart, onDragEnd = vars.onDragEnd, onDrag = vars.onDrag, onPress = vars.onPress, onRelease = vars.onRelease, onRight = vars.onRight, onLeft = vars.onLeft, onUp = vars.onUp, onDown = vars.onDown, onChangeX = vars.onChangeX, onChangeY = vars.onChangeY, onChange = vars.onChange, onToggleX = vars.onToggleX, onToggleY = vars.onToggleY, onHover = vars.onHover, onHoverEnd = vars.onHoverEnd, onMove = vars.onMove, ignoreCheck = vars.ignoreCheck, isNormalizer = vars.isNormalizer, onGestureStart = vars.onGestureStart, onGestureEnd = vars.onGestureEnd, onWheel = vars.onWheel, onEnable = vars.onEnable, onDisable = vars.onDisable, onClick = vars.onClick, scrollSpeed = vars.scrollSpeed, capture = vars.capture, allowClicks = vars.allowClicks, lockAxis = vars.lockAxis, onLockAxis = vars.onLockAxis;
+          this.target = target = _getTarget(target) || _docEl;
+          this.vars = vars;
+          ignore && (ignore = gsap2.utils.toArray(ignore));
+          tolerance = tolerance || 1e-9;
+          dragMinimum = dragMinimum || 0;
+          wheelSpeed = wheelSpeed || 1;
+          scrollSpeed = scrollSpeed || 1;
+          type = type || "wheel,touch,pointer";
+          debounce2 = debounce2 !== false;
+          lineHeight || (lineHeight = parseFloat(_win3.getComputedStyle(_body).lineHeight) || 22);
+          var id, onStopDelayedCall, dragged, moved, wheeled, locked, axis, self = this, prevDeltaX = 0, prevDeltaY = 0, passive = vars.passive || !preventDefault && vars.passive !== false, scrollFuncX = _getScrollFunc(target, _horizontal), scrollFuncY = _getScrollFunc(target, _vertical), scrollX = scrollFuncX(), scrollY = scrollFuncY(), limitToTouch = ~type.indexOf("touch") && !~type.indexOf("pointer") && _eventTypes[0] === "pointerdown", isViewport = _isViewport(target), ownerDoc = target.ownerDocument || _doc3, deltaX = [0, 0, 0], deltaY = [0, 0, 0], onClickTime = 0, clickCapture = function clickCapture2() {
+            return onClickTime = _getTime();
+          }, _ignoreCheck = function _ignoreCheck2(e, isPointerOrTouch) {
+            return (self.event = e) && ignore && _isWithin(e.target, ignore) || isPointerOrTouch && limitToTouch && e.pointerType !== "touch" || ignoreCheck && ignoreCheck(e, isPointerOrTouch);
+          }, onStopFunc = function onStopFunc2() {
+            self._vx.reset();
+            self._vy.reset();
+            onStopDelayedCall.pause();
+            onStop && onStop(self);
+          }, update = function update2() {
+            var dx = self.deltaX = _getAbsoluteMax(deltaX), dy = self.deltaY = _getAbsoluteMax(deltaY), changedX = Math.abs(dx) >= tolerance, changedY = Math.abs(dy) >= tolerance;
+            onChange && (changedX || changedY) && onChange(self, dx, dy, deltaX, deltaY);
+            if (changedX) {
+              onRight && self.deltaX > 0 && onRight(self);
+              onLeft && self.deltaX < 0 && onLeft(self);
+              onChangeX && onChangeX(self);
+              onToggleX && self.deltaX < 0 !== prevDeltaX < 0 && onToggleX(self);
+              prevDeltaX = self.deltaX;
+              deltaX[0] = deltaX[1] = deltaX[2] = 0;
+            }
+            if (changedY) {
+              onDown && self.deltaY > 0 && onDown(self);
+              onUp && self.deltaY < 0 && onUp(self);
+              onChangeY && onChangeY(self);
+              onToggleY && self.deltaY < 0 !== prevDeltaY < 0 && onToggleY(self);
+              prevDeltaY = self.deltaY;
+              deltaY[0] = deltaY[1] = deltaY[2] = 0;
+            }
+            if (moved || dragged) {
+              onMove && onMove(self);
+              if (dragged) {
+                onDragStart && dragged === 1 && onDragStart(self);
+                onDrag && onDrag(self);
+                dragged = 0;
+              }
+              moved = false;
+            }
+            locked && !(locked = false) && onLockAxis && onLockAxis(self);
+            if (wheeled) {
+              onWheel(self);
+              wheeled = false;
+            }
+            id = 0;
+          }, onDelta = function onDelta2(x, y, index) {
+            deltaX[index] += x;
+            deltaY[index] += y;
+            self._vx.update(x);
+            self._vy.update(y);
+            debounce2 ? id || (id = requestAnimationFrame(update)) : update();
+          }, onTouchOrPointerDelta = function onTouchOrPointerDelta2(x, y) {
+            if (lockAxis && !axis) {
+              self.axis = axis = Math.abs(x) > Math.abs(y) ? "x" : "y";
+              locked = true;
+            }
+            if (axis !== "y") {
+              deltaX[2] += x;
+              self._vx.update(x, true);
+            }
+            if (axis !== "x") {
+              deltaY[2] += y;
+              self._vy.update(y, true);
+            }
+            debounce2 ? id || (id = requestAnimationFrame(update)) : update();
+          }, _onDrag = function _onDrag2(e) {
+            if (_ignoreCheck(e, 1)) {
+              return;
+            }
+            e = _getEvent(e, preventDefault);
+            var x = e.clientX, y = e.clientY, dx = x - self.x, dy = y - self.y, isDragging = self.isDragging;
+            self.x = x;
+            self.y = y;
+            if (isDragging || (dx || dy) && (Math.abs(self.startX - x) >= dragMinimum || Math.abs(self.startY - y) >= dragMinimum)) {
+              dragged = isDragging ? 2 : 1;
+              isDragging || (self.isDragging = true);
+              onTouchOrPointerDelta(dx, dy);
+            }
+          }, _onPress = self.onPress = function(e) {
+            if (_ignoreCheck(e, 1) || e && e.button) {
+              return;
+            }
+            self.axis = axis = null;
+            onStopDelayedCall.pause();
+            self.isPressed = true;
+            e = _getEvent(e);
+            prevDeltaX = prevDeltaY = 0;
+            self.startX = self.x = e.clientX;
+            self.startY = self.y = e.clientY;
+            self._vx.reset();
+            self._vy.reset();
+            _addListener(isNormalizer ? target : ownerDoc, _eventTypes[1], _onDrag, passive, true);
+            self.deltaX = self.deltaY = 0;
+            onPress && onPress(self);
+          }, _onRelease = self.onRelease = function(e) {
+            if (_ignoreCheck(e, 1)) {
+              return;
+            }
+            _removeListener(isNormalizer ? target : ownerDoc, _eventTypes[1], _onDrag, true);
+            var isTrackingDrag = !isNaN(self.y - self.startY), wasDragging = self.isDragging, isDragNotClick = wasDragging && (Math.abs(self.x - self.startX) > 3 || Math.abs(self.y - self.startY) > 3), eventData = _getEvent(e);
+            if (!isDragNotClick && isTrackingDrag) {
+              self._vx.reset();
+              self._vy.reset();
+              if (preventDefault && allowClicks) {
+                gsap2.delayedCall(0.08, function() {
+                  if (_getTime() - onClickTime > 300 && !e.defaultPrevented) {
+                    if (e.target.click) {
+                      e.target.click();
+                    } else if (ownerDoc.createEvent) {
+                      var syntheticEvent = ownerDoc.createEvent("MouseEvents");
+                      syntheticEvent.initMouseEvent("click", true, true, _win3, 1, eventData.screenX, eventData.screenY, eventData.clientX, eventData.clientY, false, false, false, false, 0, null);
+                      e.target.dispatchEvent(syntheticEvent);
+                    }
+                  }
+                });
+              }
+            }
+            self.isDragging = self.isGesturing = self.isPressed = false;
+            onStop && wasDragging && !isNormalizer && onStopDelayedCall.restart(true);
+            dragged && update();
+            onDragEnd && wasDragging && onDragEnd(self);
+            onRelease && onRelease(self, isDragNotClick);
+          }, _onGestureStart = function _onGestureStart2(e) {
+            return e.touches && e.touches.length > 1 && (self.isGesturing = true) && onGestureStart(e, self.isDragging);
+          }, _onGestureEnd = function _onGestureEnd2() {
+            return (self.isGesturing = false) || onGestureEnd(self);
+          }, onScroll = function onScroll2(e) {
+            if (_ignoreCheck(e)) {
+              return;
+            }
+            var x = scrollFuncX(), y = scrollFuncY();
+            onDelta((x - scrollX) * scrollSpeed, (y - scrollY) * scrollSpeed, 1);
+            scrollX = x;
+            scrollY = y;
+            onStop && onStopDelayedCall.restart(true);
+          }, _onWheel = function _onWheel2(e) {
+            if (_ignoreCheck(e)) {
+              return;
+            }
+            e = _getEvent(e, preventDefault);
+            onWheel && (wheeled = true);
+            var multiplier = (e.deltaMode === 1 ? lineHeight : e.deltaMode === 2 ? _win3.innerHeight : 1) * wheelSpeed;
+            onDelta(e.deltaX * multiplier, e.deltaY * multiplier, 0);
+            onStop && !isNormalizer && onStopDelayedCall.restart(true);
+          }, _onMove = function _onMove2(e) {
+            if (_ignoreCheck(e)) {
+              return;
+            }
+            var x = e.clientX, y = e.clientY, dx = x - self.x, dy = y - self.y;
+            self.x = x;
+            self.y = y;
+            moved = true;
+            onStop && onStopDelayedCall.restart(true);
+            (dx || dy) && onTouchOrPointerDelta(dx, dy);
+          }, _onHover = function _onHover2(e) {
+            self.event = e;
+            onHover(self);
+          }, _onHoverEnd = function _onHoverEnd2(e) {
+            self.event = e;
+            onHoverEnd(self);
+          }, _onClick = function _onClick2(e) {
+            return _ignoreCheck(e) || _getEvent(e, preventDefault) && onClick(self);
+          };
+          onStopDelayedCall = self._dc = gsap2.delayedCall(onStopDelay || 0.25, onStopFunc).pause();
+          self.deltaX = self.deltaY = 0;
+          self._vx = _getVelocityProp(0, 50, true);
+          self._vy = _getVelocityProp(0, 50, true);
+          self.scrollX = scrollFuncX;
+          self.scrollY = scrollFuncY;
+          self.isDragging = self.isGesturing = self.isPressed = false;
+          _context2(this);
+          self.enable = function(e) {
+            if (!self.isEnabled) {
+              _addListener(isViewport ? ownerDoc : target, "scroll", _onScroll);
+              type.indexOf("scroll") >= 0 && _addListener(isViewport ? ownerDoc : target, "scroll", onScroll, passive, capture);
+              type.indexOf("wheel") >= 0 && _addListener(target, "wheel", _onWheel, passive, capture);
+              if (type.indexOf("touch") >= 0 && _isTouch || type.indexOf("pointer") >= 0) {
+                _addListener(target, _eventTypes[0], _onPress, passive, capture);
+                _addListener(ownerDoc, _eventTypes[2], _onRelease);
+                _addListener(ownerDoc, _eventTypes[3], _onRelease);
+                allowClicks && _addListener(target, "click", clickCapture, true, true);
+                onClick && _addListener(target, "click", _onClick);
+                onGestureStart && _addListener(ownerDoc, "gesturestart", _onGestureStart);
+                onGestureEnd && _addListener(ownerDoc, "gestureend", _onGestureEnd);
+                onHover && _addListener(target, _pointerType + "enter", _onHover);
+                onHoverEnd && _addListener(target, _pointerType + "leave", _onHoverEnd);
+                onMove && _addListener(target, _pointerType + "move", _onMove);
+              }
+              self.isEnabled = true;
+              self.isDragging = self.isGesturing = self.isPressed = moved = dragged = false;
+              self._vx.reset();
+              self._vy.reset();
+              scrollX = scrollFuncX();
+              scrollY = scrollFuncY();
+              e && e.type && _onPress(e);
+              onEnable && onEnable(self);
+            }
+            return self;
+          };
+          self.disable = function() {
+            if (self.isEnabled) {
+              _observers.filter(function(o) {
+                return o !== self && _isViewport(o.target);
+              }).length || _removeListener(isViewport ? ownerDoc : target, "scroll", _onScroll);
+              if (self.isPressed) {
+                self._vx.reset();
+                self._vy.reset();
+                _removeListener(isNormalizer ? target : ownerDoc, _eventTypes[1], _onDrag, true);
+              }
+              _removeListener(isViewport ? ownerDoc : target, "scroll", onScroll, capture);
+              _removeListener(target, "wheel", _onWheel, capture);
+              _removeListener(target, _eventTypes[0], _onPress, capture);
+              _removeListener(ownerDoc, _eventTypes[2], _onRelease);
+              _removeListener(ownerDoc, _eventTypes[3], _onRelease);
+              _removeListener(target, "click", clickCapture, true);
+              _removeListener(target, "click", _onClick);
+              _removeListener(ownerDoc, "gesturestart", _onGestureStart);
+              _removeListener(ownerDoc, "gestureend", _onGestureEnd);
+              _removeListener(target, _pointerType + "enter", _onHover);
+              _removeListener(target, _pointerType + "leave", _onHoverEnd);
+              _removeListener(target, _pointerType + "move", _onMove);
+              self.isEnabled = self.isPressed = self.isDragging = false;
+              onDisable && onDisable(self);
+            }
+          };
+          self.kill = self.revert = function() {
+            self.disable();
+            var i = _observers.indexOf(self);
+            i >= 0 && _observers.splice(i, 1);
+            _normalizer === self && (_normalizer = 0);
+          };
+          _observers.push(self);
+          isNormalizer && _isViewport(target) && (_normalizer = self);
+          self.enable(event);
+        };
+        _createClass(Observer2, [{
+          key: "velocityX",
+          get: function get() {
+            return this._vx.getVelocity();
+          }
+        }, {
+          key: "velocityY",
+          get: function get() {
+            return this._vy.getVelocity();
+          }
+        }]);
+        return Observer2;
+      }();
+      Observer.version = "3.13.0";
+      Observer.create = function(vars) {
+        return new Observer(vars);
+      };
+      Observer.register = _initCore3;
+      Observer.getAll = function() {
+        return _observers.slice();
+      };
+      Observer.getById = function(id) {
+        return _observers.filter(function(o) {
+          return o.vars.id === id;
+        })[0];
+      };
+      _getGSAP() && gsap2.registerPlugin(Observer);
+    }
+  });
+
+  // node_modules/gsap/ScrollTrigger.js
+  var gsap3, _coreInitted3, _win4, _doc4, _docEl2, _body2, _root2, _resizeDelay, _toArray, _clamp4, _time2, _syncInterval, _refreshing, _pointerIsDown, _transformProp2, _i, _prevWidth, _prevHeight, _autoRefresh, _sort, _suppressOverwrites2, _ignoreResize, _normalizer2, _ignoreMobileResize, _baseScreenHeight, _baseScreenWidth, _fixIOSBug, _context3, _scrollRestoration, _div100vh, _100vh, _isReverted, _clampingMax, _limitCallbacks, _startup2, _getTime2, _time1, _lastScrollTime, _enabled, _parseClamp, _keepClamp, _rafBugFix, _pointerDownHandler, _pointerUpHandler, _passThrough3, _round3, _windowExists5, _getGSAP3, _isViewport3, _getViewportDimension, _getBoundsFunc, _getSizeFunc, _getOffsetsFunc, _maxScroll, _iterateAutoRefresh, _isString3, _isFunction3, _isNumber3, _isObject3, _endAnimation, _callback3, _abs, _left, _top, _right, _bottom, _width, _height, _Right, _Left, _Top, _Bottom, _padding, _margin, _Width, _Height, _px, _getComputedStyle, _makePositionable, _setDefaults3, _getBounds, _getSize, _getLabelRatioArray, _getClosestLabel, _snapDirectional, _getLabelAtDirection, _multiListener, _addListener3, _removeListener3, _wheelListener, _markerDefaults, _defaults2, _keywords, _offsetToPx, _createMarker, _positionMarker, _triggers, _ids, _rafID, _sync, _onScroll3, _setBaseDimensions, _onResize, _listeners2, _emptyArray2, _softRefresh, _dispatch3, _savedStyles, _revertRecorded, _revertAll, _clearScrollMemory, _refreshingAll, _refreshID, _queueRefreshID, _queueRefreshAll, _refresh100vh, _hideAllMarkers, _refreshAll, _lastScroll, _direction, _primary, _updateAll, _propNamesToCopy, _stateProps, _swapPinOut, _swapPinIn, _capsExp2, _setState, _getState, _copyState, _winOffsets, _parsePosition3, _prefixExp, _reparent, _interruptionTracker, _shiftMarker, _getTweenCreator, ScrollTrigger2, _clampScrollAndGetDurationMultiplier, _allowNativePanning, _overflow, _nestedScroll, _inputObserver, _inputExp, _inputIsFocused, _captureInputs, _getScrollNormalizer;
+  var init_ScrollTrigger = __esm({
+    "node_modules/gsap/ScrollTrigger.js"() {
+      init_live_reload();
+      init_Observer();
+      _startup2 = 1;
+      _getTime2 = Date.now;
+      _time1 = _getTime2();
+      _lastScrollTime = 0;
+      _enabled = 0;
+      _parseClamp = function _parseClamp2(value, type, self) {
+        var clamp4 = _isString3(value) && (value.substr(0, 6) === "clamp(" || value.indexOf("max") > -1);
+        self["_" + type + "Clamp"] = clamp4;
+        return clamp4 ? value.substr(6, value.length - 7) : value;
+      };
+      _keepClamp = function _keepClamp2(value, clamp4) {
+        return clamp4 && (!_isString3(value) || value.substr(0, 6) !== "clamp(") ? "clamp(" + value + ")" : value;
+      };
+      _rafBugFix = function _rafBugFix2() {
+        return _enabled && requestAnimationFrame(_rafBugFix2);
+      };
+      _pointerDownHandler = function _pointerDownHandler2() {
+        return _pointerIsDown = 1;
+      };
+      _pointerUpHandler = function _pointerUpHandler2() {
+        return _pointerIsDown = 0;
+      };
+      _passThrough3 = function _passThrough4(v) {
+        return v;
+      };
+      _round3 = function _round4(value) {
+        return Math.round(value * 1e5) / 1e5 || 0;
+      };
+      _windowExists5 = function _windowExists6() {
+        return typeof window !== "undefined";
+      };
+      _getGSAP3 = function _getGSAP4() {
+        return gsap3 || _windowExists5() && (gsap3 = window.gsap) && gsap3.registerPlugin && gsap3;
+      };
+      _isViewport3 = function _isViewport4(e) {
+        return !!~_root2.indexOf(e);
+      };
+      _getViewportDimension = function _getViewportDimension2(dimensionProperty) {
+        return (dimensionProperty === "Height" ? _100vh : _win4["inner" + dimensionProperty]) || _docEl2["client" + dimensionProperty] || _body2["client" + dimensionProperty];
+      };
+      _getBoundsFunc = function _getBoundsFunc2(element) {
+        return _getProxyProp(element, "getBoundingClientRect") || (_isViewport3(element) ? function() {
+          _winOffsets.width = _win4.innerWidth;
+          _winOffsets.height = _100vh;
+          return _winOffsets;
+        } : function() {
+          return _getBounds(element);
+        });
+      };
+      _getSizeFunc = function _getSizeFunc2(scroller, isViewport, _ref) {
+        var d = _ref.d, d2 = _ref.d2, a = _ref.a;
+        return (a = _getProxyProp(scroller, "getBoundingClientRect")) ? function() {
+          return a()[d];
+        } : function() {
+          return (isViewport ? _getViewportDimension(d2) : scroller["client" + d2]) || 0;
+        };
+      };
+      _getOffsetsFunc = function _getOffsetsFunc2(element, isViewport) {
+        return !isViewport || ~_proxies.indexOf(element) ? _getBoundsFunc(element) : function() {
+          return _winOffsets;
+        };
+      };
+      _maxScroll = function _maxScroll2(element, _ref2) {
+        var s = _ref2.s, d2 = _ref2.d2, d = _ref2.d, a = _ref2.a;
+        return Math.max(0, (s = "scroll" + d2) && (a = _getProxyProp(element, s)) ? a() - _getBoundsFunc(element)()[d] : _isViewport3(element) ? (_docEl2[s] || _body2[s]) - _getViewportDimension(d2) : element[s] - element["offset" + d2]);
+      };
+      _iterateAutoRefresh = function _iterateAutoRefresh2(func, events) {
+        for (var i = 0; i < _autoRefresh.length; i += 3) {
+          (!events || ~events.indexOf(_autoRefresh[i + 1])) && func(_autoRefresh[i], _autoRefresh[i + 1], _autoRefresh[i + 2]);
+        }
+      };
+      _isString3 = function _isString4(value) {
+        return typeof value === "string";
+      };
+      _isFunction3 = function _isFunction4(value) {
+        return typeof value === "function";
+      };
+      _isNumber3 = function _isNumber4(value) {
+        return typeof value === "number";
+      };
+      _isObject3 = function _isObject4(value) {
+        return typeof value === "object";
+      };
+      _endAnimation = function _endAnimation2(animation, reversed, pause) {
+        return animation && animation.progress(reversed ? 0 : 1) && pause && animation.pause();
+      };
+      _callback3 = function _callback4(self, func) {
+        if (self.enabled) {
+          var result = self._ctx ? self._ctx.add(function() {
+            return func(self);
+          }) : func(self);
+          result && result.totalTime && (self.callbackAnimation = result);
+        }
+      };
+      _abs = Math.abs;
+      _left = "left";
+      _top = "top";
+      _right = "right";
+      _bottom = "bottom";
+      _width = "width";
+      _height = "height";
+      _Right = "Right";
+      _Left = "Left";
+      _Top = "Top";
+      _Bottom = "Bottom";
+      _padding = "padding";
+      _margin = "margin";
+      _Width = "Width";
+      _Height = "Height";
+      _px = "px";
+      _getComputedStyle = function _getComputedStyle2(element) {
+        return _win4.getComputedStyle(element);
+      };
+      _makePositionable = function _makePositionable2(element) {
+        var position = _getComputedStyle(element).position;
+        element.style.position = position === "absolute" || position === "fixed" ? position : "relative";
+      };
+      _setDefaults3 = function _setDefaults4(obj, defaults2) {
+        for (var p in defaults2) {
+          p in obj || (obj[p] = defaults2[p]);
+        }
+        return obj;
+      };
+      _getBounds = function _getBounds2(element, withoutTransforms) {
+        var tween = withoutTransforms && _getComputedStyle(element)[_transformProp2] !== "matrix(1, 0, 0, 1, 0, 0)" && gsap3.to(element, {
+          x: 0,
+          y: 0,
+          xPercent: 0,
+          yPercent: 0,
+          rotation: 0,
+          rotationX: 0,
+          rotationY: 0,
+          scale: 1,
+          skewX: 0,
+          skewY: 0
+        }).progress(1), bounds = element.getBoundingClientRect();
+        tween && tween.progress(0).kill();
+        return bounds;
+      };
+      _getSize = function _getSize2(element, _ref3) {
+        var d2 = _ref3.d2;
+        return element["offset" + d2] || element["client" + d2] || 0;
+      };
+      _getLabelRatioArray = function _getLabelRatioArray2(timeline2) {
+        var a = [], labels = timeline2.labels, duration = timeline2.duration(), p;
+        for (p in labels) {
+          a.push(labels[p] / duration);
+        }
+        return a;
+      };
+      _getClosestLabel = function _getClosestLabel2(animation) {
+        return function(value) {
+          return gsap3.utils.snap(_getLabelRatioArray(animation), value);
+        };
+      };
+      _snapDirectional = function _snapDirectional2(snapIncrementOrArray) {
+        var snap3 = gsap3.utils.snap(snapIncrementOrArray), a = Array.isArray(snapIncrementOrArray) && snapIncrementOrArray.slice(0).sort(function(a2, b) {
+          return a2 - b;
+        });
+        return a ? function(value, direction, threshold) {
+          if (threshold === void 0) {
+            threshold = 1e-3;
+          }
+          var i;
+          if (!direction) {
+            return snap3(value);
+          }
+          if (direction > 0) {
+            value -= threshold;
+            for (i = 0; i < a.length; i++) {
+              if (a[i] >= value) {
+                return a[i];
+              }
+            }
+            return a[i - 1];
+          } else {
+            i = a.length;
+            value += threshold;
+            while (i--) {
+              if (a[i] <= value) {
+                return a[i];
+              }
+            }
+          }
+          return a[0];
+        } : function(value, direction, threshold) {
+          if (threshold === void 0) {
+            threshold = 1e-3;
+          }
+          var snapped = snap3(value);
+          return !direction || Math.abs(snapped - value) < threshold || snapped - value < 0 === direction < 0 ? snapped : snap3(direction < 0 ? value - snapIncrementOrArray : value + snapIncrementOrArray);
+        };
+      };
+      _getLabelAtDirection = function _getLabelAtDirection2(timeline2) {
+        return function(value, st) {
+          return _snapDirectional(_getLabelRatioArray(timeline2))(value, st.direction);
+        };
+      };
+      _multiListener = function _multiListener2(func, element, types, callback) {
+        return types.split(",").forEach(function(type) {
+          return func(element, type, callback);
+        });
+      };
+      _addListener3 = function _addListener4(element, type, func, nonPassive, capture) {
+        return element.addEventListener(type, func, {
+          passive: !nonPassive,
+          capture: !!capture
+        });
+      };
+      _removeListener3 = function _removeListener4(element, type, func, capture) {
+        return element.removeEventListener(type, func, !!capture);
+      };
+      _wheelListener = function _wheelListener2(func, el, scrollFunc) {
+        scrollFunc = scrollFunc && scrollFunc.wheelHandler;
+        if (scrollFunc) {
+          func(el, "wheel", scrollFunc);
+          func(el, "touchmove", scrollFunc);
+        }
+      };
+      _markerDefaults = {
+        startColor: "green",
+        endColor: "red",
+        indent: 0,
+        fontSize: "16px",
+        fontWeight: "normal"
+      };
+      _defaults2 = {
+        toggleActions: "play",
+        anticipatePin: 0
+      };
+      _keywords = {
+        top: 0,
+        left: 0,
+        center: 0.5,
+        bottom: 1,
+        right: 1
+      };
+      _offsetToPx = function _offsetToPx2(value, size) {
+        if (_isString3(value)) {
+          var eqIndex = value.indexOf("="), relative = ~eqIndex ? +(value.charAt(eqIndex - 1) + 1) * parseFloat(value.substr(eqIndex + 1)) : 0;
+          if (~eqIndex) {
+            value.indexOf("%") > eqIndex && (relative *= size / 100);
+            value = value.substr(0, eqIndex - 1);
+          }
+          value = relative + (value in _keywords ? _keywords[value] * size : ~value.indexOf("%") ? parseFloat(value) * size / 100 : parseFloat(value) || 0);
+        }
+        return value;
+      };
+      _createMarker = function _createMarker2(type, name, container, direction, _ref4, offset, matchWidthEl, containerAnimation) {
+        var startColor = _ref4.startColor, endColor = _ref4.endColor, fontSize = _ref4.fontSize, indent = _ref4.indent, fontWeight = _ref4.fontWeight;
+        var e = _doc4.createElement("div"), useFixedPosition = _isViewport3(container) || _getProxyProp(container, "pinType") === "fixed", isScroller = type.indexOf("scroller") !== -1, parent = useFixedPosition ? _body2 : container, isStart = type.indexOf("start") !== -1, color = isStart ? startColor : endColor, css = "border-color:" + color + ";font-size:" + fontSize + ";color:" + color + ";font-weight:" + fontWeight + ";pointer-events:none;white-space:nowrap;font-family:sans-serif,Arial;z-index:1000;padding:4px 8px;border-width:0;border-style:solid;";
+        css += "position:" + ((isScroller || containerAnimation) && useFixedPosition ? "fixed;" : "absolute;");
+        (isScroller || containerAnimation || !useFixedPosition) && (css += (direction === _vertical ? _right : _bottom) + ":" + (offset + parseFloat(indent)) + "px;");
+        matchWidthEl && (css += "box-sizing:border-box;text-align:left;width:" + matchWidthEl.offsetWidth + "px;");
+        e._isStart = isStart;
+        e.setAttribute("class", "gsap-marker-" + type + (name ? " marker-" + name : ""));
+        e.style.cssText = css;
+        e.innerText = name || name === 0 ? type + "-" + name : type;
+        parent.children[0] ? parent.insertBefore(e, parent.children[0]) : parent.appendChild(e);
+        e._offset = e["offset" + direction.op.d2];
+        _positionMarker(e, 0, direction, isStart);
+        return e;
+      };
+      _positionMarker = function _positionMarker2(marker, start, direction, flipped) {
+        var vars = {
+          display: "block"
+        }, side = direction[flipped ? "os2" : "p2"], oppositeSide = direction[flipped ? "p2" : "os2"];
+        marker._isFlipped = flipped;
+        vars[direction.a + "Percent"] = flipped ? -100 : 0;
+        vars[direction.a] = flipped ? "1px" : 0;
+        vars["border" + side + _Width] = 1;
+        vars["border" + oppositeSide + _Width] = 0;
+        vars[direction.p] = start + "px";
+        gsap3.set(marker, vars);
+      };
+      _triggers = [];
+      _ids = {};
+      _sync = function _sync2() {
+        return _getTime2() - _lastScrollTime > 34 && (_rafID || (_rafID = requestAnimationFrame(_updateAll)));
+      };
+      _onScroll3 = function _onScroll4() {
+        if (!_normalizer2 || !_normalizer2.isPressed || _normalizer2.startX > _body2.clientWidth) {
+          _scrollers.cache++;
+          if (_normalizer2) {
+            _rafID || (_rafID = requestAnimationFrame(_updateAll));
+          } else {
+            _updateAll();
+          }
+          _lastScrollTime || _dispatch3("scrollStart");
+          _lastScrollTime = _getTime2();
+        }
+      };
+      _setBaseDimensions = function _setBaseDimensions2() {
+        _baseScreenWidth = _win4.innerWidth;
+        _baseScreenHeight = _win4.innerHeight;
+      };
+      _onResize = function _onResize2(force) {
+        _scrollers.cache++;
+        (force === true || !_refreshing && !_ignoreResize && !_doc4.fullscreenElement && !_doc4.webkitFullscreenElement && (!_ignoreMobileResize || _baseScreenWidth !== _win4.innerWidth || Math.abs(_win4.innerHeight - _baseScreenHeight) > _win4.innerHeight * 0.25)) && _resizeDelay.restart(true);
+      };
+      _listeners2 = {};
+      _emptyArray2 = [];
+      _softRefresh = function _softRefresh2() {
+        return _removeListener3(ScrollTrigger2, "scrollEnd", _softRefresh2) || _refreshAll(true);
+      };
+      _dispatch3 = function _dispatch4(type) {
+        return _listeners2[type] && _listeners2[type].map(function(f) {
+          return f();
+        }) || _emptyArray2;
+      };
+      _savedStyles = [];
+      _revertRecorded = function _revertRecorded2(media) {
+        for (var i = 0; i < _savedStyles.length; i += 5) {
+          if (!media || _savedStyles[i + 4] && _savedStyles[i + 4].query === media) {
+            _savedStyles[i].style.cssText = _savedStyles[i + 1];
+            _savedStyles[i].getBBox && _savedStyles[i].setAttribute("transform", _savedStyles[i + 2] || "");
+            _savedStyles[i + 3].uncache = 1;
+          }
+        }
+      };
+      _revertAll = function _revertAll2(kill, media) {
+        var trigger;
+        for (_i = 0; _i < _triggers.length; _i++) {
+          trigger = _triggers[_i];
+          if (trigger && (!media || trigger._ctx === media)) {
+            if (kill) {
+              trigger.kill(1);
+            } else {
+              trigger.revert(true, true);
+            }
+          }
+        }
+        _isReverted = true;
+        media && _revertRecorded(media);
+        media || _dispatch3("revert");
+      };
+      _clearScrollMemory = function _clearScrollMemory2(scrollRestoration, force) {
+        _scrollers.cache++;
+        (force || !_refreshingAll) && _scrollers.forEach(function(obj) {
+          return _isFunction3(obj) && obj.cacheID++ && (obj.rec = 0);
+        });
+        _isString3(scrollRestoration) && (_win4.history.scrollRestoration = _scrollRestoration = scrollRestoration);
+      };
+      _refreshID = 0;
+      _queueRefreshAll = function _queueRefreshAll2() {
+        if (_queueRefreshID !== _refreshID) {
+          var id = _queueRefreshID = _refreshID;
+          requestAnimationFrame(function() {
+            return id === _refreshID && _refreshAll(true);
+          });
+        }
+      };
+      _refresh100vh = function _refresh100vh2() {
+        _body2.appendChild(_div100vh);
+        _100vh = !_normalizer2 && _div100vh.offsetHeight || _win4.innerHeight;
+        _body2.removeChild(_div100vh);
+      };
+      _hideAllMarkers = function _hideAllMarkers2(hide) {
+        return _toArray(".gsap-marker-start, .gsap-marker-end, .gsap-marker-scroller-start, .gsap-marker-scroller-end").forEach(function(el) {
+          return el.style.display = hide ? "none" : "block";
+        });
+      };
+      _refreshAll = function _refreshAll2(force, skipRevert) {
+        _docEl2 = _doc4.documentElement;
+        _body2 = _doc4.body;
+        _root2 = [_win4, _doc4, _docEl2, _body2];
+        if (_lastScrollTime && !force && !_isReverted) {
+          _addListener3(ScrollTrigger2, "scrollEnd", _softRefresh);
+          return;
+        }
+        _refresh100vh();
+        _refreshingAll = ScrollTrigger2.isRefreshing = true;
+        _scrollers.forEach(function(obj) {
+          return _isFunction3(obj) && ++obj.cacheID && (obj.rec = obj());
+        });
+        var refreshInits = _dispatch3("refreshInit");
+        _sort && ScrollTrigger2.sort();
+        skipRevert || _revertAll();
+        _scrollers.forEach(function(obj) {
+          if (_isFunction3(obj)) {
+            obj.smooth && (obj.target.style.scrollBehavior = "auto");
+            obj(0);
+          }
+        });
+        _triggers.slice(0).forEach(function(t) {
+          return t.refresh();
+        });
+        _isReverted = false;
+        _triggers.forEach(function(t) {
+          if (t._subPinOffset && t.pin) {
+            var prop = t.vars.horizontal ? "offsetWidth" : "offsetHeight", original = t.pin[prop];
+            t.revert(true, 1);
+            t.adjustPinSpacing(t.pin[prop] - original);
+            t.refresh();
+          }
+        });
+        _clampingMax = 1;
+        _hideAllMarkers(true);
+        _triggers.forEach(function(t) {
+          var max = _maxScroll(t.scroller, t._dir), endClamp = t.vars.end === "max" || t._endClamp && t.end > max, startClamp = t._startClamp && t.start >= max;
+          (endClamp || startClamp) && t.setPositions(startClamp ? max - 1 : t.start, endClamp ? Math.max(startClamp ? max : t.start + 1, max) : t.end, true);
+        });
+        _hideAllMarkers(false);
+        _clampingMax = 0;
+        refreshInits.forEach(function(result) {
+          return result && result.render && result.render(-1);
+        });
+        _scrollers.forEach(function(obj) {
+          if (_isFunction3(obj)) {
+            obj.smooth && requestAnimationFrame(function() {
+              return obj.target.style.scrollBehavior = "smooth";
+            });
+            obj.rec && obj(obj.rec);
+          }
+        });
+        _clearScrollMemory(_scrollRestoration, 1);
+        _resizeDelay.pause();
+        _refreshID++;
+        _refreshingAll = 2;
+        _updateAll(2);
+        _triggers.forEach(function(t) {
+          return _isFunction3(t.vars.onRefresh) && t.vars.onRefresh(t);
+        });
+        _refreshingAll = ScrollTrigger2.isRefreshing = false;
+        _dispatch3("refresh");
+      };
+      _lastScroll = 0;
+      _direction = 1;
+      _updateAll = function _updateAll2(force) {
+        if (force === 2 || !_refreshingAll && !_isReverted) {
+          ScrollTrigger2.isUpdating = true;
+          _primary && _primary.update(0);
+          var l = _triggers.length, time = _getTime2(), recordVelocity = time - _time1 >= 50, scroll = l && _triggers[0].scroll();
+          _direction = _lastScroll > scroll ? -1 : 1;
+          _refreshingAll || (_lastScroll = scroll);
+          if (recordVelocity) {
+            if (_lastScrollTime && !_pointerIsDown && time - _lastScrollTime > 200) {
+              _lastScrollTime = 0;
+              _dispatch3("scrollEnd");
+            }
+            _time2 = _time1;
+            _time1 = time;
+          }
+          if (_direction < 0) {
+            _i = l;
+            while (_i-- > 0) {
+              _triggers[_i] && _triggers[_i].update(0, recordVelocity);
+            }
+            _direction = 1;
+          } else {
+            for (_i = 0; _i < l; _i++) {
+              _triggers[_i] && _triggers[_i].update(0, recordVelocity);
+            }
+          }
+          ScrollTrigger2.isUpdating = false;
+        }
+        _rafID = 0;
+      };
+      _propNamesToCopy = [_left, _top, _bottom, _right, _margin + _Bottom, _margin + _Right, _margin + _Top, _margin + _Left, "display", "flexShrink", "float", "zIndex", "gridColumnStart", "gridColumnEnd", "gridRowStart", "gridRowEnd", "gridArea", "justifySelf", "alignSelf", "placeSelf", "order"];
+      _stateProps = _propNamesToCopy.concat([_width, _height, "boxSizing", "max" + _Width, "max" + _Height, "position", _margin, _padding, _padding + _Top, _padding + _Right, _padding + _Bottom, _padding + _Left]);
+      _swapPinOut = function _swapPinOut2(pin, spacer, state) {
+        _setState(state);
+        var cache = pin._gsap;
+        if (cache.spacerIsNative) {
+          _setState(cache.spacerState);
+        } else if (pin._gsap.swappedIn) {
+          var parent = spacer.parentNode;
+          if (parent) {
+            parent.insertBefore(pin, spacer);
+            parent.removeChild(spacer);
+          }
+        }
+        pin._gsap.swappedIn = false;
+      };
+      _swapPinIn = function _swapPinIn2(pin, spacer, cs, spacerState) {
+        if (!pin._gsap.swappedIn) {
+          var i = _propNamesToCopy.length, spacerStyle = spacer.style, pinStyle = pin.style, p;
+          while (i--) {
+            p = _propNamesToCopy[i];
+            spacerStyle[p] = cs[p];
+          }
+          spacerStyle.position = cs.position === "absolute" ? "absolute" : "relative";
+          cs.display === "inline" && (spacerStyle.display = "inline-block");
+          pinStyle[_bottom] = pinStyle[_right] = "auto";
+          spacerStyle.flexBasis = cs.flexBasis || "auto";
+          spacerStyle.overflow = "visible";
+          spacerStyle.boxSizing = "border-box";
+          spacerStyle[_width] = _getSize(pin, _horizontal) + _px;
+          spacerStyle[_height] = _getSize(pin, _vertical) + _px;
+          spacerStyle[_padding] = pinStyle[_margin] = pinStyle[_top] = pinStyle[_left] = "0";
+          _setState(spacerState);
+          pinStyle[_width] = pinStyle["max" + _Width] = cs[_width];
+          pinStyle[_height] = pinStyle["max" + _Height] = cs[_height];
+          pinStyle[_padding] = cs[_padding];
+          if (pin.parentNode !== spacer) {
+            pin.parentNode.insertBefore(spacer, pin);
+            spacer.appendChild(pin);
+          }
+          pin._gsap.swappedIn = true;
+        }
+      };
+      _capsExp2 = /([A-Z])/g;
+      _setState = function _setState2(state) {
+        if (state) {
+          var style = state.t.style, l = state.length, i = 0, p, value;
+          (state.t._gsap || gsap3.core.getCache(state.t)).uncache = 1;
+          for (; i < l; i += 2) {
+            value = state[i + 1];
+            p = state[i];
+            if (value) {
+              style[p] = value;
+            } else if (style[p]) {
+              style.removeProperty(p.replace(_capsExp2, "-$1").toLowerCase());
+            }
+          }
+        }
+      };
+      _getState = function _getState2(element) {
+        var l = _stateProps.length, style = element.style, state = [], i = 0;
+        for (; i < l; i++) {
+          state.push(_stateProps[i], style[_stateProps[i]]);
+        }
+        state.t = element;
+        return state;
+      };
+      _copyState = function _copyState2(state, override, omitOffsets) {
+        var result = [], l = state.length, i = omitOffsets ? 8 : 0, p;
+        for (; i < l; i += 2) {
+          p = state[i];
+          result.push(p, p in override ? override[p] : state[i + 1]);
+        }
+        result.t = state.t;
+        return result;
+      };
+      _winOffsets = {
+        left: 0,
+        top: 0
+      };
+      _parsePosition3 = function _parsePosition4(value, trigger, scrollerSize, direction, scroll, marker, markerScroller, self, scrollerBounds, borderWidth, useFixedPosition, scrollerMax, containerAnimation, clampZeroProp) {
+        _isFunction3(value) && (value = value(self));
+        if (_isString3(value) && value.substr(0, 3) === "max") {
+          value = scrollerMax + (value.charAt(4) === "=" ? _offsetToPx("0" + value.substr(3), scrollerSize) : 0);
+        }
+        var time = containerAnimation ? containerAnimation.time() : 0, p1, p2, element;
+        containerAnimation && containerAnimation.seek(0);
+        isNaN(value) || (value = +value);
+        if (!_isNumber3(value)) {
+          _isFunction3(trigger) && (trigger = trigger(self));
+          var offsets = (value || "0").split(" "), bounds, localOffset, globalOffset, display;
+          element = _getTarget(trigger, self) || _body2;
+          bounds = _getBounds(element) || {};
+          if ((!bounds || !bounds.left && !bounds.top) && _getComputedStyle(element).display === "none") {
+            display = element.style.display;
+            element.style.display = "block";
+            bounds = _getBounds(element);
+            display ? element.style.display = display : element.style.removeProperty("display");
+          }
+          localOffset = _offsetToPx(offsets[0], bounds[direction.d]);
+          globalOffset = _offsetToPx(offsets[1] || "0", scrollerSize);
+          value = bounds[direction.p] - scrollerBounds[direction.p] - borderWidth + localOffset + scroll - globalOffset;
+          markerScroller && _positionMarker(markerScroller, globalOffset, direction, scrollerSize - globalOffset < 20 || markerScroller._isStart && globalOffset > 20);
+          scrollerSize -= scrollerSize - globalOffset;
+        } else {
+          containerAnimation && (value = gsap3.utils.mapRange(containerAnimation.scrollTrigger.start, containerAnimation.scrollTrigger.end, 0, scrollerMax, value));
+          markerScroller && _positionMarker(markerScroller, scrollerSize, direction, true);
+        }
+        if (clampZeroProp) {
+          self[clampZeroProp] = value || -1e-3;
+          value < 0 && (value = 0);
+        }
+        if (marker) {
+          var position = value + scrollerSize, isStart = marker._isStart;
+          p1 = "scroll" + direction.d2;
+          _positionMarker(marker, position, direction, isStart && position > 20 || !isStart && (useFixedPosition ? Math.max(_body2[p1], _docEl2[p1]) : marker.parentNode[p1]) <= position + 1);
+          if (useFixedPosition) {
+            scrollerBounds = _getBounds(markerScroller);
+            useFixedPosition && (marker.style[direction.op.p] = scrollerBounds[direction.op.p] - direction.op.m - marker._offset + _px);
+          }
+        }
+        if (containerAnimation && element) {
+          p1 = _getBounds(element);
+          containerAnimation.seek(scrollerMax);
+          p2 = _getBounds(element);
+          containerAnimation._caScrollDist = p1[direction.p] - p2[direction.p];
+          value = value / containerAnimation._caScrollDist * scrollerMax;
+        }
+        containerAnimation && containerAnimation.seek(time);
+        return containerAnimation ? value : Math.round(value);
+      };
+      _prefixExp = /(webkit|moz|length|cssText|inset)/i;
+      _reparent = function _reparent2(element, parent, top, left) {
+        if (element.parentNode !== parent) {
+          var style = element.style, p, cs;
+          if (parent === _body2) {
+            element._stOrig = style.cssText;
+            cs = _getComputedStyle(element);
+            for (p in cs) {
+              if (!+p && !_prefixExp.test(p) && cs[p] && typeof style[p] === "string" && p !== "0") {
+                style[p] = cs[p];
+              }
+            }
+            style.top = top;
+            style.left = left;
+          } else {
+            style.cssText = element._stOrig;
+          }
+          gsap3.core.getCache(element).uncache = 1;
+          parent.appendChild(element);
+        }
+      };
+      _interruptionTracker = function _interruptionTracker2(getValueFunc, initialValue, onInterrupt) {
+        var last1 = initialValue, last2 = last1;
+        return function(value) {
+          var current = Math.round(getValueFunc());
+          if (current !== last1 && current !== last2 && Math.abs(current - last1) > 3 && Math.abs(current - last2) > 3) {
+            value = current;
+            onInterrupt && onInterrupt();
+          }
+          last2 = last1;
+          last1 = Math.round(value);
+          return last1;
+        };
+      };
+      _shiftMarker = function _shiftMarker2(marker, direction, value) {
+        var vars = {};
+        vars[direction.p] = "+=" + value;
+        gsap3.set(marker, vars);
+      };
+      _getTweenCreator = function _getTweenCreator2(scroller, direction) {
+        var getScroll = _getScrollFunc(scroller, direction), prop = "_scroll" + direction.p2, getTween = function getTween2(scrollTo, vars, initialValue, change1, change2) {
+          var tween = getTween2.tween, onComplete = vars.onComplete, modifiers = {};
+          initialValue = initialValue || getScroll();
+          var checkForInterruption = _interruptionTracker(getScroll, initialValue, function() {
+            tween.kill();
+            getTween2.tween = 0;
+          });
+          change2 = change1 && change2 || 0;
+          change1 = change1 || scrollTo - initialValue;
+          tween && tween.kill();
+          vars[prop] = scrollTo;
+          vars.inherit = false;
+          vars.modifiers = modifiers;
+          modifiers[prop] = function() {
+            return checkForInterruption(initialValue + change1 * tween.ratio + change2 * tween.ratio * tween.ratio);
+          };
+          vars.onUpdate = function() {
+            _scrollers.cache++;
+            getTween2.tween && _updateAll();
+          };
+          vars.onComplete = function() {
+            getTween2.tween = 0;
+            onComplete && onComplete.call(tween);
+          };
+          tween = getTween2.tween = gsap3.to(scroller, vars);
+          return tween;
+        };
+        scroller[prop] = getScroll;
+        getScroll.wheelHandler = function() {
+          return getTween.tween && getTween.tween.kill() && (getTween.tween = 0);
+        };
+        _addListener3(scroller, "wheel", getScroll.wheelHandler);
+        ScrollTrigger2.isTouch && _addListener3(scroller, "touchmove", getScroll.wheelHandler);
+        return getTween;
+      };
+      ScrollTrigger2 = /* @__PURE__ */ function() {
+        function ScrollTrigger3(vars, animation) {
+          _coreInitted3 || ScrollTrigger3.register(gsap3) || console.warn("Please gsap.registerPlugin(ScrollTrigger)");
+          _context3(this);
+          this.init(vars, animation);
+        }
+        var _proto = ScrollTrigger3.prototype;
+        _proto.init = function init4(vars, animation) {
+          this.progress = this.start = 0;
+          this.vars && this.kill(true, true);
+          if (!_enabled) {
+            this.update = this.refresh = this.kill = _passThrough3;
+            return;
+          }
+          vars = _setDefaults3(_isString3(vars) || _isNumber3(vars) || vars.nodeType ? {
+            trigger: vars
+          } : vars, _defaults2);
+          var _vars = vars, onUpdate = _vars.onUpdate, toggleClass = _vars.toggleClass, id = _vars.id, onToggle = _vars.onToggle, onRefresh = _vars.onRefresh, scrub = _vars.scrub, trigger = _vars.trigger, pin = _vars.pin, pinSpacing = _vars.pinSpacing, invalidateOnRefresh = _vars.invalidateOnRefresh, anticipatePin = _vars.anticipatePin, onScrubComplete = _vars.onScrubComplete, onSnapComplete = _vars.onSnapComplete, once = _vars.once, snap3 = _vars.snap, pinReparent = _vars.pinReparent, pinSpacer = _vars.pinSpacer, containerAnimation = _vars.containerAnimation, fastScrollEnd = _vars.fastScrollEnd, preventOverlaps = _vars.preventOverlaps, direction = vars.horizontal || vars.containerAnimation && vars.horizontal !== false ? _horizontal : _vertical, isToggle = !scrub && scrub !== 0, scroller = _getTarget(vars.scroller || _win4), scrollerCache = gsap3.core.getCache(scroller), isViewport = _isViewport3(scroller), useFixedPosition = ("pinType" in vars ? vars.pinType : _getProxyProp(scroller, "pinType") || isViewport && "fixed") === "fixed", callbacks = [vars.onEnter, vars.onLeave, vars.onEnterBack, vars.onLeaveBack], toggleActions = isToggle && vars.toggleActions.split(" "), markers = "markers" in vars ? vars.markers : _defaults2.markers, borderWidth = isViewport ? 0 : parseFloat(_getComputedStyle(scroller)["border" + direction.p2 + _Width]) || 0, self = this, onRefreshInit = vars.onRefreshInit && function() {
+            return vars.onRefreshInit(self);
+          }, getScrollerSize = _getSizeFunc(scroller, isViewport, direction), getScrollerOffsets = _getOffsetsFunc(scroller, isViewport), lastSnap = 0, lastRefresh = 0, prevProgress = 0, scrollFunc = _getScrollFunc(scroller, direction), tweenTo, pinCache, snapFunc, scroll1, scroll2, start, end, markerStart, markerEnd, markerStartTrigger, markerEndTrigger, markerVars, executingOnRefresh, change, pinOriginalState, pinActiveState, pinState, spacer, offset, pinGetter, pinSetter, pinStart, pinChange, spacingStart, spacerState, markerStartSetter, pinMoves, markerEndSetter, cs, snap1, snap22, scrubTween, scrubSmooth, snapDurClamp, snapDelayedCall, prevScroll, prevAnimProgress, caMarkerSetter, customRevertReturn;
+          self._startClamp = self._endClamp = false;
+          self._dir = direction;
+          anticipatePin *= 45;
+          self.scroller = scroller;
+          self.scroll = containerAnimation ? containerAnimation.time.bind(containerAnimation) : scrollFunc;
+          scroll1 = scrollFunc();
+          self.vars = vars;
+          animation = animation || vars.animation;
+          if ("refreshPriority" in vars) {
+            _sort = 1;
+            vars.refreshPriority === -9999 && (_primary = self);
+          }
+          scrollerCache.tweenScroll = scrollerCache.tweenScroll || {
+            top: _getTweenCreator(scroller, _vertical),
+            left: _getTweenCreator(scroller, _horizontal)
+          };
+          self.tweenTo = tweenTo = scrollerCache.tweenScroll[direction.p];
+          self.scrubDuration = function(value) {
+            scrubSmooth = _isNumber3(value) && value;
+            if (!scrubSmooth) {
+              scrubTween && scrubTween.progress(1).kill();
+              scrubTween = 0;
+            } else {
+              scrubTween ? scrubTween.duration(value) : scrubTween = gsap3.to(animation, {
+                ease: "expo",
+                totalProgress: "+=0",
+                inherit: false,
+                duration: scrubSmooth,
+                paused: true,
+                onComplete: function onComplete() {
+                  return onScrubComplete && onScrubComplete(self);
+                }
+              });
+            }
+          };
+          if (animation) {
+            animation.vars.lazy = false;
+            animation._initted && !self.isReverted || animation.vars.immediateRender !== false && vars.immediateRender !== false && animation.duration() && animation.render(0, true, true);
+            self.animation = animation.pause();
+            animation.scrollTrigger = self;
+            self.scrubDuration(scrub);
+            snap1 = 0;
+            id || (id = animation.vars.id);
+          }
+          if (snap3) {
+            if (!_isObject3(snap3) || snap3.push) {
+              snap3 = {
+                snapTo: snap3
+              };
+            }
+            "scrollBehavior" in _body2.style && gsap3.set(isViewport ? [_body2, _docEl2] : scroller, {
+              scrollBehavior: "auto"
+            });
+            _scrollers.forEach(function(o) {
+              return _isFunction3(o) && o.target === (isViewport ? _doc4.scrollingElement || _docEl2 : scroller) && (o.smooth = false);
+            });
+            snapFunc = _isFunction3(snap3.snapTo) ? snap3.snapTo : snap3.snapTo === "labels" ? _getClosestLabel(animation) : snap3.snapTo === "labelsDirectional" ? _getLabelAtDirection(animation) : snap3.directional !== false ? function(value, st) {
+              return _snapDirectional(snap3.snapTo)(value, _getTime2() - lastRefresh < 500 ? 0 : st.direction);
+            } : gsap3.utils.snap(snap3.snapTo);
+            snapDurClamp = snap3.duration || {
+              min: 0.1,
+              max: 2
+            };
+            snapDurClamp = _isObject3(snapDurClamp) ? _clamp4(snapDurClamp.min, snapDurClamp.max) : _clamp4(snapDurClamp, snapDurClamp);
+            snapDelayedCall = gsap3.delayedCall(snap3.delay || scrubSmooth / 2 || 0.1, function() {
+              var scroll = scrollFunc(), refreshedRecently = _getTime2() - lastRefresh < 500, tween = tweenTo.tween;
+              if ((refreshedRecently || Math.abs(self.getVelocity()) < 10) && !tween && !_pointerIsDown && lastSnap !== scroll) {
+                var progress = (scroll - start) / change, totalProgress = animation && !isToggle ? animation.totalProgress() : progress, velocity = refreshedRecently ? 0 : (totalProgress - snap22) / (_getTime2() - _time2) * 1e3 || 0, change1 = gsap3.utils.clamp(-progress, 1 - progress, _abs(velocity / 2) * velocity / 0.185), naturalEnd = progress + (snap3.inertia === false ? 0 : change1), endValue, endScroll, _snap = snap3, onStart = _snap.onStart, _onInterrupt = _snap.onInterrupt, _onComplete = _snap.onComplete;
+                endValue = snapFunc(naturalEnd, self);
+                _isNumber3(endValue) || (endValue = naturalEnd);
+                endScroll = Math.max(0, Math.round(start + endValue * change));
+                if (scroll <= end && scroll >= start && endScroll !== scroll) {
+                  if (tween && !tween._initted && tween.data <= _abs(endScroll - scroll)) {
+                    return;
+                  }
+                  if (snap3.inertia === false) {
+                    change1 = endValue - progress;
+                  }
+                  tweenTo(endScroll, {
+                    duration: snapDurClamp(_abs(Math.max(_abs(naturalEnd - totalProgress), _abs(endValue - totalProgress)) * 0.185 / velocity / 0.05 || 0)),
+                    ease: snap3.ease || "power3",
+                    data: _abs(endScroll - scroll),
+                    // record the distance so that if another snap tween occurs (conflict) we can prioritize the closest snap.
+                    onInterrupt: function onInterrupt() {
+                      return snapDelayedCall.restart(true) && _onInterrupt && _onInterrupt(self);
+                    },
+                    onComplete: function onComplete() {
+                      self.update();
+                      lastSnap = scrollFunc();
+                      if (animation && !isToggle) {
+                        scrubTween ? scrubTween.resetTo("totalProgress", endValue, animation._tTime / animation._tDur) : animation.progress(endValue);
+                      }
+                      snap1 = snap22 = animation && !isToggle ? animation.totalProgress() : self.progress;
+                      onSnapComplete && onSnapComplete(self);
+                      _onComplete && _onComplete(self);
+                    }
+                  }, scroll, change1 * change, endScroll - scroll - change1 * change);
+                  onStart && onStart(self, tweenTo.tween);
+                }
+              } else if (self.isActive && lastSnap !== scroll) {
+                snapDelayedCall.restart(true);
+              }
+            }).pause();
+          }
+          id && (_ids[id] = self);
+          trigger = self.trigger = _getTarget(trigger || pin !== true && pin);
+          customRevertReturn = trigger && trigger._gsap && trigger._gsap.stRevert;
+          customRevertReturn && (customRevertReturn = customRevertReturn(self));
+          pin = pin === true ? trigger : _getTarget(pin);
+          _isString3(toggleClass) && (toggleClass = {
+            targets: trigger,
+            className: toggleClass
+          });
+          if (pin) {
+            pinSpacing === false || pinSpacing === _margin || (pinSpacing = !pinSpacing && pin.parentNode && pin.parentNode.style && _getComputedStyle(pin.parentNode).display === "flex" ? false : _padding);
+            self.pin = pin;
+            pinCache = gsap3.core.getCache(pin);
+            if (!pinCache.spacer) {
+              if (pinSpacer) {
+                pinSpacer = _getTarget(pinSpacer);
+                pinSpacer && !pinSpacer.nodeType && (pinSpacer = pinSpacer.current || pinSpacer.nativeElement);
+                pinCache.spacerIsNative = !!pinSpacer;
+                pinSpacer && (pinCache.spacerState = _getState(pinSpacer));
+              }
+              pinCache.spacer = spacer = pinSpacer || _doc4.createElement("div");
+              spacer.classList.add("pin-spacer");
+              id && spacer.classList.add("pin-spacer-" + id);
+              pinCache.pinState = pinOriginalState = _getState(pin);
+            } else {
+              pinOriginalState = pinCache.pinState;
+            }
+            vars.force3D !== false && gsap3.set(pin, {
+              force3D: true
+            });
+            self.spacer = spacer = pinCache.spacer;
+            cs = _getComputedStyle(pin);
+            spacingStart = cs[pinSpacing + direction.os2];
+            pinGetter = gsap3.getProperty(pin);
+            pinSetter = gsap3.quickSetter(pin, direction.a, _px);
+            _swapPinIn(pin, spacer, cs);
+            pinState = _getState(pin);
+          }
+          if (markers) {
+            markerVars = _isObject3(markers) ? _setDefaults3(markers, _markerDefaults) : _markerDefaults;
+            markerStartTrigger = _createMarker("scroller-start", id, scroller, direction, markerVars, 0);
+            markerEndTrigger = _createMarker("scroller-end", id, scroller, direction, markerVars, 0, markerStartTrigger);
+            offset = markerStartTrigger["offset" + direction.op.d2];
+            var content = _getTarget(_getProxyProp(scroller, "content") || scroller);
+            markerStart = this.markerStart = _createMarker("start", id, content, direction, markerVars, offset, 0, containerAnimation);
+            markerEnd = this.markerEnd = _createMarker("end", id, content, direction, markerVars, offset, 0, containerAnimation);
+            containerAnimation && (caMarkerSetter = gsap3.quickSetter([markerStart, markerEnd], direction.a, _px));
+            if (!useFixedPosition && !(_proxies.length && _getProxyProp(scroller, "fixedMarkers") === true)) {
+              _makePositionable(isViewport ? _body2 : scroller);
+              gsap3.set([markerStartTrigger, markerEndTrigger], {
+                force3D: true
+              });
+              markerStartSetter = gsap3.quickSetter(markerStartTrigger, direction.a, _px);
+              markerEndSetter = gsap3.quickSetter(markerEndTrigger, direction.a, _px);
+            }
+          }
+          if (containerAnimation) {
+            var oldOnUpdate = containerAnimation.vars.onUpdate, oldParams = containerAnimation.vars.onUpdateParams;
+            containerAnimation.eventCallback("onUpdate", function() {
+              self.update(0, 0, 1);
+              oldOnUpdate && oldOnUpdate.apply(containerAnimation, oldParams || []);
+            });
+          }
+          self.previous = function() {
+            return _triggers[_triggers.indexOf(self) - 1];
+          };
+          self.next = function() {
+            return _triggers[_triggers.indexOf(self) + 1];
+          };
+          self.revert = function(revert, temp) {
+            if (!temp) {
+              return self.kill(true);
+            }
+            var r = revert !== false || !self.enabled, prevRefreshing = _refreshing;
+            if (r !== self.isReverted) {
+              if (r) {
+                prevScroll = Math.max(scrollFunc(), self.scroll.rec || 0);
+                prevProgress = self.progress;
+                prevAnimProgress = animation && animation.progress();
+              }
+              markerStart && [markerStart, markerEnd, markerStartTrigger, markerEndTrigger].forEach(function(m) {
+                return m.style.display = r ? "none" : "block";
+              });
+              if (r) {
+                _refreshing = self;
+                self.update(r);
+              }
+              if (pin && (!pinReparent || !self.isActive)) {
+                if (r) {
+                  _swapPinOut(pin, spacer, pinOriginalState);
+                } else {
+                  _swapPinIn(pin, spacer, _getComputedStyle(pin), spacerState);
+                }
+              }
+              r || self.update(r);
+              _refreshing = prevRefreshing;
+              self.isReverted = r;
+            }
+          };
+          self.refresh = function(soft, force, position, pinOffset) {
+            if ((_refreshing || !self.enabled) && !force) {
+              return;
+            }
+            if (pin && soft && _lastScrollTime) {
+              _addListener3(ScrollTrigger3, "scrollEnd", _softRefresh);
+              return;
+            }
+            !_refreshingAll && onRefreshInit && onRefreshInit(self);
+            _refreshing = self;
+            if (tweenTo.tween && !position) {
+              tweenTo.tween.kill();
+              tweenTo.tween = 0;
+            }
+            scrubTween && scrubTween.pause();
+            if (invalidateOnRefresh && animation) {
+              animation.revert({
+                kill: false
+              }).invalidate();
+              animation.getChildren && animation.getChildren(true, true, false).forEach(function(t) {
+                return t.vars.immediateRender && t.render(0, true, true);
+              });
+            }
+            self.isReverted || self.revert(true, true);
+            self._subPinOffset = false;
+            var size = getScrollerSize(), scrollerBounds = getScrollerOffsets(), max = containerAnimation ? containerAnimation.duration() : _maxScroll(scroller, direction), isFirstRefresh = change <= 0.01 || !change, offset2 = 0, otherPinOffset = pinOffset || 0, parsedEnd = _isObject3(position) ? position.end : vars.end, parsedEndTrigger = vars.endTrigger || trigger, parsedStart = _isObject3(position) ? position.start : vars.start || (vars.start === 0 || !trigger ? 0 : pin ? "0 0" : "0 100%"), pinnedContainer = self.pinnedContainer = vars.pinnedContainer && _getTarget(vars.pinnedContainer, self), triggerIndex = trigger && Math.max(0, _triggers.indexOf(self)) || 0, i = triggerIndex, cs2, bounds, scroll, isVertical, override, curTrigger, curPin, oppositeScroll, initted, revertedPins, forcedOverflow, markerStartOffset, markerEndOffset;
+            if (markers && _isObject3(position)) {
+              markerStartOffset = gsap3.getProperty(markerStartTrigger, direction.p);
+              markerEndOffset = gsap3.getProperty(markerEndTrigger, direction.p);
+            }
+            while (i-- > 0) {
+              curTrigger = _triggers[i];
+              curTrigger.end || curTrigger.refresh(0, 1) || (_refreshing = self);
+              curPin = curTrigger.pin;
+              if (curPin && (curPin === trigger || curPin === pin || curPin === pinnedContainer) && !curTrigger.isReverted) {
+                revertedPins || (revertedPins = []);
+                revertedPins.unshift(curTrigger);
+                curTrigger.revert(true, true);
+              }
+              if (curTrigger !== _triggers[i]) {
+                triggerIndex--;
+                i--;
+              }
+            }
+            _isFunction3(parsedStart) && (parsedStart = parsedStart(self));
+            parsedStart = _parseClamp(parsedStart, "start", self);
+            start = _parsePosition3(parsedStart, trigger, size, direction, scrollFunc(), markerStart, markerStartTrigger, self, scrollerBounds, borderWidth, useFixedPosition, max, containerAnimation, self._startClamp && "_startClamp") || (pin ? -1e-3 : 0);
+            _isFunction3(parsedEnd) && (parsedEnd = parsedEnd(self));
+            if (_isString3(parsedEnd) && !parsedEnd.indexOf("+=")) {
+              if (~parsedEnd.indexOf(" ")) {
+                parsedEnd = (_isString3(parsedStart) ? parsedStart.split(" ")[0] : "") + parsedEnd;
+              } else {
+                offset2 = _offsetToPx(parsedEnd.substr(2), size);
+                parsedEnd = _isString3(parsedStart) ? parsedStart : (containerAnimation ? gsap3.utils.mapRange(0, containerAnimation.duration(), containerAnimation.scrollTrigger.start, containerAnimation.scrollTrigger.end, start) : start) + offset2;
+                parsedEndTrigger = trigger;
+              }
+            }
+            parsedEnd = _parseClamp(parsedEnd, "end", self);
+            end = Math.max(start, _parsePosition3(parsedEnd || (parsedEndTrigger ? "100% 0" : max), parsedEndTrigger, size, direction, scrollFunc() + offset2, markerEnd, markerEndTrigger, self, scrollerBounds, borderWidth, useFixedPosition, max, containerAnimation, self._endClamp && "_endClamp")) || -1e-3;
+            offset2 = 0;
+            i = triggerIndex;
+            while (i--) {
+              curTrigger = _triggers[i];
+              curPin = curTrigger.pin;
+              if (curPin && curTrigger.start - curTrigger._pinPush <= start && !containerAnimation && curTrigger.end > 0) {
+                cs2 = curTrigger.end - (self._startClamp ? Math.max(0, curTrigger.start) : curTrigger.start);
+                if ((curPin === trigger && curTrigger.start - curTrigger._pinPush < start || curPin === pinnedContainer) && isNaN(parsedStart)) {
+                  offset2 += cs2 * (1 - curTrigger.progress);
+                }
+                curPin === pin && (otherPinOffset += cs2);
+              }
+            }
+            start += offset2;
+            end += offset2;
+            self._startClamp && (self._startClamp += offset2);
+            if (self._endClamp && !_refreshingAll) {
+              self._endClamp = end || -1e-3;
+              end = Math.min(end, _maxScroll(scroller, direction));
+            }
+            change = end - start || (start -= 0.01) && 1e-3;
+            if (isFirstRefresh) {
+              prevProgress = gsap3.utils.clamp(0, 1, gsap3.utils.normalize(start, end, prevScroll));
+            }
+            self._pinPush = otherPinOffset;
+            if (markerStart && offset2) {
+              cs2 = {};
+              cs2[direction.a] = "+=" + offset2;
+              pinnedContainer && (cs2[direction.p] = "-=" + scrollFunc());
+              gsap3.set([markerStart, markerEnd], cs2);
+            }
+            if (pin && !(_clampingMax && self.end >= _maxScroll(scroller, direction))) {
+              cs2 = _getComputedStyle(pin);
+              isVertical = direction === _vertical;
+              scroll = scrollFunc();
+              pinStart = parseFloat(pinGetter(direction.a)) + otherPinOffset;
+              if (!max && end > 1) {
+                forcedOverflow = (isViewport ? _doc4.scrollingElement || _docEl2 : scroller).style;
+                forcedOverflow = {
+                  style: forcedOverflow,
+                  value: forcedOverflow["overflow" + direction.a.toUpperCase()]
+                };
+                if (isViewport && _getComputedStyle(_body2)["overflow" + direction.a.toUpperCase()] !== "scroll") {
+                  forcedOverflow.style["overflow" + direction.a.toUpperCase()] = "scroll";
+                }
+              }
+              _swapPinIn(pin, spacer, cs2);
+              pinState = _getState(pin);
+              bounds = _getBounds(pin, true);
+              oppositeScroll = useFixedPosition && _getScrollFunc(scroller, isVertical ? _horizontal : _vertical)();
+              if (pinSpacing) {
+                spacerState = [pinSpacing + direction.os2, change + otherPinOffset + _px];
+                spacerState.t = spacer;
+                i = pinSpacing === _padding ? _getSize(pin, direction) + change + otherPinOffset : 0;
+                if (i) {
+                  spacerState.push(direction.d, i + _px);
+                  spacer.style.flexBasis !== "auto" && (spacer.style.flexBasis = i + _px);
+                }
+                _setState(spacerState);
+                if (pinnedContainer) {
+                  _triggers.forEach(function(t) {
+                    if (t.pin === pinnedContainer && t.vars.pinSpacing !== false) {
+                      t._subPinOffset = true;
+                    }
+                  });
+                }
+                useFixedPosition && scrollFunc(prevScroll);
+              } else {
+                i = _getSize(pin, direction);
+                i && spacer.style.flexBasis !== "auto" && (spacer.style.flexBasis = i + _px);
+              }
+              if (useFixedPosition) {
+                override = {
+                  top: bounds.top + (isVertical ? scroll - start : oppositeScroll) + _px,
+                  left: bounds.left + (isVertical ? oppositeScroll : scroll - start) + _px,
+                  boxSizing: "border-box",
+                  position: "fixed"
+                };
+                override[_width] = override["max" + _Width] = Math.ceil(bounds.width) + _px;
+                override[_height] = override["max" + _Height] = Math.ceil(bounds.height) + _px;
+                override[_margin] = override[_margin + _Top] = override[_margin + _Right] = override[_margin + _Bottom] = override[_margin + _Left] = "0";
+                override[_padding] = cs2[_padding];
+                override[_padding + _Top] = cs2[_padding + _Top];
+                override[_padding + _Right] = cs2[_padding + _Right];
+                override[_padding + _Bottom] = cs2[_padding + _Bottom];
+                override[_padding + _Left] = cs2[_padding + _Left];
+                pinActiveState = _copyState(pinOriginalState, override, pinReparent);
+                _refreshingAll && scrollFunc(0);
+              }
+              if (animation) {
+                initted = animation._initted;
+                _suppressOverwrites2(1);
+                animation.render(animation.duration(), true, true);
+                pinChange = pinGetter(direction.a) - pinStart + change + otherPinOffset;
+                pinMoves = Math.abs(change - pinChange) > 1;
+                useFixedPosition && pinMoves && pinActiveState.splice(pinActiveState.length - 2, 2);
+                animation.render(0, true, true);
+                initted || animation.invalidate(true);
+                animation.parent || animation.totalTime(animation.totalTime());
+                _suppressOverwrites2(0);
+              } else {
+                pinChange = change;
+              }
+              forcedOverflow && (forcedOverflow.value ? forcedOverflow.style["overflow" + direction.a.toUpperCase()] = forcedOverflow.value : forcedOverflow.style.removeProperty("overflow-" + direction.a));
+            } else if (trigger && scrollFunc() && !containerAnimation) {
+              bounds = trigger.parentNode;
+              while (bounds && bounds !== _body2) {
+                if (bounds._pinOffset) {
+                  start -= bounds._pinOffset;
+                  end -= bounds._pinOffset;
+                }
+                bounds = bounds.parentNode;
+              }
+            }
+            revertedPins && revertedPins.forEach(function(t) {
+              return t.revert(false, true);
+            });
+            self.start = start;
+            self.end = end;
+            scroll1 = scroll2 = _refreshingAll ? prevScroll : scrollFunc();
+            if (!containerAnimation && !_refreshingAll) {
+              scroll1 < prevScroll && scrollFunc(prevScroll);
+              self.scroll.rec = 0;
+            }
+            self.revert(false, true);
+            lastRefresh = _getTime2();
+            if (snapDelayedCall) {
+              lastSnap = -1;
+              snapDelayedCall.restart(true);
+            }
+            _refreshing = 0;
+            animation && isToggle && (animation._initted || prevAnimProgress) && animation.progress() !== prevAnimProgress && animation.progress(prevAnimProgress || 0, true).render(animation.time(), true, true);
+            if (isFirstRefresh || prevProgress !== self.progress || containerAnimation || invalidateOnRefresh || animation && !animation._initted) {
+              animation && !isToggle && (animation._initted || prevProgress || animation.vars.immediateRender !== false) && animation.totalProgress(containerAnimation && start < -1e-3 && !prevProgress ? gsap3.utils.normalize(start, end, 0) : prevProgress, true);
+              self.progress = isFirstRefresh || (scroll1 - start) / change === prevProgress ? 0 : prevProgress;
+            }
+            pin && pinSpacing && (spacer._pinOffset = Math.round(self.progress * pinChange));
+            scrubTween && scrubTween.invalidate();
+            if (!isNaN(markerStartOffset)) {
+              markerStartOffset -= gsap3.getProperty(markerStartTrigger, direction.p);
+              markerEndOffset -= gsap3.getProperty(markerEndTrigger, direction.p);
+              _shiftMarker(markerStartTrigger, direction, markerStartOffset);
+              _shiftMarker(markerStart, direction, markerStartOffset - (pinOffset || 0));
+              _shiftMarker(markerEndTrigger, direction, markerEndOffset);
+              _shiftMarker(markerEnd, direction, markerEndOffset - (pinOffset || 0));
+            }
+            isFirstRefresh && !_refreshingAll && self.update();
+            if (onRefresh && !_refreshingAll && !executingOnRefresh) {
+              executingOnRefresh = true;
+              onRefresh(self);
+              executingOnRefresh = false;
+            }
+          };
+          self.getVelocity = function() {
+            return (scrollFunc() - scroll2) / (_getTime2() - _time2) * 1e3 || 0;
+          };
+          self.endAnimation = function() {
+            _endAnimation(self.callbackAnimation);
+            if (animation) {
+              scrubTween ? scrubTween.progress(1) : !animation.paused() ? _endAnimation(animation, animation.reversed()) : isToggle || _endAnimation(animation, self.direction < 0, 1);
+            }
+          };
+          self.labelToScroll = function(label) {
+            return animation && animation.labels && (start || self.refresh() || start) + animation.labels[label] / animation.duration() * change || 0;
+          };
+          self.getTrailing = function(name) {
+            var i = _triggers.indexOf(self), a = self.direction > 0 ? _triggers.slice(0, i).reverse() : _triggers.slice(i + 1);
+            return (_isString3(name) ? a.filter(function(t) {
+              return t.vars.preventOverlaps === name;
+            }) : a).filter(function(t) {
+              return self.direction > 0 ? t.end <= start : t.start >= end;
+            });
+          };
+          self.update = function(reset, recordVelocity, forceFake) {
+            if (containerAnimation && !forceFake && !reset) {
+              return;
+            }
+            var scroll = _refreshingAll === true ? prevScroll : self.scroll(), p = reset ? 0 : (scroll - start) / change, clipped = p < 0 ? 0 : p > 1 ? 1 : p || 0, prevProgress2 = self.progress, isActive, wasActive, toggleState, action, stateChanged, toggled, isAtMax, isTakingAction;
+            if (recordVelocity) {
+              scroll2 = scroll1;
+              scroll1 = containerAnimation ? scrollFunc() : scroll;
+              if (snap3) {
+                snap22 = snap1;
+                snap1 = animation && !isToggle ? animation.totalProgress() : clipped;
+              }
+            }
+            if (anticipatePin && pin && !_refreshing && !_startup2 && _lastScrollTime) {
+              if (!clipped && start < scroll + (scroll - scroll2) / (_getTime2() - _time2) * anticipatePin) {
+                clipped = 1e-4;
+              } else if (clipped === 1 && end > scroll + (scroll - scroll2) / (_getTime2() - _time2) * anticipatePin) {
+                clipped = 0.9999;
+              }
+            }
+            if (clipped !== prevProgress2 && self.enabled) {
+              isActive = self.isActive = !!clipped && clipped < 1;
+              wasActive = !!prevProgress2 && prevProgress2 < 1;
+              toggled = isActive !== wasActive;
+              stateChanged = toggled || !!clipped !== !!prevProgress2;
+              self.direction = clipped > prevProgress2 ? 1 : -1;
+              self.progress = clipped;
+              if (stateChanged && !_refreshing) {
+                toggleState = clipped && !prevProgress2 ? 0 : clipped === 1 ? 1 : prevProgress2 === 1 ? 2 : 3;
+                if (isToggle) {
+                  action = !toggled && toggleActions[toggleState + 1] !== "none" && toggleActions[toggleState + 1] || toggleActions[toggleState];
+                  isTakingAction = animation && (action === "complete" || action === "reset" || action in animation);
+                }
+              }
+              preventOverlaps && (toggled || isTakingAction) && (isTakingAction || scrub || !animation) && (_isFunction3(preventOverlaps) ? preventOverlaps(self) : self.getTrailing(preventOverlaps).forEach(function(t) {
+                return t.endAnimation();
+              }));
+              if (!isToggle) {
+                if (scrubTween && !_refreshing && !_startup2) {
+                  scrubTween._dp._time - scrubTween._start !== scrubTween._time && scrubTween.render(scrubTween._dp._time - scrubTween._start);
+                  if (scrubTween.resetTo) {
+                    scrubTween.resetTo("totalProgress", clipped, animation._tTime / animation._tDur);
+                  } else {
+                    scrubTween.vars.totalProgress = clipped;
+                    scrubTween.invalidate().restart();
+                  }
+                } else if (animation) {
+                  animation.totalProgress(clipped, !!(_refreshing && (lastRefresh || reset)));
+                }
+              }
+              if (pin) {
+                reset && pinSpacing && (spacer.style[pinSpacing + direction.os2] = spacingStart);
+                if (!useFixedPosition) {
+                  pinSetter(_round3(pinStart + pinChange * clipped));
+                } else if (stateChanged) {
+                  isAtMax = !reset && clipped > prevProgress2 && end + 1 > scroll && scroll + 1 >= _maxScroll(scroller, direction);
+                  if (pinReparent) {
+                    if (!reset && (isActive || isAtMax)) {
+                      var bounds = _getBounds(pin, true), _offset = scroll - start;
+                      _reparent(pin, _body2, bounds.top + (direction === _vertical ? _offset : 0) + _px, bounds.left + (direction === _vertical ? 0 : _offset) + _px);
+                    } else {
+                      _reparent(pin, spacer);
+                    }
+                  }
+                  _setState(isActive || isAtMax ? pinActiveState : pinState);
+                  pinMoves && clipped < 1 && isActive || pinSetter(pinStart + (clipped === 1 && !isAtMax ? pinChange : 0));
+                }
+              }
+              snap3 && !tweenTo.tween && !_refreshing && !_startup2 && snapDelayedCall.restart(true);
+              toggleClass && (toggled || once && clipped && (clipped < 1 || !_limitCallbacks)) && _toArray(toggleClass.targets).forEach(function(el) {
+                return el.classList[isActive || once ? "add" : "remove"](toggleClass.className);
+              });
+              onUpdate && !isToggle && !reset && onUpdate(self);
+              if (stateChanged && !_refreshing) {
+                if (isToggle) {
+                  if (isTakingAction) {
+                    if (action === "complete") {
+                      animation.pause().totalProgress(1);
+                    } else if (action === "reset") {
+                      animation.restart(true).pause();
+                    } else if (action === "restart") {
+                      animation.restart(true);
+                    } else {
+                      animation[action]();
+                    }
+                  }
+                  onUpdate && onUpdate(self);
+                }
+                if (toggled || !_limitCallbacks) {
+                  onToggle && toggled && _callback3(self, onToggle);
+                  callbacks[toggleState] && _callback3(self, callbacks[toggleState]);
+                  once && (clipped === 1 ? self.kill(false, 1) : callbacks[toggleState] = 0);
+                  if (!toggled) {
+                    toggleState = clipped === 1 ? 1 : 3;
+                    callbacks[toggleState] && _callback3(self, callbacks[toggleState]);
+                  }
+                }
+                if (fastScrollEnd && !isActive && Math.abs(self.getVelocity()) > (_isNumber3(fastScrollEnd) ? fastScrollEnd : 2500)) {
+                  _endAnimation(self.callbackAnimation);
+                  scrubTween ? scrubTween.progress(1) : _endAnimation(animation, action === "reverse" ? 1 : !clipped, 1);
+                }
+              } else if (isToggle && onUpdate && !_refreshing) {
+                onUpdate(self);
+              }
+            }
+            if (markerEndSetter) {
+              var n = containerAnimation ? scroll / containerAnimation.duration() * (containerAnimation._caScrollDist || 0) : scroll;
+              markerStartSetter(n + (markerStartTrigger._isFlipped ? 1 : 0));
+              markerEndSetter(n);
+            }
+            caMarkerSetter && caMarkerSetter(-scroll / containerAnimation.duration() * (containerAnimation._caScrollDist || 0));
+          };
+          self.enable = function(reset, refresh) {
+            if (!self.enabled) {
+              self.enabled = true;
+              _addListener3(scroller, "resize", _onResize);
+              isViewport || _addListener3(scroller, "scroll", _onScroll3);
+              onRefreshInit && _addListener3(ScrollTrigger3, "refreshInit", onRefreshInit);
+              if (reset !== false) {
+                self.progress = prevProgress = 0;
+                scroll1 = scroll2 = lastSnap = scrollFunc();
+              }
+              refresh !== false && self.refresh();
+            }
+          };
+          self.getTween = function(snap4) {
+            return snap4 && tweenTo ? tweenTo.tween : scrubTween;
+          };
+          self.setPositions = function(newStart, newEnd, keepClamp, pinOffset) {
+            if (containerAnimation) {
+              var st = containerAnimation.scrollTrigger, duration = containerAnimation.duration(), _change = st.end - st.start;
+              newStart = st.start + _change * newStart / duration;
+              newEnd = st.start + _change * newEnd / duration;
+            }
+            self.refresh(false, false, {
+              start: _keepClamp(newStart, keepClamp && !!self._startClamp),
+              end: _keepClamp(newEnd, keepClamp && !!self._endClamp)
+            }, pinOffset);
+            self.update();
+          };
+          self.adjustPinSpacing = function(amount) {
+            if (spacerState && amount) {
+              var i = spacerState.indexOf(direction.d) + 1;
+              spacerState[i] = parseFloat(spacerState[i]) + amount + _px;
+              spacerState[1] = parseFloat(spacerState[1]) + amount + _px;
+              _setState(spacerState);
+            }
+          };
+          self.disable = function(reset, allowAnimation) {
+            if (self.enabled) {
+              reset !== false && self.revert(true, true);
+              self.enabled = self.isActive = false;
+              allowAnimation || scrubTween && scrubTween.pause();
+              prevScroll = 0;
+              pinCache && (pinCache.uncache = 1);
+              onRefreshInit && _removeListener3(ScrollTrigger3, "refreshInit", onRefreshInit);
+              if (snapDelayedCall) {
+                snapDelayedCall.pause();
+                tweenTo.tween && tweenTo.tween.kill() && (tweenTo.tween = 0);
+              }
+              if (!isViewport) {
+                var i = _triggers.length;
+                while (i--) {
+                  if (_triggers[i].scroller === scroller && _triggers[i] !== self) {
+                    return;
+                  }
+                }
+                _removeListener3(scroller, "resize", _onResize);
+                isViewport || _removeListener3(scroller, "scroll", _onScroll3);
+              }
+            }
+          };
+          self.kill = function(revert, allowAnimation) {
+            self.disable(revert, allowAnimation);
+            scrubTween && !allowAnimation && scrubTween.kill();
+            id && delete _ids[id];
+            var i = _triggers.indexOf(self);
+            i >= 0 && _triggers.splice(i, 1);
+            i === _i && _direction > 0 && _i--;
+            i = 0;
+            _triggers.forEach(function(t) {
+              return t.scroller === self.scroller && (i = 1);
+            });
+            i || _refreshingAll || (self.scroll.rec = 0);
+            if (animation) {
+              animation.scrollTrigger = null;
+              revert && animation.revert({
+                kill: false
+              });
+              allowAnimation || animation.kill();
+            }
+            markerStart && [markerStart, markerEnd, markerStartTrigger, markerEndTrigger].forEach(function(m) {
+              return m.parentNode && m.parentNode.removeChild(m);
+            });
+            _primary === self && (_primary = 0);
+            if (pin) {
+              pinCache && (pinCache.uncache = 1);
+              i = 0;
+              _triggers.forEach(function(t) {
+                return t.pin === pin && i++;
+              });
+              i || (pinCache.spacer = 0);
+            }
+            vars.onKill && vars.onKill(self);
+          };
+          _triggers.push(self);
+          self.enable(false, false);
+          customRevertReturn && customRevertReturn(self);
+          if (animation && animation.add && !change) {
+            var updateFunc = self.update;
+            self.update = function() {
+              self.update = updateFunc;
+              _scrollers.cache++;
+              start || end || self.refresh();
+            };
+            gsap3.delayedCall(0.01, self.update);
+            change = 0.01;
+            start = end = 0;
+          } else {
+            self.refresh();
+          }
+          pin && _queueRefreshAll();
+        };
+        ScrollTrigger3.register = function register(core) {
+          if (!_coreInitted3) {
+            gsap3 = core || _getGSAP3();
+            _windowExists5() && window.document && ScrollTrigger3.enable();
+            _coreInitted3 = _enabled;
+          }
+          return _coreInitted3;
+        };
+        ScrollTrigger3.defaults = function defaults2(config3) {
+          if (config3) {
+            for (var p in config3) {
+              _defaults2[p] = config3[p];
+            }
+          }
+          return _defaults2;
+        };
+        ScrollTrigger3.disable = function disable(reset, kill) {
+          _enabled = 0;
+          _triggers.forEach(function(trigger) {
+            return trigger[kill ? "kill" : "disable"](reset);
+          });
+          _removeListener3(_win4, "wheel", _onScroll3);
+          _removeListener3(_doc4, "scroll", _onScroll3);
+          clearInterval(_syncInterval);
+          _removeListener3(_doc4, "touchcancel", _passThrough3);
+          _removeListener3(_body2, "touchstart", _passThrough3);
+          _multiListener(_removeListener3, _doc4, "pointerdown,touchstart,mousedown", _pointerDownHandler);
+          _multiListener(_removeListener3, _doc4, "pointerup,touchend,mouseup", _pointerUpHandler);
+          _resizeDelay.kill();
+          _iterateAutoRefresh(_removeListener3);
+          for (var i = 0; i < _scrollers.length; i += 3) {
+            _wheelListener(_removeListener3, _scrollers[i], _scrollers[i + 1]);
+            _wheelListener(_removeListener3, _scrollers[i], _scrollers[i + 2]);
+          }
+        };
+        ScrollTrigger3.enable = function enable() {
+          _win4 = window;
+          _doc4 = document;
+          _docEl2 = _doc4.documentElement;
+          _body2 = _doc4.body;
+          if (gsap3) {
+            _toArray = gsap3.utils.toArray;
+            _clamp4 = gsap3.utils.clamp;
+            _context3 = gsap3.core.context || _passThrough3;
+            _suppressOverwrites2 = gsap3.core.suppressOverwrites || _passThrough3;
+            _scrollRestoration = _win4.history.scrollRestoration || "auto";
+            _lastScroll = _win4.pageYOffset || 0;
+            gsap3.core.globals("ScrollTrigger", ScrollTrigger3);
+            if (_body2) {
+              _enabled = 1;
+              _div100vh = document.createElement("div");
+              _div100vh.style.height = "100vh";
+              _div100vh.style.position = "absolute";
+              _refresh100vh();
+              _rafBugFix();
+              Observer.register(gsap3);
+              ScrollTrigger3.isTouch = Observer.isTouch;
+              _fixIOSBug = Observer.isTouch && /(iPad|iPhone|iPod|Mac)/g.test(navigator.userAgent);
+              _ignoreMobileResize = Observer.isTouch === 1;
+              _addListener3(_win4, "wheel", _onScroll3);
+              _root2 = [_win4, _doc4, _docEl2, _body2];
+              if (gsap3.matchMedia) {
+                ScrollTrigger3.matchMedia = function(vars) {
+                  var mm = gsap3.matchMedia(), p;
+                  for (p in vars) {
+                    mm.add(p, vars[p]);
+                  }
+                  return mm;
+                };
+                gsap3.addEventListener("matchMediaInit", function() {
+                  return _revertAll();
+                });
+                gsap3.addEventListener("matchMediaRevert", function() {
+                  return _revertRecorded();
+                });
+                gsap3.addEventListener("matchMedia", function() {
+                  _refreshAll(0, 1);
+                  _dispatch3("matchMedia");
+                });
+                gsap3.matchMedia().add("(orientation: portrait)", function() {
+                  _setBaseDimensions();
+                  return _setBaseDimensions;
+                });
+              } else {
+                console.warn("Requires GSAP 3.11.0 or later");
+              }
+              _setBaseDimensions();
+              _addListener3(_doc4, "scroll", _onScroll3);
+              var bodyHasStyle = _body2.hasAttribute("style"), bodyStyle = _body2.style, border = bodyStyle.borderTopStyle, AnimationProto = gsap3.core.Animation.prototype, bounds, i;
+              AnimationProto.revert || Object.defineProperty(AnimationProto, "revert", {
+                value: function value() {
+                  return this.time(-0.01, true);
+                }
+              });
+              bodyStyle.borderTopStyle = "solid";
+              bounds = _getBounds(_body2);
+              _vertical.m = Math.round(bounds.top + _vertical.sc()) || 0;
+              _horizontal.m = Math.round(bounds.left + _horizontal.sc()) || 0;
+              border ? bodyStyle.borderTopStyle = border : bodyStyle.removeProperty("border-top-style");
+              if (!bodyHasStyle) {
+                _body2.setAttribute("style", "");
+                _body2.removeAttribute("style");
+              }
+              _syncInterval = setInterval(_sync, 250);
+              gsap3.delayedCall(0.5, function() {
+                return _startup2 = 0;
+              });
+              _addListener3(_doc4, "touchcancel", _passThrough3);
+              _addListener3(_body2, "touchstart", _passThrough3);
+              _multiListener(_addListener3, _doc4, "pointerdown,touchstart,mousedown", _pointerDownHandler);
+              _multiListener(_addListener3, _doc4, "pointerup,touchend,mouseup", _pointerUpHandler);
+              _transformProp2 = gsap3.utils.checkPrefix("transform");
+              _stateProps.push(_transformProp2);
+              _coreInitted3 = _getTime2();
+              _resizeDelay = gsap3.delayedCall(0.2, _refreshAll).pause();
+              _autoRefresh = [_doc4, "visibilitychange", function() {
+                var w = _win4.innerWidth, h = _win4.innerHeight;
+                if (_doc4.hidden) {
+                  _prevWidth = w;
+                  _prevHeight = h;
+                } else if (_prevWidth !== w || _prevHeight !== h) {
+                  _onResize();
+                }
+              }, _doc4, "DOMContentLoaded", _refreshAll, _win4, "load", _refreshAll, _win4, "resize", _onResize];
+              _iterateAutoRefresh(_addListener3);
+              _triggers.forEach(function(trigger) {
+                return trigger.enable(0, 1);
+              });
+              for (i = 0; i < _scrollers.length; i += 3) {
+                _wheelListener(_removeListener3, _scrollers[i], _scrollers[i + 1]);
+                _wheelListener(_removeListener3, _scrollers[i], _scrollers[i + 2]);
+              }
+            }
+          }
+        };
+        ScrollTrigger3.config = function config3(vars) {
+          "limitCallbacks" in vars && (_limitCallbacks = !!vars.limitCallbacks);
+          var ms = vars.syncInterval;
+          ms && clearInterval(_syncInterval) || (_syncInterval = ms) && setInterval(_sync, ms);
+          "ignoreMobileResize" in vars && (_ignoreMobileResize = ScrollTrigger3.isTouch === 1 && vars.ignoreMobileResize);
+          if ("autoRefreshEvents" in vars) {
+            _iterateAutoRefresh(_removeListener3) || _iterateAutoRefresh(_addListener3, vars.autoRefreshEvents || "none");
+            _ignoreResize = (vars.autoRefreshEvents + "").indexOf("resize") === -1;
+          }
+        };
+        ScrollTrigger3.scrollerProxy = function scrollerProxy(target, vars) {
+          var t = _getTarget(target), i = _scrollers.indexOf(t), isViewport = _isViewport3(t);
+          if (~i) {
+            _scrollers.splice(i, isViewport ? 6 : 2);
+          }
+          if (vars) {
+            isViewport ? _proxies.unshift(_win4, vars, _body2, vars, _docEl2, vars) : _proxies.unshift(t, vars);
+          }
+        };
+        ScrollTrigger3.clearMatchMedia = function clearMatchMedia(query) {
+          _triggers.forEach(function(t) {
+            return t._ctx && t._ctx.query === query && t._ctx.kill(true, true);
+          });
+        };
+        ScrollTrigger3.isInViewport = function isInViewport(element, ratio, horizontal) {
+          var bounds = (_isString3(element) ? _getTarget(element) : element).getBoundingClientRect(), offset = bounds[horizontal ? _width : _height] * ratio || 0;
+          return horizontal ? bounds.right - offset > 0 && bounds.left + offset < _win4.innerWidth : bounds.bottom - offset > 0 && bounds.top + offset < _win4.innerHeight;
+        };
+        ScrollTrigger3.positionInViewport = function positionInViewport(element, referencePoint, horizontal) {
+          _isString3(element) && (element = _getTarget(element));
+          var bounds = element.getBoundingClientRect(), size = bounds[horizontal ? _width : _height], offset = referencePoint == null ? size / 2 : referencePoint in _keywords ? _keywords[referencePoint] * size : ~referencePoint.indexOf("%") ? parseFloat(referencePoint) * size / 100 : parseFloat(referencePoint) || 0;
+          return horizontal ? (bounds.left + offset) / _win4.innerWidth : (bounds.top + offset) / _win4.innerHeight;
+        };
+        ScrollTrigger3.killAll = function killAll(allowListeners) {
+          _triggers.slice(0).forEach(function(t) {
+            return t.vars.id !== "ScrollSmoother" && t.kill();
+          });
+          if (allowListeners !== true) {
+            var listeners = _listeners2.killAll || [];
+            _listeners2 = {};
+            listeners.forEach(function(f) {
+              return f();
+            });
+          }
+        };
+        return ScrollTrigger3;
+      }();
+      ScrollTrigger2.version = "3.13.0";
+      ScrollTrigger2.saveStyles = function(targets) {
+        return targets ? _toArray(targets).forEach(function(target) {
+          if (target && target.style) {
+            var i = _savedStyles.indexOf(target);
+            i >= 0 && _savedStyles.splice(i, 5);
+            _savedStyles.push(target, target.style.cssText, target.getBBox && target.getAttribute("transform"), gsap3.core.getCache(target), _context3());
+          }
+        }) : _savedStyles;
+      };
+      ScrollTrigger2.revert = function(soft, media) {
+        return _revertAll(!soft, media);
+      };
+      ScrollTrigger2.create = function(vars, animation) {
+        return new ScrollTrigger2(vars, animation);
+      };
+      ScrollTrigger2.refresh = function(safe) {
+        return safe ? _onResize(true) : (_coreInitted3 || ScrollTrigger2.register()) && _refreshAll(true);
+      };
+      ScrollTrigger2.update = function(force) {
+        return ++_scrollers.cache && _updateAll(force === true ? 2 : 0);
+      };
+      ScrollTrigger2.clearScrollMemory = _clearScrollMemory;
+      ScrollTrigger2.maxScroll = function(element, horizontal) {
+        return _maxScroll(element, horizontal ? _horizontal : _vertical);
+      };
+      ScrollTrigger2.getScrollFunc = function(element, horizontal) {
+        return _getScrollFunc(_getTarget(element), horizontal ? _horizontal : _vertical);
+      };
+      ScrollTrigger2.getById = function(id) {
+        return _ids[id];
+      };
+      ScrollTrigger2.getAll = function() {
+        return _triggers.filter(function(t) {
+          return t.vars.id !== "ScrollSmoother";
+        });
+      };
+      ScrollTrigger2.isScrolling = function() {
+        return !!_lastScrollTime;
+      };
+      ScrollTrigger2.snapDirectional = _snapDirectional;
+      ScrollTrigger2.addEventListener = function(type, callback) {
+        var a = _listeners2[type] || (_listeners2[type] = []);
+        ~a.indexOf(callback) || a.push(callback);
+      };
+      ScrollTrigger2.removeEventListener = function(type, callback) {
+        var a = _listeners2[type], i = a && a.indexOf(callback);
+        i >= 0 && a.splice(i, 1);
+      };
+      ScrollTrigger2.batch = function(targets, vars) {
+        var result = [], varsCopy = {}, interval = vars.interval || 0.016, batchMax = vars.batchMax || 1e9, proxyCallback = function proxyCallback2(type, callback) {
+          var elements = [], triggers = [], delay = gsap3.delayedCall(interval, function() {
+            callback(elements, triggers);
+            elements = [];
+            triggers = [];
+          }).pause();
+          return function(self) {
+            elements.length || delay.restart(true);
+            elements.push(self.trigger);
+            triggers.push(self);
+            batchMax <= elements.length && delay.progress(1);
+          };
+        }, p;
+        for (p in vars) {
+          varsCopy[p] = p.substr(0, 2) === "on" && _isFunction3(vars[p]) && p !== "onRefreshInit" ? proxyCallback(p, vars[p]) : vars[p];
+        }
+        if (_isFunction3(batchMax)) {
+          batchMax = batchMax();
+          _addListener3(ScrollTrigger2, "refresh", function() {
+            return batchMax = vars.batchMax();
+          });
+        }
+        _toArray(targets).forEach(function(target) {
+          var config3 = {};
+          for (p in varsCopy) {
+            config3[p] = varsCopy[p];
+          }
+          config3.trigger = target;
+          result.push(ScrollTrigger2.create(config3));
+        });
+        return result;
+      };
+      _clampScrollAndGetDurationMultiplier = function _clampScrollAndGetDurationMultiplier2(scrollFunc, current, end, max) {
+        current > max ? scrollFunc(max) : current < 0 && scrollFunc(0);
+        return end > max ? (max - current) / (end - current) : end < 0 ? current / (current - end) : 1;
+      };
+      _allowNativePanning = function _allowNativePanning2(target, direction) {
+        if (direction === true) {
+          target.style.removeProperty("touch-action");
+        } else {
+          target.style.touchAction = direction === true ? "auto" : direction ? "pan-" + direction + (Observer.isTouch ? " pinch-zoom" : "") : "none";
+        }
+        target === _docEl2 && _allowNativePanning2(_body2, direction);
+      };
+      _overflow = {
+        auto: 1,
+        scroll: 1
+      };
+      _nestedScroll = function _nestedScroll2(_ref5) {
+        var event = _ref5.event, target = _ref5.target, axis = _ref5.axis;
+        var node = (event.changedTouches ? event.changedTouches[0] : event).target, cache = node._gsap || gsap3.core.getCache(node), time = _getTime2(), cs;
+        if (!cache._isScrollT || time - cache._isScrollT > 2e3) {
+          while (node && node !== _body2 && (node.scrollHeight <= node.clientHeight && node.scrollWidth <= node.clientWidth || !(_overflow[(cs = _getComputedStyle(node)).overflowY] || _overflow[cs.overflowX]))) {
+            node = node.parentNode;
+          }
+          cache._isScroll = node && node !== target && !_isViewport3(node) && (_overflow[(cs = _getComputedStyle(node)).overflowY] || _overflow[cs.overflowX]);
+          cache._isScrollT = time;
+        }
+        if (cache._isScroll || axis === "x") {
+          event.stopPropagation();
+          event._gsapAllow = true;
+        }
+      };
+      _inputObserver = function _inputObserver2(target, type, inputs, nested) {
+        return Observer.create({
+          target,
+          capture: true,
+          debounce: false,
+          lockAxis: true,
+          type,
+          onWheel: nested = nested && _nestedScroll,
+          onPress: nested,
+          onDrag: nested,
+          onScroll: nested,
+          onEnable: function onEnable() {
+            return inputs && _addListener3(_doc4, Observer.eventTypes[0], _captureInputs, false, true);
+          },
+          onDisable: function onDisable() {
+            return _removeListener3(_doc4, Observer.eventTypes[0], _captureInputs, true);
+          }
+        });
+      };
+      _inputExp = /(input|label|select|textarea)/i;
+      _captureInputs = function _captureInputs2(e) {
+        var isInput = _inputExp.test(e.target.tagName);
+        if (isInput || _inputIsFocused) {
+          e._gsapAllow = true;
+          _inputIsFocused = isInput;
+        }
+      };
+      _getScrollNormalizer = function _getScrollNormalizer2(vars) {
+        _isObject3(vars) || (vars = {});
+        vars.preventDefault = vars.isNormalizer = vars.allowClicks = true;
+        vars.type || (vars.type = "wheel,touch");
+        vars.debounce = !!vars.debounce;
+        vars.id = vars.id || "normalizer";
+        var _vars2 = vars, normalizeScrollX = _vars2.normalizeScrollX, momentum = _vars2.momentum, allowNestedScroll = _vars2.allowNestedScroll, onRelease = _vars2.onRelease, self, maxY, target = _getTarget(vars.target) || _docEl2, smoother = gsap3.core.globals().ScrollSmoother, smootherInstance = smoother && smoother.get(), content = _fixIOSBug && (vars.content && _getTarget(vars.content) || smootherInstance && vars.content !== false && !smootherInstance.smooth() && smootherInstance.content()), scrollFuncY = _getScrollFunc(target, _vertical), scrollFuncX = _getScrollFunc(target, _horizontal), scale = 1, initialScale = (Observer.isTouch && _win4.visualViewport ? _win4.visualViewport.scale * _win4.visualViewport.width : _win4.outerWidth) / _win4.innerWidth, wheelRefresh = 0, resolveMomentumDuration = _isFunction3(momentum) ? function() {
+          return momentum(self);
+        } : function() {
+          return momentum || 2.8;
+        }, lastRefreshID, skipTouchMove, inputObserver = _inputObserver(target, vars.type, true, allowNestedScroll), resumeTouchMove = function resumeTouchMove2() {
+          return skipTouchMove = false;
+        }, scrollClampX = _passThrough3, scrollClampY = _passThrough3, updateClamps = function updateClamps2() {
+          maxY = _maxScroll(target, _vertical);
+          scrollClampY = _clamp4(_fixIOSBug ? 1 : 0, maxY);
+          normalizeScrollX && (scrollClampX = _clamp4(0, _maxScroll(target, _horizontal)));
+          lastRefreshID = _refreshID;
+        }, removeContentOffset = function removeContentOffset2() {
+          content._gsap.y = _round3(parseFloat(content._gsap.y) + scrollFuncY.offset) + "px";
+          content.style.transform = "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, " + parseFloat(content._gsap.y) + ", 0, 1)";
+          scrollFuncY.offset = scrollFuncY.cacheID = 0;
+        }, ignoreDrag = function ignoreDrag2() {
+          if (skipTouchMove) {
+            requestAnimationFrame(resumeTouchMove);
+            var offset = _round3(self.deltaY / 2), scroll = scrollClampY(scrollFuncY.v - offset);
+            if (content && scroll !== scrollFuncY.v + scrollFuncY.offset) {
+              scrollFuncY.offset = scroll - scrollFuncY.v;
+              var y = _round3((parseFloat(content && content._gsap.y) || 0) - scrollFuncY.offset);
+              content.style.transform = "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, " + y + ", 0, 1)";
+              content._gsap.y = y + "px";
+              scrollFuncY.cacheID = _scrollers.cache;
+              _updateAll();
+            }
+            return true;
+          }
+          scrollFuncY.offset && removeContentOffset();
+          skipTouchMove = true;
+        }, tween, startScrollX, startScrollY, onStopDelayedCall, onResize = function onResize2() {
+          updateClamps();
+          if (tween.isActive() && tween.vars.scrollY > maxY) {
+            scrollFuncY() > maxY ? tween.progress(1) && scrollFuncY(maxY) : tween.resetTo("scrollY", maxY);
+          }
+        };
+        content && gsap3.set(content, {
+          y: "+=0"
+        });
+        vars.ignoreCheck = function(e) {
+          return _fixIOSBug && e.type === "touchmove" && ignoreDrag(e) || scale > 1.05 && e.type !== "touchstart" || self.isGesturing || e.touches && e.touches.length > 1;
+        };
+        vars.onPress = function() {
+          skipTouchMove = false;
+          var prevScale = scale;
+          scale = _round3((_win4.visualViewport && _win4.visualViewport.scale || 1) / initialScale);
+          tween.pause();
+          prevScale !== scale && _allowNativePanning(target, scale > 1.01 ? true : normalizeScrollX ? false : "x");
+          startScrollX = scrollFuncX();
+          startScrollY = scrollFuncY();
+          updateClamps();
+          lastRefreshID = _refreshID;
+        };
+        vars.onRelease = vars.onGestureStart = function(self2, wasDragging) {
+          scrollFuncY.offset && removeContentOffset();
+          if (!wasDragging) {
+            onStopDelayedCall.restart(true);
+          } else {
+            _scrollers.cache++;
+            var dur = resolveMomentumDuration(), currentScroll, endScroll;
+            if (normalizeScrollX) {
+              currentScroll = scrollFuncX();
+              endScroll = currentScroll + dur * 0.05 * -self2.velocityX / 0.227;
+              dur *= _clampScrollAndGetDurationMultiplier(scrollFuncX, currentScroll, endScroll, _maxScroll(target, _horizontal));
+              tween.vars.scrollX = scrollClampX(endScroll);
+            }
+            currentScroll = scrollFuncY();
+            endScroll = currentScroll + dur * 0.05 * -self2.velocityY / 0.227;
+            dur *= _clampScrollAndGetDurationMultiplier(scrollFuncY, currentScroll, endScroll, _maxScroll(target, _vertical));
+            tween.vars.scrollY = scrollClampY(endScroll);
+            tween.invalidate().duration(dur).play(0.01);
+            if (_fixIOSBug && tween.vars.scrollY >= maxY || currentScroll >= maxY - 1) {
+              gsap3.to({}, {
+                onUpdate: onResize,
+                duration: dur
+              });
+            }
+          }
+          onRelease && onRelease(self2);
+        };
+        vars.onWheel = function() {
+          tween._ts && tween.pause();
+          if (_getTime2() - wheelRefresh > 1e3) {
+            lastRefreshID = 0;
+            wheelRefresh = _getTime2();
+          }
+        };
+        vars.onChange = function(self2, dx, dy, xArray, yArray) {
+          _refreshID !== lastRefreshID && updateClamps();
+          dx && normalizeScrollX && scrollFuncX(scrollClampX(xArray[2] === dx ? startScrollX + (self2.startX - self2.x) : scrollFuncX() + dx - xArray[1]));
+          if (dy) {
+            scrollFuncY.offset && removeContentOffset();
+            var isTouch = yArray[2] === dy, y = isTouch ? startScrollY + self2.startY - self2.y : scrollFuncY() + dy - yArray[1], yClamped = scrollClampY(y);
+            isTouch && y !== yClamped && (startScrollY += yClamped - y);
+            scrollFuncY(yClamped);
+          }
+          (dy || dx) && _updateAll();
+        };
+        vars.onEnable = function() {
+          _allowNativePanning(target, normalizeScrollX ? false : "x");
+          ScrollTrigger2.addEventListener("refresh", onResize);
+          _addListener3(_win4, "resize", onResize);
+          if (scrollFuncY.smooth) {
+            scrollFuncY.target.style.scrollBehavior = "auto";
+            scrollFuncY.smooth = scrollFuncX.smooth = false;
+          }
+          inputObserver.enable();
+        };
+        vars.onDisable = function() {
+          _allowNativePanning(target, true);
+          _removeListener3(_win4, "resize", onResize);
+          ScrollTrigger2.removeEventListener("refresh", onResize);
+          inputObserver.kill();
+        };
+        vars.lockAxis = vars.lockAxis !== false;
+        self = new Observer(vars);
+        self.iOS = _fixIOSBug;
+        _fixIOSBug && !scrollFuncY() && scrollFuncY(1);
+        _fixIOSBug && gsap3.ticker.add(_passThrough3);
+        onStopDelayedCall = self._dc;
+        tween = gsap3.to(self, {
+          ease: "power4",
+          paused: true,
+          inherit: false,
+          scrollX: normalizeScrollX ? "+=0.1" : "+=0",
+          scrollY: "+=0.1",
+          modifiers: {
+            scrollY: _interruptionTracker(scrollFuncY, scrollFuncY(), function() {
+              return tween.pause();
+            })
+          },
+          onUpdate: _updateAll,
+          onComplete: onStopDelayedCall.vars.onComplete
+        });
+        return self;
+      };
+      ScrollTrigger2.sort = function(func) {
+        if (_isFunction3(func)) {
+          return _triggers.sort(func);
+        }
+        var scroll = _win4.pageYOffset || 0;
+        ScrollTrigger2.getAll().forEach(function(t) {
+          return t._sortY = t.trigger ? scroll + t.trigger.getBoundingClientRect().top : t.start + _win4.innerHeight;
+        });
+        return _triggers.sort(func || function(a, b) {
+          return (a.vars.refreshPriority || 0) * -1e6 + (a.vars.containerAnimation ? 1e6 : a._sortY) - ((b.vars.containerAnimation ? 1e6 : b._sortY) + (b.vars.refreshPriority || 0) * -1e6);
+        });
+      };
+      ScrollTrigger2.observe = function(vars) {
+        return new Observer(vars);
+      };
+      ScrollTrigger2.normalizeScroll = function(vars) {
+        if (typeof vars === "undefined") {
+          return _normalizer2;
+        }
+        if (vars === true && _normalizer2) {
+          return _normalizer2.enable();
+        }
+        if (vars === false) {
+          _normalizer2 && _normalizer2.kill();
+          _normalizer2 = vars;
+          return;
+        }
+        var normalizer = vars instanceof Observer ? vars : _getScrollNormalizer(vars);
+        _normalizer2 && _normalizer2.target === normalizer.target && _normalizer2.kill();
+        _isViewport3(normalizer.target) && (_normalizer2 = normalizer);
+        return normalizer;
+      };
+      ScrollTrigger2.core = {
+        // smaller file size way to leverage in ScrollSmoother and Observer
+        _getVelocityProp,
+        _inputObserver,
+        _scrollers,
+        _proxies,
+        bridge: {
+          // when normalizeScroll sets the scroll position (ss = setScroll)
+          ss: function ss() {
+            _lastScrollTime || _dispatch3("scrollStart");
+            _lastScrollTime = _getTime2();
+          },
+          // a way to get the _refreshing value in Observer
+          ref: function ref() {
+            return _refreshing;
+          }
+        }
+      };
+      _getGSAP3() && gsap3.registerPlugin(ScrollTrigger2);
+    }
+  });
+
+  // node_modules/@finsweet/ts-utils/dist/animations/index.js
+  var init_animations = __esm({
+    "node_modules/@finsweet/ts-utils/dist/animations/index.js"() {
+      init_live_reload();
+    }
+  });
+
+  // node_modules/@finsweet/ts-utils/dist/type-guards/instances.js
+  var init_instances = __esm({
+    "node_modules/@finsweet/ts-utils/dist/type-guards/instances.js"() {
+      init_live_reload();
+    }
+  });
+
+  // node_modules/@finsweet/ts-utils/dist/type-guards/primitives.js
+  var init_primitives = __esm({
+    "node_modules/@finsweet/ts-utils/dist/type-guards/primitives.js"() {
+      init_live_reload();
+    }
+  });
+
+  // node_modules/@finsweet/ts-utils/dist/type-guards/index.js
+  var init_type_guards = __esm({
+    "node_modules/@finsweet/ts-utils/dist/type-guards/index.js"() {
+      init_live_reload();
+      init_instances();
+      init_primitives();
+    }
+  });
+
+  // node_modules/@finsweet/ts-utils/dist/webflow/css.js
+  var init_css = __esm({
+    "node_modules/@finsweet/ts-utils/dist/webflow/css.js"() {
+      init_live_reload();
+    }
+  });
+
+  // node_modules/@finsweet/ts-utils/dist/helpers/index.js
+  var init_helpers = __esm({
+    "node_modules/@finsweet/ts-utils/dist/helpers/index.js"() {
+      init_live_reload();
+    }
+  });
+
+  // node_modules/@finsweet/ts-utils/dist/components/index.js
+  var init_components = __esm({
+    "node_modules/@finsweet/ts-utils/dist/components/index.js"() {
+      init_live_reload();
+    }
+  });
+
+  // node_modules/@finsweet/ts-utils/dist/types/apis/Greenhouse.js
+  var init_Greenhouse = __esm({
+    "node_modules/@finsweet/ts-utils/dist/types/apis/Greenhouse.js"() {
+      init_live_reload();
+    }
+  });
+
+  // node_modules/@finsweet/ts-utils/dist/types/index.js
+  var init_types = __esm({
+    "node_modules/@finsweet/ts-utils/dist/types/index.js"() {
+      init_live_reload();
+      init_Greenhouse();
+    }
+  });
+
+  // node_modules/@finsweet/ts-utils/dist/webflow/breakpoints.js
+  var WEBFLOW_BREAKPOINTS;
+  var init_breakpoints = __esm({
+    "node_modules/@finsweet/ts-utils/dist/webflow/breakpoints.js"() {
+      init_live_reload();
+      WEBFLOW_BREAKPOINTS = /* @__PURE__ */ new Map([
+        ["tiny", "(max-width: 479px)"],
+        ["small", "(max-width: 767px)"],
+        ["medium", "(max-width: 991px)"],
+        ["main", "(min-width: 992px)"]
+      ]);
+    }
+  });
+
+  // node_modules/@finsweet/ts-utils/dist/webflow/Webflow.js
+  var init_Webflow = __esm({
+    "node_modules/@finsweet/ts-utils/dist/webflow/Webflow.js"() {
+      init_live_reload();
+    }
+  });
+
+  // node_modules/@finsweet/ts-utils/dist/webflow/WebflowElements.js
+  var init_WebflowElements = __esm({
+    "node_modules/@finsweet/ts-utils/dist/webflow/WebflowElements.js"() {
+      init_live_reload();
+    }
+  });
+
+  // node_modules/@finsweet/ts-utils/dist/webflow/index.js
+  var init_webflow = __esm({
+    "node_modules/@finsweet/ts-utils/dist/webflow/index.js"() {
+      init_live_reload();
+      init_breakpoints();
+      init_css();
+      init_Webflow();
+      init_WebflowElements();
+    }
+  });
+
+  // node_modules/@finsweet/ts-utils/dist/index.js
+  var init_dist = __esm({
+    "node_modules/@finsweet/ts-utils/dist/index.js"() {
+      init_live_reload();
+      init_animations();
+      init_components();
+      init_helpers();
+      init_type_guards();
+      init_types();
+      init_webflow();
+    }
+  });
+
+  // src/utils/deviceInfo.ts
+  var breakpoints, isTouchDevice;
+  var init_deviceInfo = __esm({
+    "src/utils/deviceInfo.ts"() {
+      "use strict";
+      init_live_reload();
+      init_dist();
+      breakpoints = () => {
+        let device = "";
+        const wBreakpoints = [...WEBFLOW_BREAKPOINTS];
+        const breakpoints2 = {
+          tiny: 0,
+          small: 0,
+          medium: 0,
+          main: 0
+        };
+        window.addEventListener("resize", () => {
+          init4();
+        });
+        init4();
+        function init4() {
+          for (const i in wBreakpoints) {
+            const nametTemp = wBreakpoints[i][0];
+            const pointTemp = parseInt(wBreakpoints[i][1].split(":")[1].split("p")[0]);
+            breakpoints2[nametTemp] = pointTemp;
+          }
+          const curWidth = window.innerWidth;
+          if (curWidth > breakpoints2.main) {
+            device = "desktop";
+          } else if (curWidth < breakpoints2.main && curWidth > breakpoints2.small) {
+            device = "tablet";
+          } else if (curWidth < breakpoints2.medium && curWidth > breakpoints2.tiny) {
+            device = "mobile-landscape";
+          } else if (curWidth < breakpoints2.small) {
+            device = "mobile-portrait";
+          }
+        }
+        return [device, window.innerWidth, window.innerHeight];
+      };
+      isTouchDevice = () => {
+        return "ontouchstart" in window || navigator.maxTouchPoints > 0;
+      };
+    }
+  });
+
+  // node_modules/lenis/dist/lenis.mjs
+  function clamp3(min, input, max) {
+    return Math.max(min, Math.min(input, max));
+  }
+  function lerp(x, y, t) {
+    return (1 - t) * x + t * y;
+  }
+  function damp(x, y, lambda, deltaTime) {
+    return lerp(x, y, 1 - Math.exp(-lambda * deltaTime));
+  }
+  function modulo(n, d) {
+    return (n % d + d) % d;
+  }
+  function debounce(callback, delay) {
+    let timer;
+    return function(...args) {
+      let context3 = this;
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        timer = void 0;
+        callback.apply(context3, args);
+      }, delay);
+    };
+  }
+  var version, Animate, Dimensions, Emitter, LINE_HEIGHT, listenerOptions, VirtualScroll, defaultEasing, Lenis;
+  var init_lenis = __esm({
+    "node_modules/lenis/dist/lenis.mjs"() {
+      init_live_reload();
+      version = "1.3.4";
+      Animate = class {
+        isRunning = false;
+        value = 0;
+        from = 0;
+        to = 0;
+        currentTime = 0;
+        // These are instanciated in the fromTo method
+        lerp;
+        duration;
+        easing;
+        onUpdate;
+        /**
+         * Advance the animation by the given delta time
+         *
+         * @param deltaTime - The time in seconds to advance the animation
+         */
+        advance(deltaTime) {
+          if (!this.isRunning) return;
+          let completed = false;
+          if (this.duration && this.easing) {
+            this.currentTime += deltaTime;
+            const linearProgress = clamp3(0, this.currentTime / this.duration, 1);
+            completed = linearProgress >= 1;
+            const easedProgress = completed ? 1 : this.easing(linearProgress);
+            this.value = this.from + (this.to - this.from) * easedProgress;
+          } else if (this.lerp) {
+            this.value = damp(this.value, this.to, this.lerp * 60, deltaTime);
+            if (Math.round(this.value) === this.to) {
+              this.value = this.to;
+              completed = true;
+            }
+          } else {
+            this.value = this.to;
+            completed = true;
+          }
+          if (completed) {
+            this.stop();
+          }
+          this.onUpdate?.(this.value, completed);
+        }
+        /** Stop the animation */
+        stop() {
+          this.isRunning = false;
+        }
+        /**
+         * Set up the animation from a starting value to an ending value
+         * with optional parameters for lerping, duration, easing, and onUpdate callback
+         *
+         * @param from - The starting value
+         * @param to - The ending value
+         * @param options - Options for the animation
+         */
+        fromTo(from, to, { lerp: lerp2, duration, easing, onStart, onUpdate }) {
+          this.from = this.value = from;
+          this.to = to;
+          this.lerp = lerp2;
+          this.duration = duration;
+          this.easing = easing;
+          this.currentTime = 0;
+          this.isRunning = true;
+          onStart?.();
+          this.onUpdate = onUpdate;
+        }
+      };
+      Dimensions = class {
+        constructor(wrapper, content, { autoResize = true, debounce: debounceValue = 250 } = {}) {
+          this.wrapper = wrapper;
+          this.content = content;
+          if (autoResize) {
+            this.debouncedResize = debounce(this.resize, debounceValue);
+            if (this.wrapper instanceof Window) {
+              window.addEventListener("resize", this.debouncedResize, false);
+            } else {
+              this.wrapperResizeObserver = new ResizeObserver(this.debouncedResize);
+              this.wrapperResizeObserver.observe(this.wrapper);
+            }
+            this.contentResizeObserver = new ResizeObserver(this.debouncedResize);
+            this.contentResizeObserver.observe(this.content);
+          }
+          this.resize();
+        }
+        width = 0;
+        height = 0;
+        scrollHeight = 0;
+        scrollWidth = 0;
+        // These are instanciated in the constructor as they need information from the options
+        debouncedResize;
+        wrapperResizeObserver;
+        contentResizeObserver;
+        destroy() {
+          this.wrapperResizeObserver?.disconnect();
+          this.contentResizeObserver?.disconnect();
+          if (this.wrapper === window && this.debouncedResize) {
+            window.removeEventListener("resize", this.debouncedResize, false);
+          }
+        }
+        resize = () => {
+          this.onWrapperResize();
+          this.onContentResize();
+        };
+        onWrapperResize = () => {
+          if (this.wrapper instanceof Window) {
+            this.width = window.innerWidth;
+            this.height = window.innerHeight;
+          } else {
+            this.width = this.wrapper.clientWidth;
+            this.height = this.wrapper.clientHeight;
+          }
+        };
+        onContentResize = () => {
+          if (this.wrapper instanceof Window) {
+            this.scrollHeight = this.content.scrollHeight;
+            this.scrollWidth = this.content.scrollWidth;
+          } else {
+            this.scrollHeight = this.wrapper.scrollHeight;
+            this.scrollWidth = this.wrapper.scrollWidth;
+          }
+        };
+        get limit() {
+          return {
+            x: this.scrollWidth - this.width,
+            y: this.scrollHeight - this.height
+          };
+        }
+      };
+      Emitter = class {
+        events = {};
+        /**
+         * Emit an event with the given data
+         * @param event Event name
+         * @param args Data to pass to the event handlers
+         */
+        emit(event, ...args) {
+          let callbacks = this.events[event] || [];
+          for (let i = 0, length = callbacks.length; i < length; i++) {
+            callbacks[i]?.(...args);
+          }
+        }
+        /**
+         * Add a callback to the event
+         * @param event Event name
+         * @param cb Callback function
+         * @returns Unsubscribe function
+         */
+        on(event, cb) {
+          this.events[event]?.push(cb) || (this.events[event] = [cb]);
+          return () => {
+            this.events[event] = this.events[event]?.filter((i) => cb !== i);
+          };
+        }
+        /**
+         * Remove a callback from the event
+         * @param event Event name
+         * @param callback Callback function
+         */
+        off(event, callback) {
+          this.events[event] = this.events[event]?.filter((i) => callback !== i);
+        }
+        /**
+         * Remove all event listeners and clean up
+         */
+        destroy() {
+          this.events = {};
+        }
+      };
+      LINE_HEIGHT = 100 / 6;
+      listenerOptions = { passive: false };
+      VirtualScroll = class {
+        constructor(element, options = { wheelMultiplier: 1, touchMultiplier: 1 }) {
+          this.element = element;
+          this.options = options;
+          window.addEventListener("resize", this.onWindowResize, false);
+          this.onWindowResize();
+          this.element.addEventListener("wheel", this.onWheel, listenerOptions);
+          this.element.addEventListener(
+            "touchstart",
+            this.onTouchStart,
+            listenerOptions
+          );
+          this.element.addEventListener(
+            "touchmove",
+            this.onTouchMove,
+            listenerOptions
+          );
+          this.element.addEventListener("touchend", this.onTouchEnd, listenerOptions);
+        }
+        touchStart = {
+          x: 0,
+          y: 0
+        };
+        lastDelta = {
+          x: 0,
+          y: 0
+        };
+        window = {
+          width: 0,
+          height: 0
+        };
+        emitter = new Emitter();
+        /**
+         * Add an event listener for the given event and callback
+         *
+         * @param event Event name
+         * @param callback Callback function
+         */
+        on(event, callback) {
+          return this.emitter.on(event, callback);
+        }
+        /** Remove all event listeners and clean up */
+        destroy() {
+          this.emitter.destroy();
+          window.removeEventListener("resize", this.onWindowResize, false);
+          this.element.removeEventListener("wheel", this.onWheel, listenerOptions);
+          this.element.removeEventListener(
+            "touchstart",
+            this.onTouchStart,
+            listenerOptions
+          );
+          this.element.removeEventListener(
+            "touchmove",
+            this.onTouchMove,
+            listenerOptions
+          );
+          this.element.removeEventListener(
+            "touchend",
+            this.onTouchEnd,
+            listenerOptions
+          );
+        }
+        /**
+         * Event handler for 'touchstart' event
+         *
+         * @param event Touch event
+         */
+        onTouchStart = (event) => {
+          const { clientX, clientY } = event.targetTouches ? event.targetTouches[0] : event;
+          this.touchStart.x = clientX;
+          this.touchStart.y = clientY;
+          this.lastDelta = {
+            x: 0,
+            y: 0
+          };
+          this.emitter.emit("scroll", {
+            deltaX: 0,
+            deltaY: 0,
+            event
+          });
+        };
+        /** Event handler for 'touchmove' event */
+        onTouchMove = (event) => {
+          const { clientX, clientY } = event.targetTouches ? event.targetTouches[0] : event;
+          const deltaX = -(clientX - this.touchStart.x) * this.options.touchMultiplier;
+          const deltaY = -(clientY - this.touchStart.y) * this.options.touchMultiplier;
+          this.touchStart.x = clientX;
+          this.touchStart.y = clientY;
+          this.lastDelta = {
+            x: deltaX,
+            y: deltaY
+          };
+          this.emitter.emit("scroll", {
+            deltaX,
+            deltaY,
+            event
+          });
+        };
+        onTouchEnd = (event) => {
+          this.emitter.emit("scroll", {
+            deltaX: this.lastDelta.x,
+            deltaY: this.lastDelta.y,
+            event
+          });
+        };
+        /** Event handler for 'wheel' event */
+        onWheel = (event) => {
+          let { deltaX, deltaY, deltaMode } = event;
+          const multiplierX = deltaMode === 1 ? LINE_HEIGHT : deltaMode === 2 ? this.window.width : 1;
+          const multiplierY = deltaMode === 1 ? LINE_HEIGHT : deltaMode === 2 ? this.window.height : 1;
+          deltaX *= multiplierX;
+          deltaY *= multiplierY;
+          deltaX *= this.options.wheelMultiplier;
+          deltaY *= this.options.wheelMultiplier;
+          this.emitter.emit("scroll", { deltaX, deltaY, event });
+        };
+        onWindowResize = () => {
+          this.window = {
+            width: window.innerWidth,
+            height: window.innerHeight
+          };
+        };
+      };
+      defaultEasing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t));
+      Lenis = class {
+        _isScrolling = false;
+        // true when scroll is animating
+        _isStopped = false;
+        // true if user should not be able to scroll - enable/disable programmatically
+        _isLocked = false;
+        // same as isStopped but enabled/disabled when scroll reaches target
+        _preventNextNativeScrollEvent = false;
+        _resetVelocityTimeout = null;
+        __rafID = null;
+        /**
+         * Whether or not the user is touching the screen
+         */
+        isTouching;
+        /**
+         * The time in ms since the lenis instance was created
+         */
+        time = 0;
+        /**
+         * User data that will be forwarded through the scroll event
+         *
+         * @example
+         * lenis.scrollTo(100, {
+         *   userData: {
+         *     foo: 'bar'
+         *   }
+         * })
+         */
+        userData = {};
+        /**
+         * The last velocity of the scroll
+         */
+        lastVelocity = 0;
+        /**
+         * The current velocity of the scroll
+         */
+        velocity = 0;
+        /**
+         * The direction of the scroll
+         */
+        direction = 0;
+        /**
+         * The options passed to the lenis instance
+         */
+        options;
+        /**
+         * The target scroll value
+         */
+        targetScroll;
+        /**
+         * The animated scroll value
+         */
+        animatedScroll;
+        // These are instanciated here as they don't need information from the options
+        animate = new Animate();
+        emitter = new Emitter();
+        // These are instanciated in the constructor as they need information from the options
+        dimensions;
+        // This is not private because it's used in the Snap class
+        virtualScroll;
+        constructor({
+          wrapper = window,
+          content = document.documentElement,
+          eventsTarget = wrapper,
+          smoothWheel = true,
+          syncTouch = false,
+          syncTouchLerp = 0.075,
+          touchInertiaMultiplier = 35,
+          duration,
+          // in seconds
+          easing,
+          lerp: lerp2 = 0.1,
+          infinite = false,
+          orientation = "vertical",
+          // vertical, horizontal
+          gestureOrientation = "vertical",
+          // vertical, horizontal, both
+          touchMultiplier = 1,
+          wheelMultiplier = 1,
+          autoResize = true,
+          prevent,
+          virtualScroll,
+          overscroll = true,
+          autoRaf = false,
+          anchors = false,
+          autoToggle = false,
+          // https://caniuse.com/?search=transition-behavior
+          allowNestedScroll = false,
+          __experimental__naiveDimensions = false
+        } = {}) {
+          window.lenisVersion = version;
+          if (!wrapper || wrapper === document.documentElement) {
+            wrapper = window;
+          }
+          if (typeof duration === "number" && typeof easing !== "function") {
+            easing = defaultEasing;
+          } else if (typeof easing === "function" && typeof duration !== "number") {
+            duration = 1;
+          }
+          this.options = {
+            wrapper,
+            content,
+            eventsTarget,
+            smoothWheel,
+            syncTouch,
+            syncTouchLerp,
+            touchInertiaMultiplier,
+            duration,
+            easing,
+            lerp: lerp2,
+            infinite,
+            gestureOrientation,
+            orientation,
+            touchMultiplier,
+            wheelMultiplier,
+            autoResize,
+            prevent,
+            virtualScroll,
+            overscroll,
+            autoRaf,
+            anchors,
+            autoToggle,
+            allowNestedScroll,
+            __experimental__naiveDimensions
+          };
+          this.dimensions = new Dimensions(wrapper, content, { autoResize });
+          this.updateClassName();
+          this.targetScroll = this.animatedScroll = this.actualScroll;
+          this.options.wrapper.addEventListener("scroll", this.onNativeScroll, false);
+          this.options.wrapper.addEventListener("scrollend", this.onScrollEnd, {
+            capture: true
+          });
+          if (this.options.anchors && this.options.wrapper === window) {
+            this.options.wrapper.addEventListener(
+              "click",
+              this.onClick,
+              false
+            );
+          }
+          this.options.wrapper.addEventListener(
+            "pointerdown",
+            this.onPointerDown,
+            false
+          );
+          this.virtualScroll = new VirtualScroll(eventsTarget, {
+            touchMultiplier,
+            wheelMultiplier
+          });
+          this.virtualScroll.on("scroll", this.onVirtualScroll);
+          if (this.options.autoToggle) {
+            this.rootElement.addEventListener("transitionend", this.onTransitionEnd, {
+              passive: true
+            });
+          }
+          if (this.options.autoRaf) {
+            this.__rafID = requestAnimationFrame(this.raf);
+          }
+        }
+        /**
+         * Destroy the lenis instance, remove all event listeners and clean up the class name
+         */
+        destroy() {
+          this.emitter.destroy();
+          this.options.wrapper.removeEventListener(
+            "scroll",
+            this.onNativeScroll,
+            false
+          );
+          this.options.wrapper.removeEventListener("scrollend", this.onScrollEnd, {
+            capture: true
+          });
+          this.options.wrapper.removeEventListener(
+            "pointerdown",
+            this.onPointerDown,
+            false
+          );
+          if (this.options.anchors && this.options.wrapper === window) {
+            this.options.wrapper.removeEventListener(
+              "click",
+              this.onClick,
+              false
+            );
+          }
+          this.virtualScroll.destroy();
+          this.dimensions.destroy();
+          this.cleanUpClassName();
+          if (this.__rafID) {
+            cancelAnimationFrame(this.__rafID);
+          }
+        }
+        on(event, callback) {
+          return this.emitter.on(event, callback);
+        }
+        off(event, callback) {
+          return this.emitter.off(event, callback);
+        }
+        onScrollEnd = (e) => {
+          if (!(e instanceof CustomEvent)) {
+            if (this.isScrolling === "smooth" || this.isScrolling === false) {
+              e.stopPropagation();
+            }
+          }
+        };
+        dispatchScrollendEvent = () => {
+          this.options.wrapper.dispatchEvent(
+            new CustomEvent("scrollend", {
+              bubbles: this.options.wrapper === window,
+              // cancelable: false,
+              detail: {
+                lenisScrollEnd: true
+              }
+            })
+          );
+        };
+        onTransitionEnd = (event) => {
+          if (event.propertyName.includes("overflow")) {
+            const property = this.isHorizontal ? "overflow-x" : "overflow-y";
+            const overflow = getComputedStyle(this.rootElement)[property];
+            if (["hidden", "clip"].includes(overflow)) {
+              this.stop();
+            } else {
+              this.start();
+            }
+          }
+        };
+        setScroll(scroll) {
+          if (this.isHorizontal) {
+            this.options.wrapper.scrollTo({ left: scroll, behavior: "instant" });
+          } else {
+            this.options.wrapper.scrollTo({ top: scroll, behavior: "instant" });
+          }
+        }
+        onClick = (event) => {
+          const path = event.composedPath();
+          const anchor = path.find(
+            (node) => node instanceof HTMLAnchorElement && (node.getAttribute("href")?.startsWith("#") || node.getAttribute("href")?.startsWith("/#") || node.getAttribute("href")?.startsWith("./#"))
+          );
+          if (anchor) {
+            const id = anchor.getAttribute("href");
+            if (id) {
+              const options = typeof this.options.anchors === "object" && this.options.anchors ? this.options.anchors : void 0;
+              let target = `#${id.split("#")[1]}`;
+              if (["#", "/#", "./#", "#top", "/#top", "./#top"].includes(id)) {
+                target = 0;
+              }
+              this.scrollTo(target, options);
+            }
+          }
+        };
+        onPointerDown = (event) => {
+          if (event.button === 1) {
+            this.reset();
+          }
+        };
+        onVirtualScroll = (data) => {
+          if (typeof this.options.virtualScroll === "function" && this.options.virtualScroll(data) === false)
+            return;
+          const { deltaX, deltaY, event } = data;
+          this.emitter.emit("virtual-scroll", { deltaX, deltaY, event });
+          if (event.ctrlKey) return;
+          if (event.lenisStopPropagation) return;
+          const isTouch = event.type.includes("touch");
+          const isWheel = event.type.includes("wheel");
+          this.isTouching = event.type === "touchstart" || event.type === "touchmove";
+          const isClickOrTap = deltaX === 0 && deltaY === 0;
+          const isTapToStop = this.options.syncTouch && isTouch && event.type === "touchstart" && isClickOrTap && !this.isStopped && !this.isLocked;
+          if (isTapToStop) {
+            this.reset();
+            return;
+          }
+          const isUnknownGesture = this.options.gestureOrientation === "vertical" && deltaY === 0 || this.options.gestureOrientation === "horizontal" && deltaX === 0;
+          if (isClickOrTap || isUnknownGesture) {
+            return;
+          }
+          let composedPath = event.composedPath();
+          composedPath = composedPath.slice(0, composedPath.indexOf(this.rootElement));
+          const prevent = this.options.prevent;
+          if (!!composedPath.find(
+            (node) => node instanceof HTMLElement && (typeof prevent === "function" && prevent?.(node) || node.hasAttribute?.("data-lenis-prevent") || isTouch && node.hasAttribute?.("data-lenis-prevent-touch") || isWheel && node.hasAttribute?.("data-lenis-prevent-wheel") || this.options.allowNestedScroll && this.checkNestedScroll(node, { deltaX, deltaY }))
+          ))
+            return;
+          if (this.isStopped || this.isLocked) {
+            event.preventDefault();
+            return;
+          }
+          const isSmooth = this.options.syncTouch && isTouch || this.options.smoothWheel && isWheel;
+          if (!isSmooth) {
+            this.isScrolling = "native";
+            this.animate.stop();
+            event.lenisStopPropagation = true;
+            return;
+          }
+          let delta = deltaY;
+          if (this.options.gestureOrientation === "both") {
+            delta = Math.abs(deltaY) > Math.abs(deltaX) ? deltaY : deltaX;
+          } else if (this.options.gestureOrientation === "horizontal") {
+            delta = deltaX;
+          }
+          if (!this.options.overscroll || this.options.infinite || this.options.wrapper !== window && (this.animatedScroll > 0 && this.animatedScroll < this.limit || this.animatedScroll === 0 && deltaY > 0 || this.animatedScroll === this.limit && deltaY < 0)) {
+            event.lenisStopPropagation = true;
+          }
+          event.preventDefault();
+          const isSyncTouch = isTouch && this.options.syncTouch;
+          const isTouchEnd = isTouch && event.type === "touchend";
+          const hasTouchInertia = isTouchEnd && Math.abs(delta) > 5;
+          if (hasTouchInertia) {
+            delta = this.velocity * this.options.touchInertiaMultiplier;
+          }
+          this.scrollTo(this.targetScroll + delta, {
+            programmatic: false,
+            ...isSyncTouch ? {
+              lerp: hasTouchInertia ? this.options.syncTouchLerp : 1
+              // immediate: !hasTouchInertia,
+            } : {
+              lerp: this.options.lerp,
+              duration: this.options.duration,
+              easing: this.options.easing
+            }
+          });
+        };
+        /**
+         * Force lenis to recalculate the dimensions
+         */
+        resize() {
+          this.dimensions.resize();
+          this.animatedScroll = this.targetScroll = this.actualScroll;
+          this.emit();
+        }
+        emit() {
+          this.emitter.emit("scroll", this);
+        }
+        onNativeScroll = () => {
+          if (this._resetVelocityTimeout !== null) {
+            clearTimeout(this._resetVelocityTimeout);
+            this._resetVelocityTimeout = null;
+          }
+          if (this._preventNextNativeScrollEvent) {
+            this._preventNextNativeScrollEvent = false;
+            return;
+          }
+          if (this.isScrolling === false || this.isScrolling === "native") {
+            const lastScroll = this.animatedScroll;
+            this.animatedScroll = this.targetScroll = this.actualScroll;
+            this.lastVelocity = this.velocity;
+            this.velocity = this.animatedScroll - lastScroll;
+            this.direction = Math.sign(
+              this.animatedScroll - lastScroll
+            );
+            if (!this.isStopped) {
+              this.isScrolling = "native";
+            }
+            this.emit();
+            if (this.velocity !== 0) {
+              this._resetVelocityTimeout = setTimeout(() => {
+                this.lastVelocity = this.velocity;
+                this.velocity = 0;
+                this.isScrolling = false;
+                this.emit();
+              }, 400);
+            }
+          }
+        };
+        reset() {
+          this.isLocked = false;
+          this.isScrolling = false;
+          this.animatedScroll = this.targetScroll = this.actualScroll;
+          this.lastVelocity = this.velocity = 0;
+          this.animate.stop();
+        }
+        /**
+         * Start lenis scroll after it has been stopped
+         */
+        start() {
+          if (!this.isStopped) return;
+          this.reset();
+          this.isStopped = false;
+          this.emit();
+        }
+        /**
+         * Stop lenis scroll
+         */
+        stop() {
+          if (this.isStopped) return;
+          this.reset();
+          this.isStopped = true;
+          this.emit();
+        }
+        /**
+         * RequestAnimationFrame for lenis
+         *
+         * @param time The time in ms from an external clock like `requestAnimationFrame` or Tempus
+         */
+        raf = (time) => {
+          const deltaTime = time - (this.time || time);
+          this.time = time;
+          this.animate.advance(deltaTime * 1e-3);
+          if (this.options.autoRaf) {
+            this.__rafID = requestAnimationFrame(this.raf);
+          }
+        };
+        /**
+         * Scroll to a target value
+         *
+         * @param target The target value to scroll to
+         * @param options The options for the scroll
+         *
+         * @example
+         * lenis.scrollTo(100, {
+         *   offset: 100,
+         *   duration: 1,
+         *   easing: (t) => 1 - Math.cos((t * Math.PI) / 2),
+         *   lerp: 0.1,
+         *   onStart: () => {
+         *     console.log('onStart')
+         *   },
+         *   onComplete: () => {
+         *     console.log('onComplete')
+         *   },
+         * })
+         */
+        scrollTo(target, {
+          offset = 0,
+          immediate = false,
+          lock = false,
+          duration = this.options.duration,
+          easing = this.options.easing,
+          lerp: lerp2 = this.options.lerp,
+          onStart,
+          onComplete,
+          force = false,
+          // scroll even if stopped
+          programmatic = true,
+          // called from outside of the class
+          userData
+        } = {}) {
+          if ((this.isStopped || this.isLocked) && !force) return;
+          if (typeof target === "string" && ["top", "left", "start"].includes(target)) {
+            target = 0;
+          } else if (typeof target === "string" && ["bottom", "right", "end"].includes(target)) {
+            target = this.limit;
+          } else {
+            let node;
+            if (typeof target === "string") {
+              node = document.querySelector(target);
+            } else if (target instanceof HTMLElement && target?.nodeType) {
+              node = target;
+            }
+            if (node) {
+              if (this.options.wrapper !== window) {
+                const wrapperRect = this.rootElement.getBoundingClientRect();
+                offset -= this.isHorizontal ? wrapperRect.left : wrapperRect.top;
+              }
+              const rect = node.getBoundingClientRect();
+              target = (this.isHorizontal ? rect.left : rect.top) + this.animatedScroll;
+            }
+          }
+          if (typeof target !== "number") return;
+          target += offset;
+          target = Math.round(target);
+          if (this.options.infinite) {
+            if (programmatic) {
+              this.targetScroll = this.animatedScroll = this.scroll;
+              const distance = target - this.animatedScroll;
+              if (distance > this.limit / 2) {
+                target = target - this.limit;
+              } else if (distance < -this.limit / 2) {
+                target = target + this.limit;
+              }
+            }
+          } else {
+            target = clamp3(0, target, this.limit);
+          }
+          if (target === this.targetScroll) {
+            onStart?.(this);
+            onComplete?.(this);
+            return;
+          }
+          this.userData = userData ?? {};
+          if (immediate) {
+            this.animatedScroll = this.targetScroll = target;
+            this.setScroll(this.scroll);
+            this.reset();
+            this.preventNextNativeScrollEvent();
+            this.emit();
+            onComplete?.(this);
+            this.userData = {};
+            requestAnimationFrame(() => {
+              this.dispatchScrollendEvent();
+            });
+            return;
+          }
+          if (!programmatic) {
+            this.targetScroll = target;
+          }
+          if (typeof duration === "number" && typeof easing !== "function") {
+            easing = defaultEasing;
+          } else if (typeof easing === "function" && typeof duration !== "number") {
+            duration = 1;
+          }
+          this.animate.fromTo(this.animatedScroll, target, {
+            duration,
+            easing,
+            lerp: lerp2,
+            onStart: () => {
+              if (lock) this.isLocked = true;
+              this.isScrolling = "smooth";
+              onStart?.(this);
+            },
+            onUpdate: (value, completed) => {
+              this.isScrolling = "smooth";
+              this.lastVelocity = this.velocity;
+              this.velocity = value - this.animatedScroll;
+              this.direction = Math.sign(this.velocity);
+              this.animatedScroll = value;
+              this.setScroll(this.scroll);
+              if (programmatic) {
+                this.targetScroll = value;
+              }
+              if (!completed) this.emit();
+              if (completed) {
+                this.reset();
+                this.emit();
+                onComplete?.(this);
+                this.userData = {};
+                requestAnimationFrame(() => {
+                  this.dispatchScrollendEvent();
+                });
+                this.preventNextNativeScrollEvent();
+              }
+            }
+          });
+        }
+        preventNextNativeScrollEvent() {
+          this._preventNextNativeScrollEvent = true;
+          requestAnimationFrame(() => {
+            this._preventNextNativeScrollEvent = false;
+          });
+        }
+        checkNestedScroll(node, { deltaX, deltaY }) {
+          const time = Date.now();
+          const cache = node._lenis ??= {};
+          let hasOverflowX, hasOverflowY, isScrollableX, isScrollableY, scrollWidth, scrollHeight, clientWidth, clientHeight;
+          const gestureOrientation = this.options.gestureOrientation;
+          if (time - (cache.time ?? 0) > 2e3) {
+            cache.time = Date.now();
+            const computedStyle = window.getComputedStyle(node);
+            cache.computedStyle = computedStyle;
+            const overflowXString = computedStyle.overflowX;
+            const overflowYString = computedStyle.overflowY;
+            hasOverflowX = ["auto", "overlay", "scroll"].includes(overflowXString);
+            hasOverflowY = ["auto", "overlay", "scroll"].includes(overflowYString);
+            cache.hasOverflowX = hasOverflowX;
+            cache.hasOverflowY = hasOverflowY;
+            if (!hasOverflowX && !hasOverflowY) return false;
+            if (gestureOrientation === "vertical" && !hasOverflowY) return false;
+            if (gestureOrientation === "horizontal" && !hasOverflowX) return false;
+            scrollWidth = node.scrollWidth;
+            scrollHeight = node.scrollHeight;
+            clientWidth = node.clientWidth;
+            clientHeight = node.clientHeight;
+            isScrollableX = scrollWidth > clientWidth;
+            isScrollableY = scrollHeight > clientHeight;
+            cache.isScrollableX = isScrollableX;
+            cache.isScrollableY = isScrollableY;
+            cache.scrollWidth = scrollWidth;
+            cache.scrollHeight = scrollHeight;
+            cache.clientWidth = clientWidth;
+            cache.clientHeight = clientHeight;
+          } else {
+            isScrollableX = cache.isScrollableX;
+            isScrollableY = cache.isScrollableY;
+            hasOverflowX = cache.hasOverflowX;
+            hasOverflowY = cache.hasOverflowY;
+            scrollWidth = cache.scrollWidth;
+            scrollHeight = cache.scrollHeight;
+            clientWidth = cache.clientWidth;
+            clientHeight = cache.clientHeight;
+          }
+          if (!hasOverflowX && !hasOverflowY || !isScrollableX && !isScrollableY) {
+            return false;
+          }
+          if (gestureOrientation === "vertical" && (!hasOverflowY || !isScrollableY))
+            return false;
+          if (gestureOrientation === "horizontal" && (!hasOverflowX || !isScrollableX))
+            return false;
+          let orientation;
+          if (gestureOrientation === "horizontal") {
+            orientation = "x";
+          } else if (gestureOrientation === "vertical") {
+            orientation = "y";
+          } else {
+            const isScrollingX = deltaX !== 0;
+            const isScrollingY = deltaY !== 0;
+            if (isScrollingX && hasOverflowX && isScrollableX) {
+              orientation = "x";
+            }
+            if (isScrollingY && hasOverflowY && isScrollableY) {
+              orientation = "y";
+            }
+          }
+          if (!orientation) return false;
+          let scroll, maxScroll, delta, hasOverflow, isScrollable;
+          if (orientation === "x") {
+            scroll = node.scrollLeft;
+            maxScroll = scrollWidth - clientWidth;
+            delta = deltaX;
+            hasOverflow = hasOverflowX;
+            isScrollable = isScrollableX;
+          } else if (orientation === "y") {
+            scroll = node.scrollTop;
+            maxScroll = scrollHeight - clientHeight;
+            delta = deltaY;
+            hasOverflow = hasOverflowY;
+            isScrollable = isScrollableY;
+          } else {
+            return false;
+          }
+          const willScroll = delta > 0 ? scroll < maxScroll : scroll > 0;
+          return willScroll && hasOverflow && isScrollable;
+        }
+        /**
+         * The root element on which lenis is instanced
+         */
+        get rootElement() {
+          return this.options.wrapper === window ? document.documentElement : this.options.wrapper;
+        }
+        /**
+         * The limit which is the maximum scroll value
+         */
+        get limit() {
+          if (this.options.__experimental__naiveDimensions) {
+            if (this.isHorizontal) {
+              return this.rootElement.scrollWidth - this.rootElement.clientWidth;
+            } else {
+              return this.rootElement.scrollHeight - this.rootElement.clientHeight;
+            }
+          } else {
+            return this.dimensions.limit[this.isHorizontal ? "x" : "y"];
+          }
+        }
+        /**
+         * Whether or not the scroll is horizontal
+         */
+        get isHorizontal() {
+          return this.options.orientation === "horizontal";
+        }
+        /**
+         * The actual scroll value
+         */
+        get actualScroll() {
+          const wrapper = this.options.wrapper;
+          return this.isHorizontal ? wrapper.scrollX ?? wrapper.scrollLeft : wrapper.scrollY ?? wrapper.scrollTop;
+        }
+        /**
+         * The current scroll value
+         */
+        get scroll() {
+          return this.options.infinite ? modulo(this.animatedScroll, this.limit) : this.animatedScroll;
+        }
+        /**
+         * The progress of the scroll relative to the limit
+         */
+        get progress() {
+          return this.limit === 0 ? 1 : this.scroll / this.limit;
+        }
+        /**
+         * Current scroll state
+         */
+        get isScrolling() {
+          return this._isScrolling;
+        }
+        set isScrolling(value) {
+          if (this._isScrolling !== value) {
+            this._isScrolling = value;
+            this.updateClassName();
+          }
+        }
+        /**
+         * Check if lenis is stopped
+         */
+        get isStopped() {
+          return this._isStopped;
+        }
+        set isStopped(value) {
+          if (this._isStopped !== value) {
+            this._isStopped = value;
+            this.updateClassName();
+          }
+        }
+        /**
+         * Check if lenis is locked
+         */
+        get isLocked() {
+          return this._isLocked;
+        }
+        set isLocked(value) {
+          if (this._isLocked !== value) {
+            this._isLocked = value;
+            this.updateClassName();
+          }
+        }
+        /**
+         * Check if lenis is smooth scrolling
+         */
+        get isSmooth() {
+          return this.isScrolling === "smooth";
+        }
+        /**
+         * The class name applied to the wrapper element
+         */
+        get className() {
+          let className = "lenis";
+          if (this.options.autoToggle) className += " lenis-autoToggle";
+          if (this.isStopped) className += " lenis-stopped";
+          if (this.isLocked) className += " lenis-locked";
+          if (this.isScrolling) className += " lenis-scrolling";
+          if (this.isScrolling === "smooth") className += " lenis-smooth";
+          return className;
+        }
+        updateClassName() {
+          this.cleanUpClassName();
+          this.rootElement.className = `${this.rootElement.className} ${this.className}`.trim();
+        }
+        cleanUpClassName() {
+          this.rootElement.className = this.rootElement.className.replace(/lenis(-\w+)?/g, "").trim();
+        }
+      };
+    }
+  });
+
+  // src/utils/webflowEnv.ts
+  function getWebflowEnv() {
+    const wf = window.Webflow;
+    const isEditor = document.documentElement.hasAttribute("w-editor") || typeof window.WebflowEditor !== "undefined" || wf?.env?.("editor") === true;
+    const isPreview = wf?.env?.("preview") === true;
+    return isEditor ? "editor" : isPreview ? "preview" : "published";
+  }
+  var init_webflowEnv = __esm({
+    "src/utils/webflowEnv.ts"() {
+      "use strict";
+      init_live_reload();
+    }
+  });
+
+  // src/utils/smoothScroll.ts
+  function initSmoothScroll() {
+    window.addEventListener("load", () => {
+      const env = getWebflowEnv();
+      if (env === "editor") {
+        console.log("[SmoothScroll] Editor detected \u2014 disabling Lenis.");
+        disableScrollStyles();
+        return;
+      }
+      lenis = new Lenis({
+        duration: 1.4,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(90, -2 * t)),
+        wheelMultiplier: 0.8,
+        touchMultiplier: 2,
+        orientation: "vertical",
+        gestureOrientation: "vertical",
+        smoothWheel: true,
+        infinite: false
+      });
+      function raf(time) {
+        if (!lenis) return;
+        lenis.raf(time);
+        ScrollTrigger2.update();
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+      ScrollTrigger2.refresh();
+    });
+  }
+  function lenisInstance() {
+    return lenis;
+  }
+  function disableScrollStyles() {
+    document.documentElement.style.scrollBehavior = "auto";
+    document.body.style.overflow = "";
+  }
+  var lenis;
+  var init_smoothScroll = __esm({
+    "src/utils/smoothScroll.ts"() {
+      "use strict";
+      init_live_reload();
+      init_gsap();
+      init_ScrollTrigger();
+      init_lenis();
+      init_webflowEnv();
+      gsapWithCSS.registerPlugin(ScrollTrigger2);
+      lenis = null;
+    }
+  });
+
+  // src/components/scrollController.ts
+  var ScrollController, scrollControllerInstance, scrollControler, getScrollController, scrollController_default;
+  var init_scrollController = __esm({
+    "src/components/scrollController.ts"() {
+      "use strict";
+      init_live_reload();
+      init_gsap();
+      init_ScrollTrigger();
+      init_deviceInfo();
+      init_smoothScroll();
+      gsapWithCSS.registerPlugin(ScrollTrigger2);
+      ScrollController = class {
+        container;
+        track;
+        wideSections;
+        wideLayouts;
+        fxSections;
+        heroSection;
+        contactSection;
+        footerSection;
+        horizontalTween = null;
+        menuSections = [];
+        menuSectionIndex = /* @__PURE__ */ new Map();
+        getScrollLengthFn = null;
+        constructor() {
+          this.container = document.querySelector(".page_horizontal");
+          this.track = document.querySelector(".page_scroll-track");
+          this.wideSections = [...this.track.querySelectorAll("[data-section-wide]")];
+          this.wideLayouts = [
+            ...this.track.querySelectorAll("[data-section-wide] .section_layout")
+          ];
+          this.fxSections = [...this.track.querySelectorAll(".section_fx")];
+          this.heroSection = document.querySelector(".section_hero");
+          this.contactSection = document.querySelector(".section_contact");
+          this.footerSection = document.querySelector(".footer_component");
+          const bp = breakpoints();
+          const isTouch = isTouchDevice();
+          console.log("BP", bp, "touch", isTouch);
+          if (!this.container || !this.track) {
+            console.error("Container or track not found.");
+            return;
+          }
+          if (isTouch) {
+            console.log("[Scroller] Touch Device - Bypassing scroller setup");
+            return;
+          }
+          if (bp[0] !== "Desktop") {
+            console.log("[Scroller] Non Desktop Device - Bypassing scroller setup");
+            return;
+          }
+          this.setup();
+          this.bindResize();
+        }
+        setup() {
+          const root = document.documentElement;
+          const navMargin = getComputedStyle(root).getPropertyValue("--custom--nav-width-plus-gutter").trim();
+          const siteMargin = getComputedStyle(root).getPropertyValue("--site--margin").trim();
+          gsapWithCSS.set(this.track, {
+            display: "flex",
+            flexFlow: "row nowrap",
+            width: "max-content"
+          });
+          gsapWithCSS.set(this.fxSections, { flex: "0 0 100vw", height: "100vh" });
+          gsapWithCSS.set(this.heroSection, { flex: "0 0 100vw", height: "100vh" });
+          gsapWithCSS.set(this.contactSection, { flex: "0 0 133vw", height: "100vh" });
+          gsapWithCSS.set(this.contactSection.children[0], {
+            width: "auto",
+            paddingRight: `calc(${navMargin})`
+          });
+          gsapWithCSS.set(this.footerSection, { paddingRight: `calc(${siteMargin})` });
+          gsapWithCSS.set(this.wideSections, {
+            width: "auto",
+            minWidth: "100vw",
+            height: "100vh",
+            paddingRight: `calc(${navMargin})`
+          });
+          this.wideLayouts.forEach((e) => {
+            gsapWithCSS.set(e, {
+              display: "grid",
+              gridAutoFlow: "column",
+              gridAutoColumns: "var(--custom--site-frame)",
+              height: "100%"
+            });
+          });
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              this.initScroll();
+              ScrollTrigger2.refresh();
+            });
+          });
+        }
+        bindResize() {
+          window.addEventListener(
+            "resize",
+            () => {
+              ScrollTrigger2.refresh();
+            },
+            { passive: true }
+          );
+        }
+        initScroll() {
+          const getScrollLength = () => {
+            const last = this.track.lastElementChild;
+            if (!last) return 0;
+            const len = last.offsetLeft + last.offsetWidth - this.container.clientWidth;
+            return Math.max(0, Math.round(len));
+          };
+          this.getScrollLengthFn = getScrollLength;
+          this.horizontalTween = gsapWithCSS.to(this.track, {
+            x: () => -getScrollLength(),
+            ease: "none",
+            scrollTrigger: {
+              trigger: this.container,
+              start: "top top",
+              end: () => `+=${getScrollLength()}`,
+              scrub: true,
+              pin: true,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+              markers: true,
+              onRefresh: () => this.rebuildMenuIndex()
+            }
+          });
+          this.rebuildMenuIndex();
+          this.initParallax();
+          const lenis2 = lenisInstance();
+          if (lenis2) {
+            requestAnimationFrame(function raf(time) {
+              lenis2.raf(time);
+              ScrollTrigger2.update();
+              requestAnimationFrame(raf);
+            });
+          }
+        }
+        initParallax() {
+          if (!this.horizontalTween) return;
+          const fxSections = [...this.track.querySelectorAll(".section_fx")];
+          fxSections.forEach((section) => {
+            const image = section.querySelector(".fx_img");
+            if (!image) return;
+            const maxScale = 1.6;
+            const minScale = 1.4;
+            const offset = -(minScale - 1) * 100;
+            const beforeWidth = image.getBoundingClientRect().width;
+            gsapWithCSS.set(image, { scale: maxScale });
+            const afterWidth = image.getBoundingClientRect().width;
+            const offsetWidth = (afterWidth - beforeWidth) / 2;
+            console.log("before", beforeWidth, "after", afterWidth, "offset", offsetWidth);
+            gsapWithCSS.set(image, { x: offsetWidth });
+            gsapWithCSS.fromTo(
+              image,
+              { xPercent: 0 },
+              {
+                scale: minScale,
+                // opacity: 0.2,
+                x: offset,
+                ease: "none",
+                scrollTrigger: {
+                  containerAnimation: this.horizontalTween || void 0,
+                  trigger: section,
+                  start: "left 90%",
+                  end: "right 10%",
+                  scrub: true
+                  // markers: true,
+                }
+              }
+            );
+          });
+        }
+        clamp(n, min, max) {
+          return Math.max(min, Math.min(max, n));
+        }
+        buildMenuIndex() {
+          const index = /* @__PURE__ */ new Map();
+          this.menuSections = [...this.track.querySelectorAll("[data-menu-section]")];
+          const max = this.getScrollLengthFn ? this.getScrollLengthFn() : 0;
+          for (const el of this.menuSections) {
+            const id = el.getAttribute("data-menu-section")?.trim();
+            if (!id) continue;
+            const target = this.clamp(Math.round(el.offsetLeft), 0, max);
+            index.set(id, target);
+          }
+          return index;
+        }
+        scrollToMenuSection(id, opts) {
+          const x = this.getMenuSectionX(id);
+          if (x == null) return;
+          const lenis2 = lenisInstance();
+          if (lenis2) {
+            lenis2.scrollTo(x, {
+              duration: opts?.duration ?? 1.1,
+              easing: opts?.easing,
+              onComplete: opts?.onComplete
+            });
+          } else {
+            window.scrollTo({ top: x, behavior: "smooth" });
+            opts?.onComplete?.();
+          }
+        }
+        isHorizontalEnabled() {
+          const bp = breakpoints();
+          const isTouch = isTouchDevice();
+          return !isTouch && bp[0] === "Desktop";
+        }
+        rebuildMenuIndex() {
+          this.menuSectionIndex = this.buildMenuIndex();
+        }
+        getMenuSectionX(id) {
+          return this.menuSectionIndex.get(id) ?? null;
+        }
+        getMenuSectionMap() {
+          return Object.fromEntries(this.menuSectionIndex.entries());
+        }
+      };
+      scrollControllerInstance = null;
+      scrollControler = () => {
+        scrollControllerInstance = new ScrollController();
+        return scrollControllerInstance;
+      };
+      getScrollController = () => scrollControllerInstance;
+      scrollController_default = scrollControler;
+    }
+  });
+
   // node_modules/gsap/SplitText.js
   var gsap4, _fonts, _coreInitted4, _initIfNecessary, _charSegmenter, _toArray2, _elements, _emptyArray3, _context4, _spacesRegEx, _emojiSafeRegEx, _emptyBounds, _stretchToFitSpecialChars, _disallowInline, _insertNodeBefore, _getWrapper, _getLineWrapper, _splitWordsAndCharsRecursively, _SplitText, SplitText;
   var init_SplitText = __esm({
@@ -4759,1075 +8602,6 @@
     }
   });
 
-  // node_modules/gsap/utils/paths.js
-  function getRawPath(value) {
-    value = _isString5(value) && _selectorExp.test(value) ? document.querySelector(value) || value : value;
-    var e = value.getAttribute ? value : 0, rawPath;
-    if (e && (value = value.getAttribute("d"))) {
-      if (!e._gsPath) {
-        e._gsPath = {};
-      }
-      rawPath = e._gsPath[value];
-      return rawPath && !rawPath._dirty ? rawPath : e._gsPath[value] = stringToRawPath(value);
-    }
-    return !value ? console.warn("Expecting a <path> element or an SVG path data string") : _isString5(value) ? stringToRawPath(value) : _isNumber5(value[0]) ? [value] : value;
-  }
-  function reverseSegment(segment) {
-    var i = 0, y;
-    segment.reverse();
-    for (; i < segment.length; i += 2) {
-      y = segment[i];
-      segment[i] = segment[i + 1];
-      segment[i + 1] = y;
-    }
-    segment.reversed = !segment.reversed;
-  }
-  function convertToPath(element, swap) {
-    var type = element.tagName.toLowerCase(), circ = 0.552284749831, data, x, y, r, ry, path, rcirc, rycirc, points, w, h, x2, x3, x4, x5, x6, y2, y3, y4, y5, y6, attr;
-    if (type === "path" || !element.getBBox) {
-      return element;
-    }
-    path = _createPath(element, "x,y,width,height,cx,cy,rx,ry,r,x1,x2,y1,y2,points");
-    attr = _attrToObj(element, _typeAttrs[type]);
-    if (type === "rect") {
-      r = attr.rx;
-      ry = attr.ry || r;
-      x = attr.x;
-      y = attr.y;
-      w = attr.width - r * 2;
-      h = attr.height - ry * 2;
-      if (r || ry) {
-        x2 = x + r * (1 - circ);
-        x3 = x + r;
-        x4 = x3 + w;
-        x5 = x4 + r * circ;
-        x6 = x4 + r;
-        y2 = y + ry * (1 - circ);
-        y3 = y + ry;
-        y4 = y3 + h;
-        y5 = y4 + ry * circ;
-        y6 = y4 + ry;
-        data = "M" + x6 + "," + y3 + " V" + y4 + " C" + [x6, y5, x5, y6, x4, y6, x4 - (x4 - x3) / 3, y6, x3 + (x4 - x3) / 3, y6, x3, y6, x2, y6, x, y5, x, y4, x, y4 - (y4 - y3) / 3, x, y3 + (y4 - y3) / 3, x, y3, x, y2, x2, y, x3, y, x3 + (x4 - x3) / 3, y, x4 - (x4 - x3) / 3, y, x4, y, x5, y, x6, y2, x6, y3].join(",") + "z";
-      } else {
-        data = "M" + (x + w) + "," + y + " v" + h + " h" + -w + " v" + -h + " h" + w + "z";
-      }
-    } else if (type === "circle" || type === "ellipse") {
-      if (type === "circle") {
-        r = ry = attr.r;
-        rycirc = r * circ;
-      } else {
-        r = attr.rx;
-        ry = attr.ry;
-        rycirc = ry * circ;
-      }
-      x = attr.cx;
-      y = attr.cy;
-      rcirc = r * circ;
-      data = "M" + (x + r) + "," + y + " C" + [x + r, y + rycirc, x + rcirc, y + ry, x, y + ry, x - rcirc, y + ry, x - r, y + rycirc, x - r, y, x - r, y - rycirc, x - rcirc, y - ry, x, y - ry, x + rcirc, y - ry, x + r, y - rycirc, x + r, y].join(",") + "z";
-    } else if (type === "line") {
-      data = "M" + attr.x1 + "," + attr.y1 + " L" + attr.x2 + "," + attr.y2;
-    } else if (type === "polyline" || type === "polygon") {
-      points = (element.getAttribute("points") + "").match(_numbersExp) || [];
-      x = points.shift();
-      y = points.shift();
-      data = "M" + x + "," + y + " L" + points.join(",");
-      if (type === "polygon") {
-        data += "," + x + "," + y + "z";
-      }
-    }
-    path.setAttribute("d", rawPathToString(path._gsRawPath = stringToRawPath(data)));
-    if (swap && element.parentNode) {
-      element.parentNode.insertBefore(path, element);
-      element.parentNode.removeChild(element);
-    }
-    return path;
-  }
-  function arcToSegment(lastX, lastY, rx, ry, angle, largeArcFlag, sweepFlag, x, y) {
-    if (lastX === x && lastY === y) {
-      return;
-    }
-    rx = _abs2(rx);
-    ry = _abs2(ry);
-    var angleRad = angle % 360 * _DEG2RAD2, cosAngle = _cos2(angleRad), sinAngle = _sin2(angleRad), PI = Math.PI, TWOPI = PI * 2, dx2 = (lastX - x) / 2, dy2 = (lastY - y) / 2, x1 = cosAngle * dx2 + sinAngle * dy2, y1 = -sinAngle * dx2 + cosAngle * dy2, x1_sq = x1 * x1, y1_sq = y1 * y1, radiiCheck = x1_sq / (rx * rx) + y1_sq / (ry * ry);
-    if (radiiCheck > 1) {
-      rx = _sqrt2(radiiCheck) * rx;
-      ry = _sqrt2(radiiCheck) * ry;
-    }
-    var rx_sq = rx * rx, ry_sq = ry * ry, sq = (rx_sq * ry_sq - rx_sq * y1_sq - ry_sq * x1_sq) / (rx_sq * y1_sq + ry_sq * x1_sq);
-    if (sq < 0) {
-      sq = 0;
-    }
-    var coef = (largeArcFlag === sweepFlag ? -1 : 1) * _sqrt2(sq), cx1 = coef * (rx * y1 / ry), cy1 = coef * -(ry * x1 / rx), sx2 = (lastX + x) / 2, sy2 = (lastY + y) / 2, cx = sx2 + (cosAngle * cx1 - sinAngle * cy1), cy = sy2 + (sinAngle * cx1 + cosAngle * cy1), ux = (x1 - cx1) / rx, uy = (y1 - cy1) / ry, vx = (-x1 - cx1) / rx, vy = (-y1 - cy1) / ry, temp = ux * ux + uy * uy, angleStart = (uy < 0 ? -1 : 1) * Math.acos(ux / _sqrt2(temp)), angleExtent = (ux * vy - uy * vx < 0 ? -1 : 1) * Math.acos((ux * vx + uy * vy) / _sqrt2(temp * (vx * vx + vy * vy)));
-    isNaN(angleExtent) && (angleExtent = PI);
-    if (!sweepFlag && angleExtent > 0) {
-      angleExtent -= TWOPI;
-    } else if (sweepFlag && angleExtent < 0) {
-      angleExtent += TWOPI;
-    }
-    angleStart %= TWOPI;
-    angleExtent %= TWOPI;
-    var segments = Math.ceil(_abs2(angleExtent) / (TWOPI / 4)), rawPath = [], angleIncrement = angleExtent / segments, controlLength = 4 / 3 * _sin2(angleIncrement / 2) / (1 + _cos2(angleIncrement / 2)), ma = cosAngle * rx, mb = sinAngle * rx, mc = sinAngle * -ry, md = cosAngle * ry, i;
-    for (i = 0; i < segments; i++) {
-      angle = angleStart + i * angleIncrement;
-      x1 = _cos2(angle);
-      y1 = _sin2(angle);
-      ux = _cos2(angle += angleIncrement);
-      uy = _sin2(angle);
-      rawPath.push(x1 - controlLength * y1, y1 + controlLength * x1, ux + controlLength * uy, uy - controlLength * ux, ux, uy);
-    }
-    for (i = 0; i < rawPath.length; i += 2) {
-      x1 = rawPath[i];
-      y1 = rawPath[i + 1];
-      rawPath[i] = x1 * ma + y1 * mc + cx;
-      rawPath[i + 1] = x1 * mb + y1 * md + cy;
-    }
-    rawPath[i - 2] = x;
-    rawPath[i - 1] = y;
-    return rawPath;
-  }
-  function stringToRawPath(d) {
-    var a = (d + "").replace(_scientific, function(m) {
-      var n = +m;
-      return n < 1e-4 && n > -1e-4 ? 0 : n;
-    }).match(_svgPathExp) || [], path = [], relativeX = 0, relativeY = 0, twoThirds = 2 / 3, elements = a.length, points = 0, errorMessage = "ERROR: malformed path: " + d, i, j, x, y, command, isRelative, segment, startX, startY, difX, difY, beziers, prevCommand, flag1, flag2, line = function line2(sx, sy, ex, ey) {
-      difX = (ex - sx) / 3;
-      difY = (ey - sy) / 3;
-      segment.push(sx + difX, sy + difY, ex - difX, ey - difY, ex, ey);
-    };
-    if (!d || !isNaN(a[0]) || isNaN(a[1])) {
-      console.log(errorMessage);
-      return path;
-    }
-    for (i = 0; i < elements; i++) {
-      prevCommand = command;
-      if (isNaN(a[i])) {
-        command = a[i].toUpperCase();
-        isRelative = command !== a[i];
-      } else {
-        i--;
-      }
-      x = +a[i + 1];
-      y = +a[i + 2];
-      if (isRelative) {
-        x += relativeX;
-        y += relativeY;
-      }
-      if (!i) {
-        startX = x;
-        startY = y;
-      }
-      if (command === "M") {
-        if (segment) {
-          if (segment.length < 8) {
-            path.length -= 1;
-          } else {
-            points += segment.length;
-          }
-        }
-        relativeX = startX = x;
-        relativeY = startY = y;
-        segment = [x, y];
-        path.push(segment);
-        i += 2;
-        command = "L";
-      } else if (command === "C") {
-        if (!segment) {
-          segment = [0, 0];
-        }
-        if (!isRelative) {
-          relativeX = relativeY = 0;
-        }
-        segment.push(x, y, relativeX + a[i + 3] * 1, relativeY + a[i + 4] * 1, relativeX += a[i + 5] * 1, relativeY += a[i + 6] * 1);
-        i += 6;
-      } else if (command === "S") {
-        difX = relativeX;
-        difY = relativeY;
-        if (prevCommand === "C" || prevCommand === "S") {
-          difX += relativeX - segment[segment.length - 4];
-          difY += relativeY - segment[segment.length - 3];
-        }
-        if (!isRelative) {
-          relativeX = relativeY = 0;
-        }
-        segment.push(difX, difY, x, y, relativeX += a[i + 3] * 1, relativeY += a[i + 4] * 1);
-        i += 4;
-      } else if (command === "Q") {
-        difX = relativeX + (x - relativeX) * twoThirds;
-        difY = relativeY + (y - relativeY) * twoThirds;
-        if (!isRelative) {
-          relativeX = relativeY = 0;
-        }
-        relativeX += a[i + 3] * 1;
-        relativeY += a[i + 4] * 1;
-        segment.push(difX, difY, relativeX + (x - relativeX) * twoThirds, relativeY + (y - relativeY) * twoThirds, relativeX, relativeY);
-        i += 4;
-      } else if (command === "T") {
-        difX = relativeX - segment[segment.length - 4];
-        difY = relativeY - segment[segment.length - 3];
-        segment.push(relativeX + difX, relativeY + difY, x + (relativeX + difX * 1.5 - x) * twoThirds, y + (relativeY + difY * 1.5 - y) * twoThirds, relativeX = x, relativeY = y);
-        i += 2;
-      } else if (command === "H") {
-        line(relativeX, relativeY, relativeX = x, relativeY);
-        i += 1;
-      } else if (command === "V") {
-        line(relativeX, relativeY, relativeX, relativeY = x + (isRelative ? relativeY - relativeX : 0));
-        i += 1;
-      } else if (command === "L" || command === "Z") {
-        if (command === "Z") {
-          x = startX;
-          y = startY;
-          segment.closed = true;
-        }
-        if (command === "L" || _abs2(relativeX - x) > 0.5 || _abs2(relativeY - y) > 0.5) {
-          line(relativeX, relativeY, x, y);
-          if (command === "L") {
-            i += 2;
-          }
-        }
-        relativeX = x;
-        relativeY = y;
-      } else if (command === "A") {
-        flag1 = a[i + 4];
-        flag2 = a[i + 5];
-        difX = a[i + 6];
-        difY = a[i + 7];
-        j = 7;
-        if (flag1.length > 1) {
-          if (flag1.length < 3) {
-            difY = difX;
-            difX = flag2;
-            j--;
-          } else {
-            difY = flag2;
-            difX = flag1.substr(2);
-            j -= 2;
-          }
-          flag2 = flag1.charAt(1);
-          flag1 = flag1.charAt(0);
-        }
-        beziers = arcToSegment(relativeX, relativeY, +a[i + 1], +a[i + 2], +a[i + 3], +flag1, +flag2, (isRelative ? relativeX : 0) + difX * 1, (isRelative ? relativeY : 0) + difY * 1);
-        i += j;
-        if (beziers) {
-          for (j = 0; j < beziers.length; j++) {
-            segment.push(beziers[j]);
-          }
-        }
-        relativeX = segment[segment.length - 2];
-        relativeY = segment[segment.length - 1];
-      } else {
-        console.log(errorMessage);
-      }
-    }
-    i = segment.length;
-    if (i < 6) {
-      path.pop();
-      i = 0;
-    } else if (segment[0] === segment[i - 2] && segment[1] === segment[i - 1]) {
-      segment.closed = true;
-    }
-    path.totalPoints = points + i;
-    return path;
-  }
-  function rawPathToString(rawPath) {
-    if (_isNumber5(rawPath[0])) {
-      rawPath = [rawPath];
-    }
-    var result = "", l = rawPath.length, sl, s, i, segment;
-    for (s = 0; s < l; s++) {
-      segment = rawPath[s];
-      result += "M" + _round5(segment[0]) + "," + _round5(segment[1]) + " C";
-      sl = segment.length;
-      for (i = 2; i < sl; i++) {
-        result += _round5(segment[i++]) + "," + _round5(segment[i++]) + " " + _round5(segment[i++]) + "," + _round5(segment[i++]) + " " + _round5(segment[i++]) + "," + _round5(segment[i]) + " ";
-      }
-      if (segment.closed) {
-        result += "z";
-      }
-    }
-    return result;
-  }
-  var _svgPathExp, _numbersExp, _scientific, _selectorExp, _DEG2RAD2, _RAD2DEG2, _sin2, _cos2, _abs2, _sqrt2, _isString5, _isNumber5, _roundingNum, _round5, _createPath, _typeAttrs, _attrToObj;
-  var init_paths = __esm({
-    "node_modules/gsap/utils/paths.js"() {
-      init_live_reload();
-      _svgPathExp = /[achlmqstvz]|(-?\d*\.?\d*(?:e[\-+]?\d+)?)[0-9]/ig;
-      _numbersExp = /(?:(-)?\d*\.?\d*(?:e[\-+]?\d+)?)[0-9]/ig;
-      _scientific = /[\+\-]?\d*\.?\d+e[\+\-]?\d+/ig;
-      _selectorExp = /(^[#\.][a-z]|[a-y][a-z])/i;
-      _DEG2RAD2 = Math.PI / 180;
-      _RAD2DEG2 = 180 / Math.PI;
-      _sin2 = Math.sin;
-      _cos2 = Math.cos;
-      _abs2 = Math.abs;
-      _sqrt2 = Math.sqrt;
-      _isString5 = function _isString6(value) {
-        return typeof value === "string";
-      };
-      _isNumber5 = function _isNumber6(value) {
-        return typeof value === "number";
-      };
-      _roundingNum = 1e5;
-      _round5 = function _round6(value) {
-        return Math.round(value * _roundingNum) / _roundingNum || 0;
-      };
-      _createPath = function _createPath2(e, ignore) {
-        var path = document.createElementNS("http://www.w3.org/2000/svg", "path"), attr = [].slice.call(e.attributes), i = attr.length, name;
-        ignore = "," + ignore + ",";
-        while (--i > -1) {
-          name = attr[i].nodeName.toLowerCase();
-          if (ignore.indexOf("," + name + ",") < 0) {
-            path.setAttributeNS(null, name, attr[i].nodeValue);
-          }
-        }
-        return path;
-      };
-      _typeAttrs = {
-        rect: "rx,ry,x,y,width,height",
-        circle: "r,cx,cy",
-        ellipse: "rx,ry,cx,cy",
-        line: "x1,x2,y1,y2"
-      };
-      _attrToObj = function _attrToObj2(e, attrs) {
-        var props = attrs ? attrs.split(",") : [], obj = {}, i = props.length;
-        while (--i > -1) {
-          obj[props[i]] = +e.getAttribute(props[i]) || 0;
-        }
-        return obj;
-      };
-    }
-  });
-
-  // node_modules/gsap/MorphSVGPlugin.js
-  var gsap5, _toArray3, _lastLinkedAnchor, _doc5, _coreInitted5, PluginClass, _getGSAP5, _isFunction5, _atan22, _cos3, _sin3, _sqrt3, _PI, _2PI2, _angleMin, _angleMax, _bigNum3, _numExp2, _selectorExp2, _commands, _log, _bonusValidated, _getAverageXY, _getSize3, _getTotalSize, _sortByComplexity, _sortBySize, _offsetSegment, _getTotalMovement, _getClosestShapeIndex, _getClosestAnchor, _getClosestSegment, _subdivideSegmentQty, _equalizeSegmentQuantity, _pathFilter, _offsetPoints, _equalizePointQuantity, _pointsFilter, _buildPointsFilter, _parseShape, _populateSmoothData, _parseOriginFactors, _shortAngle, _morphMessage, _tweenRotation, _initCore5, MorphSVGPlugin;
-  var init_MorphSVGPlugin = __esm({
-    "node_modules/gsap/MorphSVGPlugin.js"() {
-      init_live_reload();
-      init_paths();
-      _getGSAP5 = function _getGSAP6() {
-        return gsap5 || typeof window !== "undefined" && (gsap5 = window.gsap) && gsap5.registerPlugin && gsap5;
-      };
-      _isFunction5 = function _isFunction6(value) {
-        return typeof value === "function";
-      };
-      _atan22 = Math.atan2;
-      _cos3 = Math.cos;
-      _sin3 = Math.sin;
-      _sqrt3 = Math.sqrt;
-      _PI = Math.PI;
-      _2PI2 = _PI * 2;
-      _angleMin = _PI * 0.3;
-      _angleMax = _PI * 0.7;
-      _bigNum3 = 1e20;
-      _numExp2 = /[-+=\.]*\d+[\.e\-\+]*\d*[e\-\+]*\d*/gi;
-      _selectorExp2 = /(^[#\.][a-z]|[a-y][a-z])/i;
-      _commands = /[achlmqstvz]/i;
-      _log = function _log2(message) {
-        return console && console.warn(message);
-      };
-      _bonusValidated = 1;
-      _getAverageXY = function _getAverageXY2(segment) {
-        var l = segment.length, x = 0, y = 0, i;
-        for (i = 0; i < l; i++) {
-          x += segment[i++];
-          y += segment[i];
-        }
-        return [x / (l / 2), y / (l / 2)];
-      };
-      _getSize3 = function _getSize4(segment) {
-        var l = segment.length, xMax = segment[0], xMin = xMax, yMax = segment[1], yMin = yMax, x, y, i;
-        for (i = 6; i < l; i += 6) {
-          x = segment[i];
-          y = segment[i + 1];
-          if (x > xMax) {
-            xMax = x;
-          } else if (x < xMin) {
-            xMin = x;
-          }
-          if (y > yMax) {
-            yMax = y;
-          } else if (y < yMin) {
-            yMin = y;
-          }
-        }
-        segment.centerX = (xMax + xMin) / 2;
-        segment.centerY = (yMax + yMin) / 2;
-        return segment.size = (xMax - xMin) * (yMax - yMin);
-      };
-      _getTotalSize = function _getTotalSize2(rawPath, samplesPerBezier) {
-        if (samplesPerBezier === void 0) {
-          samplesPerBezier = 3;
-        }
-        var j = rawPath.length, xMax = rawPath[0][0], xMin = xMax, yMax = rawPath[0][1], yMin = yMax, inc = 1 / samplesPerBezier, l, x, y, i, segment, k, t, inv, x1, y1, x2, x3, x4, y2, y3, y4;
-        while (--j > -1) {
-          segment = rawPath[j];
-          l = segment.length;
-          for (i = 6; i < l; i += 6) {
-            x1 = segment[i];
-            y1 = segment[i + 1];
-            x2 = segment[i + 2] - x1;
-            y2 = segment[i + 3] - y1;
-            x3 = segment[i + 4] - x1;
-            y3 = segment[i + 5] - y1;
-            x4 = segment[i + 6] - x1;
-            y4 = segment[i + 7] - y1;
-            k = samplesPerBezier;
-            while (--k > -1) {
-              t = inc * k;
-              inv = 1 - t;
-              x = (t * t * x4 + 3 * inv * (t * x3 + inv * x2)) * t + x1;
-              y = (t * t * y4 + 3 * inv * (t * y3 + inv * y2)) * t + y1;
-              if (x > xMax) {
-                xMax = x;
-              } else if (x < xMin) {
-                xMin = x;
-              }
-              if (y > yMax) {
-                yMax = y;
-              } else if (y < yMin) {
-                yMin = y;
-              }
-            }
-          }
-        }
-        rawPath.centerX = (xMax + xMin) / 2;
-        rawPath.centerY = (yMax + yMin) / 2;
-        rawPath.left = xMin;
-        rawPath.width = xMax - xMin;
-        rawPath.top = yMin;
-        rawPath.height = yMax - yMin;
-        return rawPath.size = (xMax - xMin) * (yMax - yMin);
-      };
-      _sortByComplexity = function _sortByComplexity2(a, b) {
-        return b.length - a.length;
-      };
-      _sortBySize = function _sortBySize2(a, b) {
-        var sizeA = a.size || _getSize3(a), sizeB = b.size || _getSize3(b);
-        return Math.abs(sizeB - sizeA) < (sizeA + sizeB) / 20 ? b.centerX - a.centerX || b.centerY - a.centerY : sizeB - sizeA;
-      };
-      _offsetSegment = function _offsetSegment2(segment, shapeIndex) {
-        var a = segment.slice(0), l = segment.length, wrap3 = l - 2, i, index;
-        shapeIndex = shapeIndex | 0;
-        for (i = 0; i < l; i++) {
-          index = (i + shapeIndex) % wrap3;
-          segment[i++] = a[index];
-          segment[i] = a[index + 1];
-        }
-      };
-      _getTotalMovement = function _getTotalMovement2(sb, eb, shapeIndex, offsetX, offsetY) {
-        var l = sb.length, d = 0, wrap3 = l - 2, index, i, x, y;
-        shapeIndex *= 6;
-        for (i = 0; i < l; i += 6) {
-          index = (i + shapeIndex) % wrap3;
-          y = sb[index] - (eb[i] - offsetX);
-          x = sb[index + 1] - (eb[i + 1] - offsetY);
-          d += _sqrt3(x * x + y * y);
-        }
-        return d;
-      };
-      _getClosestShapeIndex = function _getClosestShapeIndex2(sb, eb, checkReverse) {
-        var l = sb.length, sCenter = _getAverageXY(sb), eCenter = _getAverageXY(eb), offsetX = eCenter[0] - sCenter[0], offsetY = eCenter[1] - sCenter[1], min = _getTotalMovement(sb, eb, 0, offsetX, offsetY), minIndex = 0, copy, d, i;
-        for (i = 6; i < l; i += 6) {
-          d = _getTotalMovement(sb, eb, i / 6, offsetX, offsetY);
-          if (d < min) {
-            min = d;
-            minIndex = i;
-          }
-        }
-        if (checkReverse) {
-          copy = sb.slice(0);
-          reverseSegment(copy);
-          for (i = 6; i < l; i += 6) {
-            d = _getTotalMovement(copy, eb, i / 6, offsetX, offsetY);
-            if (d < min) {
-              min = d;
-              minIndex = -i;
-            }
-          }
-        }
-        return minIndex / 6;
-      };
-      _getClosestAnchor = function _getClosestAnchor2(rawPath, x, y) {
-        var j = rawPath.length, closestDistance = _bigNum3, closestX = 0, closestY = 0, segment, dx, dy, d, i, l;
-        while (--j > -1) {
-          segment = rawPath[j];
-          l = segment.length;
-          for (i = 0; i < l; i += 6) {
-            dx = segment[i] - x;
-            dy = segment[i + 1] - y;
-            d = _sqrt3(dx * dx + dy * dy);
-            if (d < closestDistance) {
-              closestDistance = d;
-              closestX = segment[i];
-              closestY = segment[i + 1];
-            }
-          }
-        }
-        return [closestX, closestY];
-      };
-      _getClosestSegment = function _getClosestSegment2(bezier, pool, startIndex, sortRatio, offsetX, offsetY) {
-        var l = pool.length, index = 0, minSize = Math.min(bezier.size || _getSize3(bezier), pool[startIndex].size || _getSize3(pool[startIndex])) * sortRatio, min = _bigNum3, cx = bezier.centerX + offsetX, cy = bezier.centerY + offsetY, size, i, dx, dy, d;
-        for (i = startIndex; i < l; i++) {
-          size = pool[i].size || _getSize3(pool[i]);
-          if (size < minSize) {
-            break;
-          }
-          dx = pool[i].centerX - cx;
-          dy = pool[i].centerY - cy;
-          d = _sqrt3(dx * dx + dy * dy);
-          if (d < min) {
-            index = i;
-            min = d;
-          }
-        }
-        d = pool[index];
-        pool.splice(index, 1);
-        return d;
-      };
-      _subdivideSegmentQty = function _subdivideSegmentQty2(segment, quantity) {
-        var tally = 0, max = 0.999999, l = segment.length, newPointsPerSegment = quantity / ((l - 2) / 6), ax, ay, cp1x, cp1y, cp2x, cp2y, bx, by, x1, y1, x2, y2, i, t;
-        for (i = 2; i < l; i += 6) {
-          tally += newPointsPerSegment;
-          while (tally > max) {
-            ax = segment[i - 2];
-            ay = segment[i - 1];
-            cp1x = segment[i];
-            cp1y = segment[i + 1];
-            cp2x = segment[i + 2];
-            cp2y = segment[i + 3];
-            bx = segment[i + 4];
-            by = segment[i + 5];
-            t = 1 / ((Math.floor(tally) || 1) + 1);
-            x1 = ax + (cp1x - ax) * t;
-            x2 = cp1x + (cp2x - cp1x) * t;
-            x1 += (x2 - x1) * t;
-            x2 += (cp2x + (bx - cp2x) * t - x2) * t;
-            y1 = ay + (cp1y - ay) * t;
-            y2 = cp1y + (cp2y - cp1y) * t;
-            y1 += (y2 - y1) * t;
-            y2 += (cp2y + (by - cp2y) * t - y2) * t;
-            segment.splice(
-              i,
-              4,
-              ax + (cp1x - ax) * t,
-              //first control point
-              ay + (cp1y - ay) * t,
-              x1,
-              //second control point
-              y1,
-              x1 + (x2 - x1) * t,
-              //new fabricated anchor on line
-              y1 + (y2 - y1) * t,
-              x2,
-              //third control point
-              y2,
-              cp2x + (bx - cp2x) * t,
-              //fourth control point
-              cp2y + (by - cp2y) * t
-            );
-            i += 6;
-            l += 6;
-            tally--;
-          }
-        }
-        return segment;
-      };
-      _equalizeSegmentQuantity = function _equalizeSegmentQuantity2(start, end, shapeIndex, map, fillSafe) {
-        var dif = end.length - start.length, longer = dif > 0 ? end : start, shorter = dif > 0 ? start : end, added = 0, sortMethod = map === "complexity" ? _sortByComplexity : _sortBySize, sortRatio = map === "position" ? 0 : typeof map === "number" ? map : 0.8, i = shorter.length, shapeIndices = typeof shapeIndex === "object" && shapeIndex.push ? shapeIndex.slice(0) : [shapeIndex], reverse = shapeIndices[0] === "reverse" || shapeIndices[0] < 0, log = shapeIndex === "log", eb, sb, b, x, y, offsetX, offsetY;
-        if (!shorter[0]) {
-          return;
-        }
-        if (longer.length > 1) {
-          start.sort(sortMethod);
-          end.sort(sortMethod);
-          offsetX = longer.size || _getTotalSize(longer);
-          offsetX = shorter.size || _getTotalSize(shorter);
-          offsetX = longer.centerX - shorter.centerX;
-          offsetY = longer.centerY - shorter.centerY;
-          if (sortMethod === _sortBySize) {
-            for (i = 0; i < shorter.length; i++) {
-              longer.splice(i, 0, _getClosestSegment(shorter[i], longer, i, sortRatio, offsetX, offsetY));
-            }
-          }
-        }
-        if (dif) {
-          if (dif < 0) {
-            dif = -dif;
-          }
-          if (longer[0].length > shorter[0].length) {
-            _subdivideSegmentQty(shorter[0], (longer[0].length - shorter[0].length) / 6 | 0);
-          }
-          i = shorter.length;
-          while (added < dif) {
-            x = longer[i].size || _getSize3(longer[i]);
-            b = _getClosestAnchor(shorter, longer[i].centerX, longer[i].centerY);
-            x = b[0];
-            y = b[1];
-            shorter[i++] = [x, y, x, y, x, y, x, y];
-            shorter.totalPoints += 8;
-            added++;
-          }
-        }
-        for (i = 0; i < start.length; i++) {
-          eb = end[i];
-          sb = start[i];
-          dif = eb.length - sb.length;
-          if (dif < 0) {
-            _subdivideSegmentQty(eb, -dif / 6 | 0);
-          } else if (dif > 0) {
-            _subdivideSegmentQty(sb, dif / 6 | 0);
-          }
-          if (reverse && fillSafe !== false && !sb.reversed) {
-            reverseSegment(sb);
-          }
-          shapeIndex = shapeIndices[i] || shapeIndices[i] === 0 ? shapeIndices[i] : "auto";
-          if (shapeIndex) {
-            if (sb.closed || Math.abs(sb[0] - sb[sb.length - 2]) < 0.5 && Math.abs(sb[1] - sb[sb.length - 1]) < 0.5) {
-              if (shapeIndex === "auto" || shapeIndex === "log") {
-                shapeIndices[i] = shapeIndex = _getClosestShapeIndex(sb, eb, !i || fillSafe === false);
-                if (shapeIndex < 0) {
-                  reverse = true;
-                  reverseSegment(sb);
-                  shapeIndex = -shapeIndex;
-                }
-                _offsetSegment(sb, shapeIndex * 6);
-              } else if (shapeIndex !== "reverse") {
-                if (i && shapeIndex < 0) {
-                  reverseSegment(sb);
-                }
-                _offsetSegment(sb, (shapeIndex < 0 ? -shapeIndex : shapeIndex) * 6);
-              }
-            } else if (!reverse && (shapeIndex === "auto" && Math.abs(eb[0] - sb[0]) + Math.abs(eb[1] - sb[1]) + Math.abs(eb[eb.length - 2] - sb[sb.length - 2]) + Math.abs(eb[eb.length - 1] - sb[sb.length - 1]) > Math.abs(eb[0] - sb[sb.length - 2]) + Math.abs(eb[1] - sb[sb.length - 1]) + Math.abs(eb[eb.length - 2] - sb[0]) + Math.abs(eb[eb.length - 1] - sb[1]) || shapeIndex % 2)) {
-              reverseSegment(sb);
-              shapeIndices[i] = -1;
-              reverse = true;
-            } else if (shapeIndex === "auto") {
-              shapeIndices[i] = 0;
-            } else if (shapeIndex === "reverse") {
-              shapeIndices[i] = -1;
-            }
-            if (sb.closed !== eb.closed) {
-              sb.closed = eb.closed = false;
-            }
-          }
-        }
-        log && _log("shapeIndex:[" + shapeIndices.join(",") + "]");
-        start.shapeIndex = shapeIndices;
-        return shapeIndices;
-      };
-      _pathFilter = function _pathFilter2(a, shapeIndex, map, precompile, fillSafe) {
-        var start = stringToRawPath(a[0]), end = stringToRawPath(a[1]);
-        if (!_equalizeSegmentQuantity(start, end, shapeIndex || shapeIndex === 0 ? shapeIndex : "auto", map, fillSafe)) {
-          return;
-        }
-        a[0] = rawPathToString(start);
-        a[1] = rawPathToString(end);
-        if (precompile === "log" || precompile === true) {
-          _log('precompile:["' + a[0] + '","' + a[1] + '"]');
-        }
-      };
-      _offsetPoints = function _offsetPoints2(text, offset) {
-        if (!offset) {
-          return text;
-        }
-        var a = text.match(_numExp2) || [], l = a.length, s = "", inc, i, j;
-        if (offset === "reverse") {
-          i = l - 1;
-          inc = -2;
-        } else {
-          i = ((parseInt(offset, 10) || 0) * 2 + 1 + l * 100) % l;
-          inc = 2;
-        }
-        for (j = 0; j < l; j += 2) {
-          s += a[i - 1] + "," + a[i] + " ";
-          i = (i + inc) % l;
-        }
-        return s;
-      };
-      _equalizePointQuantity = function _equalizePointQuantity2(a, quantity) {
-        var tally = 0, x = parseFloat(a[0]), y = parseFloat(a[1]), s = x + "," + y + " ", max = 0.999999, newPointsPerSegment, i, l, j, factor, nextX, nextY;
-        l = a.length;
-        newPointsPerSegment = quantity * 0.5 / (l * 0.5 - 1);
-        for (i = 0; i < l - 2; i += 2) {
-          tally += newPointsPerSegment;
-          nextX = parseFloat(a[i + 2]);
-          nextY = parseFloat(a[i + 3]);
-          if (tally > max) {
-            factor = 1 / (Math.floor(tally) + 1);
-            j = 1;
-            while (tally > max) {
-              s += (x + (nextX - x) * factor * j).toFixed(2) + "," + (y + (nextY - y) * factor * j).toFixed(2) + " ";
-              tally--;
-              j++;
-            }
-          }
-          s += nextX + "," + nextY + " ";
-          x = nextX;
-          y = nextY;
-        }
-        return s;
-      };
-      _pointsFilter = function _pointsFilter2(a) {
-        var startNums = a[0].match(_numExp2) || [], endNums = a[1].match(_numExp2) || [], dif = endNums.length - startNums.length;
-        if (dif > 0) {
-          a[0] = _equalizePointQuantity(startNums, dif);
-        } else {
-          a[1] = _equalizePointQuantity(endNums, -dif);
-        }
-      };
-      _buildPointsFilter = function _buildPointsFilter2(shapeIndex) {
-        return !isNaN(shapeIndex) ? function(a) {
-          _pointsFilter(a);
-          a[1] = _offsetPoints(a[1], parseInt(shapeIndex, 10));
-        } : _pointsFilter;
-      };
-      _parseShape = function _parseShape2(shape, forcePath, target) {
-        var isString = typeof shape === "string", e, type;
-        if (!isString || _selectorExp2.test(shape) || (shape.match(_numExp2) || []).length < 3) {
-          e = _toArray3(shape)[0];
-          if (e) {
-            type = (e.nodeName + "").toUpperCase();
-            if (forcePath && type !== "PATH") {
-              e = convertToPath(e, false);
-              type = "PATH";
-            }
-            shape = e.getAttribute(type === "PATH" ? "d" : "points") || "";
-            if (e === target) {
-              shape = e.getAttributeNS(null, "data-original") || shape;
-            }
-          } else {
-            _log("WARNING: invalid morph to: " + shape);
-            shape = false;
-          }
-        }
-        return shape;
-      };
-      _populateSmoothData = function _populateSmoothData2(rawPath, tolerance) {
-        var j = rawPath.length, limit = 0.2 * (tolerance || 1), smooth, segment, x, y, x2, y2, i, l, a, a2, isSmooth, smoothData;
-        while (--j > -1) {
-          segment = rawPath[j];
-          isSmooth = segment.isSmooth = segment.isSmooth || [0, 0, 0, 0];
-          smoothData = segment.smoothData = segment.smoothData || [0, 0, 0, 0];
-          isSmooth.length = 4;
-          l = segment.length - 2;
-          for (i = 6; i < l; i += 6) {
-            x = segment[i] - segment[i - 2];
-            y = segment[i + 1] - segment[i - 1];
-            x2 = segment[i + 2] - segment[i];
-            y2 = segment[i + 3] - segment[i + 1];
-            a = _atan22(y, x);
-            a2 = _atan22(y2, x2);
-            smooth = Math.abs(a - a2) < limit;
-            if (smooth) {
-              smoothData[i - 2] = a;
-              smoothData[i + 2] = a2;
-              smoothData[i - 1] = _sqrt3(x * x + y * y);
-              smoothData[i + 3] = _sqrt3(x2 * x2 + y2 * y2);
-            }
-            isSmooth.push(smooth, smooth, 0, 0, smooth, smooth);
-          }
-          if (segment[l] === segment[0] && segment[l + 1] === segment[1]) {
-            x = segment[0] - segment[l - 2];
-            y = segment[1] - segment[l - 1];
-            x2 = segment[2] - segment[0];
-            y2 = segment[3] - segment[1];
-            a = _atan22(y, x);
-            a2 = _atan22(y2, x2);
-            if (Math.abs(a - a2) < limit) {
-              smoothData[l - 2] = a;
-              smoothData[2] = a2;
-              smoothData[l - 1] = _sqrt3(x * x + y * y);
-              smoothData[3] = _sqrt3(x2 * x2 + y2 * y2);
-              isSmooth[l - 2] = isSmooth[l - 1] = true;
-            }
-          }
-        }
-        return rawPath;
-      };
-      _parseOriginFactors = function _parseOriginFactors2(v) {
-        var a = v.trim().split(" "), x = ~v.indexOf("left") ? 0 : ~v.indexOf("right") ? 100 : isNaN(parseFloat(a[0])) ? 50 : parseFloat(a[0]), y = ~v.indexOf("top") ? 0 : ~v.indexOf("bottom") ? 100 : isNaN(parseFloat(a[1])) ? 50 : parseFloat(a[1]);
-        return {
-          x: x / 100,
-          y: y / 100
-        };
-      };
-      _shortAngle = function _shortAngle2(dif) {
-        return dif !== dif % _PI ? dif + (dif < 0 ? _2PI2 : -_2PI2) : dif;
-      };
-      _morphMessage = "Use MorphSVGPlugin.convertToPath() to convert to a path before morphing.";
-      _tweenRotation = function _tweenRotation2(start, end, i, linkedPT) {
-        var so = this._origin, eo = this._eOrigin, dx = start[i] - so.x, dy = start[i + 1] - so.y, d = _sqrt3(dx * dx + dy * dy), sa = _atan22(dy, dx), angleDif, _short;
-        dx = end[i] - eo.x;
-        dy = end[i + 1] - eo.y;
-        angleDif = _atan22(dy, dx) - sa;
-        _short = _shortAngle(angleDif);
-        if (!linkedPT && _lastLinkedAnchor && Math.abs(_short + _lastLinkedAnchor.ca) < _angleMin) {
-          linkedPT = _lastLinkedAnchor;
-        }
-        return this._anchorPT = _lastLinkedAnchor = {
-          _next: this._anchorPT,
-          t: start,
-          sa,
-          //starting angle
-          ca: linkedPT && _short * linkedPT.ca < 0 && Math.abs(_short) > _angleMax ? angleDif : _short,
-          //change in angle
-          sl: d,
-          //starting length
-          cl: _sqrt3(dx * dx + dy * dy) - d,
-          //change in length
-          i
-        };
-      };
-      _initCore5 = function _initCore6(required) {
-        gsap5 = _getGSAP5();
-        PluginClass = PluginClass || gsap5 && gsap5.plugins.morphSVG;
-        if (gsap5 && PluginClass) {
-          _toArray3 = gsap5.utils.toArray;
-          _doc5 = document;
-          PluginClass.prototype._tweenRotation = _tweenRotation;
-          _coreInitted5 = 1;
-        } else if (required) {
-          _log("Please gsap.registerPlugin(MorphSVGPlugin)");
-        }
-      };
-      MorphSVGPlugin = {
-        version: "3.13.0",
-        name: "morphSVG",
-        rawVars: 1,
-        // otherwise "render" would be interpreted as a function-based value.
-        register: function register(core, Plugin) {
-          gsap5 = core;
-          PluginClass = Plugin;
-          _initCore5();
-        },
-        init: function init4(target, value, tween, index, targets) {
-          _coreInitted5 || _initCore5(1);
-          if (!value) {
-            _log("invalid shape");
-            return false;
-          }
-          _isFunction5(value) && (value = value.call(tween, index, target, targets));
-          var type, p, pt, shape, isPoly, shapeIndex, map, startSmooth, endSmooth, start, end, i, j, l, startSeg, endSeg, precompiled, sData, eData, originFactors, useRotation, offset;
-          if (typeof value === "string" || value.getBBox || value[0]) {
-            value = {
-              shape: value
-            };
-          } else if (typeof value === "object") {
-            type = {};
-            for (p in value) {
-              type[p] = _isFunction5(value[p]) && p !== "render" ? value[p].call(tween, index, target, targets) : value[p];
-            }
-            value = type;
-          }
-          var cs = target.nodeType ? window.getComputedStyle(target) : {}, fill = cs.fill + "", fillSafe = !(fill === "none" || (fill.match(_numExp2) || [])[3] === "0" || cs.fillRule === "evenodd"), origins = (value.origin || "50 50").split(",");
-          type = (target.nodeName + "").toUpperCase();
-          isPoly = type === "POLYLINE" || type === "POLYGON";
-          if (type !== "PATH" && !isPoly && !value.prop) {
-            _log("Cannot morph a <" + type + "> element. " + _morphMessage);
-            return false;
-          }
-          p = type === "PATH" ? "d" : "points";
-          if (!value.prop && !_isFunction5(target.setAttribute)) {
-            return false;
-          }
-          shape = _parseShape(value.shape || value.d || value.points || "", p === "d", target);
-          if (isPoly && _commands.test(shape)) {
-            _log("A <" + type + "> cannot accept path data. " + _morphMessage);
-            return false;
-          }
-          shapeIndex = value.shapeIndex || value.shapeIndex === 0 ? value.shapeIndex : "auto";
-          map = value.map || MorphSVGPlugin.defaultMap;
-          this._prop = value.prop;
-          this._render = value.render || MorphSVGPlugin.defaultRender;
-          this._apply = "updateTarget" in value ? value.updateTarget : MorphSVGPlugin.defaultUpdateTarget;
-          this._rnd = Math.pow(10, isNaN(value.precision) ? 2 : +value.precision);
-          this._tween = tween;
-          if (shape) {
-            this._target = target;
-            precompiled = typeof value.precompile === "object";
-            start = this._prop ? target[this._prop] : target.getAttribute(p);
-            if (!this._prop && !target.getAttributeNS(null, "data-original")) {
-              target.setAttributeNS(null, "data-original", start);
-            }
-            if (p === "d" || this._prop) {
-              start = stringToRawPath(precompiled ? value.precompile[0] : start);
-              end = stringToRawPath(precompiled ? value.precompile[1] : shape);
-              if (!precompiled && !_equalizeSegmentQuantity(start, end, shapeIndex, map, fillSafe)) {
-                return false;
-              }
-              if (value.precompile === "log" || value.precompile === true) {
-                _log('precompile:["' + rawPathToString(start) + '","' + rawPathToString(end) + '"]');
-              }
-              useRotation = (value.type || MorphSVGPlugin.defaultType) !== "linear";
-              if (useRotation) {
-                start = _populateSmoothData(start, value.smoothTolerance);
-                end = _populateSmoothData(end, value.smoothTolerance);
-                if (!start.size) {
-                  _getTotalSize(start);
-                }
-                if (!end.size) {
-                  _getTotalSize(end);
-                }
-                originFactors = _parseOriginFactors(origins[0]);
-                this._origin = start.origin = {
-                  x: start.left + originFactors.x * start.width,
-                  y: start.top + originFactors.y * start.height
-                };
-                if (origins[1]) {
-                  originFactors = _parseOriginFactors(origins[1]);
-                }
-                this._eOrigin = {
-                  x: end.left + originFactors.x * end.width,
-                  y: end.top + originFactors.y * end.height
-                };
-              }
-              this._rawPath = target._gsRawPath = start;
-              j = start.length;
-              while (--j > -1) {
-                startSeg = start[j];
-                endSeg = end[j];
-                startSmooth = startSeg.isSmooth || [];
-                endSmooth = endSeg.isSmooth || [];
-                l = startSeg.length;
-                _lastLinkedAnchor = 0;
-                for (i = 0; i < l; i += 2) {
-                  if (endSeg[i] !== startSeg[i] || endSeg[i + 1] !== startSeg[i + 1]) {
-                    if (useRotation) {
-                      if (startSmooth[i] && endSmooth[i]) {
-                        sData = startSeg.smoothData;
-                        eData = endSeg.smoothData;
-                        offset = i + (i === l - 4 ? 7 - l : 5);
-                        this._controlPT = {
-                          _next: this._controlPT,
-                          i,
-                          j,
-                          l1s: sData[i + 1],
-                          l1c: eData[i + 1] - sData[i + 1],
-                          l2s: sData[offset],
-                          l2c: eData[offset] - sData[offset]
-                        };
-                        pt = this._tweenRotation(startSeg, endSeg, i + 2);
-                        this._tweenRotation(startSeg, endSeg, i, pt);
-                        this._tweenRotation(startSeg, endSeg, offset - 1, pt);
-                        i += 4;
-                      } else {
-                        this._tweenRotation(startSeg, endSeg, i);
-                      }
-                    } else {
-                      pt = this.add(startSeg, i, startSeg[i], endSeg[i], 0, 0, 0, 0, 0, 1);
-                      pt = this.add(startSeg, i + 1, startSeg[i + 1], endSeg[i + 1], 0, 0, 0, 0, 0, 1) || pt;
-                    }
-                  }
-                }
-              }
-            } else {
-              pt = this.add(target, "setAttribute", target.getAttribute(p) + "", shape + "", index, targets, 0, _buildPointsFilter(shapeIndex), p);
-            }
-            if (useRotation) {
-              this.add(this._origin, "x", this._origin.x, this._eOrigin.x, 0, 0, 0, 0, 0, 1);
-              pt = this.add(this._origin, "y", this._origin.y, this._eOrigin.y, 0, 0, 0, 0, 0, 1);
-            }
-            if (pt) {
-              this._props.push("morphSVG");
-              pt.end = shape;
-              pt.endProp = p;
-            }
-          }
-          return _bonusValidated;
-        },
-        render: function render3(ratio, data) {
-          var rawPath = data._rawPath, controlPT = data._controlPT, anchorPT = data._anchorPT, rnd = data._rnd, target = data._target, pt = data._pt, s, space, easeInOut, segment, l, angle, i, j, x, y, sin, cos, offset;
-          while (pt) {
-            pt.r(ratio, pt.d);
-            pt = pt._next;
-          }
-          if (ratio === 1 && data._apply) {
-            pt = data._pt;
-            while (pt) {
-              if (pt.end) {
-                if (data._prop) {
-                  target[data._prop] = pt.end;
-                } else {
-                  target.setAttribute(pt.endProp, pt.end);
-                }
-              }
-              pt = pt._next;
-            }
-          } else if (rawPath) {
-            while (anchorPT) {
-              angle = anchorPT.sa + ratio * anchorPT.ca;
-              l = anchorPT.sl + ratio * anchorPT.cl;
-              anchorPT.t[anchorPT.i] = data._origin.x + _cos3(angle) * l;
-              anchorPT.t[anchorPT.i + 1] = data._origin.y + _sin3(angle) * l;
-              anchorPT = anchorPT._next;
-            }
-            easeInOut = ratio < 0.5 ? 2 * ratio * ratio : (4 - 2 * ratio) * ratio - 1;
-            while (controlPT) {
-              i = controlPT.i;
-              segment = rawPath[controlPT.j];
-              offset = i + (i === segment.length - 4 ? 7 - segment.length : 5);
-              angle = _atan22(segment[offset] - segment[i + 1], segment[offset - 1] - segment[i]);
-              sin = _sin3(angle);
-              cos = _cos3(angle);
-              x = segment[i + 2];
-              y = segment[i + 3];
-              l = controlPT.l1s + easeInOut * controlPT.l1c;
-              segment[i] = x - cos * l;
-              segment[i + 1] = y - sin * l;
-              l = controlPT.l2s + easeInOut * controlPT.l2c;
-              segment[offset - 1] = x + cos * l;
-              segment[offset] = y + sin * l;
-              controlPT = controlPT._next;
-            }
-            target._gsRawPath = rawPath;
-            if (data._apply) {
-              s = "";
-              space = " ";
-              for (j = 0; j < rawPath.length; j++) {
-                segment = rawPath[j];
-                l = segment.length;
-                s += "M" + (segment[0] * rnd | 0) / rnd + space + (segment[1] * rnd | 0) / rnd + " C";
-                for (i = 2; i < l; i++) {
-                  s += (segment[i] * rnd | 0) / rnd + space;
-                }
-              }
-              if (data._prop) {
-                target[data._prop] = s;
-              } else {
-                target.setAttribute("d", s);
-              }
-            }
-          }
-          data._render && rawPath && data._render.call(data._tween, rawPath, target);
-        },
-        kill: function kill(property) {
-          this._pt = this._rawPath = 0;
-        },
-        getRawPath,
-        stringToRawPath,
-        rawPathToString,
-        normalizeStrings: function normalizeStrings(shape1, shape2, _ref) {
-          var shapeIndex = _ref.shapeIndex, map = _ref.map;
-          var result = [shape1, shape2];
-          _pathFilter(result, shapeIndex, map);
-          return result;
-        },
-        pathFilter: _pathFilter,
-        pointsFilter: _pointsFilter,
-        getTotalSize: _getTotalSize,
-        equalizeSegmentQuantity: _equalizeSegmentQuantity,
-        convertToPath: function convertToPath2(targets, swap) {
-          return _toArray3(targets).map(function(target) {
-            return convertToPath(target, swap !== false);
-          });
-        },
-        defaultType: "linear",
-        defaultUpdateTarget: true,
-        defaultMap: "size"
-      };
-      _getGSAP5() && gsap5.registerPlugin(MorphSVGPlugin);
-    }
-  });
-
   // src/components/menu.ts
   var menu_exports = {};
   __export(menu_exports, {
@@ -5840,8 +8614,8 @@
       "use strict";
       init_live_reload();
       init_gsap();
-      init_MorphSVGPlugin();
-      gsapWithCSS.registerPlugin(MorphSVGPlugin);
+      init_scrollController();
+      init_smoothScroll();
       Menu = class {
         component;
         links;
@@ -5886,13 +8660,39 @@
             const highlight = element.querySelector(".nav_span-highlight");
             const imgWrap = element.querySelector(".nav_link-img-wrap");
             element.addEventListener("mouseover", () => {
-              console.log("over");
               gsapWithCSS.to(highlight, { width: "50%", ease: "circ.out" });
               gsapWithCSS.to(imgWrap, { height: "100%", ease: "circ.out" });
             });
             element.addEventListener("mouseout", () => {
               gsapWithCSS.to(highlight, { width: "0%", ease: "circ.out" });
               gsapWithCSS.to(imgWrap, { height: "0%", ease: "circ.out" });
+            });
+            element.addEventListener("click", (e) => {
+              const target = element.dataset.menuTarget;
+              const scroller = getScrollController();
+              console.log("^^", target, scroller);
+              if (!target || !scroller) return;
+              if (scroller.isHorizontalEnabled()) {
+                e.preventDefault();
+                scroller.scrollToMenuSection(target, {
+                  duration: 1.1,
+                  onComplete: () => this.closeMenu()
+                });
+                return;
+              }
+              e.preventDefault();
+              const el = document.querySelector(`[data-menu-section="${target}"]`);
+              if (!el) return;
+              const lenis2 = lenisInstance();
+              if (lenis2) {
+                lenis2.scrollTo(el, {
+                  duration: 1.1,
+                  onComplete: () => this.closeMenu()
+                });
+              } else {
+                el.scrollIntoView({ behavior: "smooth", block: "start" });
+                gsapWithCSS.delayedCall(0.2, () => this.closeMenu());
+              }
             });
           });
         }
@@ -5905,7 +8705,7 @@
           tl.fromTo(
             this.links,
             { opacity: 0, y: "4rem" },
-            { opacity: 1, y: "0rem", duartion: 1, stagger: 0.2, ease: "power1.out" }
+            { opacity: 1, y: "0rem", stagger: 0.2, ease: "power1.out" }
           );
           tl.to(this.linkSpans, { width: "100%", duration: 1, stagger: 0.2, ease: "expo.out" }, "<0.1");
         }
@@ -6034,3700 +8834,8 @@
   };
   var navHUD_default = navHUD;
 
-  // src/components/scrollController.ts
-  init_live_reload();
-  init_gsap();
-
-  // node_modules/gsap/ScrollTrigger.js
-  init_live_reload();
-
-  // node_modules/gsap/Observer.js
-  init_live_reload();
-  function _defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
-    }
-  }
-  function _createClass(Constructor, protoProps, staticProps) {
-    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) _defineProperties(Constructor, staticProps);
-    return Constructor;
-  }
-  var gsap2;
-  var _coreInitted2;
-  var _clamp3;
-  var _win3;
-  var _doc3;
-  var _docEl;
-  var _body;
-  var _isTouch;
-  var _pointerType;
-  var ScrollTrigger;
-  var _root;
-  var _normalizer;
-  var _eventTypes;
-  var _context2;
-  var _getGSAP = function _getGSAP2() {
-    return gsap2 || typeof window !== "undefined" && (gsap2 = window.gsap) && gsap2.registerPlugin && gsap2;
-  };
-  var _startup = 1;
-  var _observers = [];
-  var _scrollers = [];
-  var _proxies = [];
-  var _getTime = Date.now;
-  var _bridge = function _bridge2(name, value) {
-    return value;
-  };
-  var _integrate = function _integrate2() {
-    var core = ScrollTrigger.core, data = core.bridge || {}, scrollers = core._scrollers, proxies = core._proxies;
-    scrollers.push.apply(scrollers, _scrollers);
-    proxies.push.apply(proxies, _proxies);
-    _scrollers = scrollers;
-    _proxies = proxies;
-    _bridge = function _bridge3(name, value) {
-      return data[name](value);
-    };
-  };
-  var _getProxyProp = function _getProxyProp2(element, property) {
-    return ~_proxies.indexOf(element) && _proxies[_proxies.indexOf(element) + 1][property];
-  };
-  var _isViewport = function _isViewport2(el) {
-    return !!~_root.indexOf(el);
-  };
-  var _addListener = function _addListener2(element, type, func, passive, capture) {
-    return element.addEventListener(type, func, {
-      passive: passive !== false,
-      capture: !!capture
-    });
-  };
-  var _removeListener = function _removeListener2(element, type, func, capture) {
-    return element.removeEventListener(type, func, !!capture);
-  };
-  var _scrollLeft = "scrollLeft";
-  var _scrollTop = "scrollTop";
-  var _onScroll = function _onScroll2() {
-    return _normalizer && _normalizer.isPressed || _scrollers.cache++;
-  };
-  var _scrollCacheFunc = function _scrollCacheFunc2(f, doNotCache) {
-    var cachingFunc = function cachingFunc2(value) {
-      if (value || value === 0) {
-        _startup && (_win3.history.scrollRestoration = "manual");
-        var isNormalizing = _normalizer && _normalizer.isPressed;
-        value = cachingFunc2.v = Math.round(value) || (_normalizer && _normalizer.iOS ? 1 : 0);
-        f(value);
-        cachingFunc2.cacheID = _scrollers.cache;
-        isNormalizing && _bridge("ss", value);
-      } else if (doNotCache || _scrollers.cache !== cachingFunc2.cacheID || _bridge("ref")) {
-        cachingFunc2.cacheID = _scrollers.cache;
-        cachingFunc2.v = f();
-      }
-      return cachingFunc2.v + cachingFunc2.offset;
-    };
-    cachingFunc.offset = 0;
-    return f && cachingFunc;
-  };
-  var _horizontal = {
-    s: _scrollLeft,
-    p: "left",
-    p2: "Left",
-    os: "right",
-    os2: "Right",
-    d: "width",
-    d2: "Width",
-    a: "x",
-    sc: _scrollCacheFunc(function(value) {
-      return arguments.length ? _win3.scrollTo(value, _vertical.sc()) : _win3.pageXOffset || _doc3[_scrollLeft] || _docEl[_scrollLeft] || _body[_scrollLeft] || 0;
-    })
-  };
-  var _vertical = {
-    s: _scrollTop,
-    p: "top",
-    p2: "Top",
-    os: "bottom",
-    os2: "Bottom",
-    d: "height",
-    d2: "Height",
-    a: "y",
-    op: _horizontal,
-    sc: _scrollCacheFunc(function(value) {
-      return arguments.length ? _win3.scrollTo(_horizontal.sc(), value) : _win3.pageYOffset || _doc3[_scrollTop] || _docEl[_scrollTop] || _body[_scrollTop] || 0;
-    })
-  };
-  var _getTarget = function _getTarget2(t, self) {
-    return (self && self._ctx && self._ctx.selector || gsap2.utils.toArray)(t)[0] || (typeof t === "string" && gsap2.config().nullTargetWarn !== false ? console.warn("Element not found:", t) : null);
-  };
-  var _isWithin = function _isWithin2(element, list) {
-    var i = list.length;
-    while (i--) {
-      if (list[i] === element || list[i].contains(element)) {
-        return true;
-      }
-    }
-    return false;
-  };
-  var _getScrollFunc = function _getScrollFunc2(element, _ref) {
-    var s = _ref.s, sc = _ref.sc;
-    _isViewport(element) && (element = _doc3.scrollingElement || _docEl);
-    var i = _scrollers.indexOf(element), offset = sc === _vertical.sc ? 1 : 2;
-    !~i && (i = _scrollers.push(element) - 1);
-    _scrollers[i + offset] || _addListener(element, "scroll", _onScroll);
-    var prev = _scrollers[i + offset], func = prev || (_scrollers[i + offset] = _scrollCacheFunc(_getProxyProp(element, s), true) || (_isViewport(element) ? sc : _scrollCacheFunc(function(value) {
-      return arguments.length ? element[s] = value : element[s];
-    })));
-    func.target = element;
-    prev || (func.smooth = gsap2.getProperty(element, "scrollBehavior") === "smooth");
-    return func;
-  };
-  var _getVelocityProp = function _getVelocityProp2(value, minTimeRefresh, useDelta) {
-    var v1 = value, v2 = value, t1 = _getTime(), t2 = t1, min = minTimeRefresh || 50, dropToZeroTime = Math.max(500, min * 3), update = function update2(value2, force) {
-      var t = _getTime();
-      if (force || t - t1 > min) {
-        v2 = v1;
-        v1 = value2;
-        t2 = t1;
-        t1 = t;
-      } else if (useDelta) {
-        v1 += value2;
-      } else {
-        v1 = v2 + (value2 - v2) / (t - t2) * (t1 - t2);
-      }
-    }, reset = function reset2() {
-      v2 = v1 = useDelta ? 0 : v1;
-      t2 = t1 = 0;
-    }, getVelocity = function getVelocity2(latestValue) {
-      var tOld = t2, vOld = v2, t = _getTime();
-      (latestValue || latestValue === 0) && latestValue !== v1 && update(latestValue);
-      return t1 === t2 || t - t2 > dropToZeroTime ? 0 : (v1 + (useDelta ? vOld : -vOld)) / ((useDelta ? t : t1) - tOld) * 1e3;
-    };
-    return {
-      update,
-      reset,
-      getVelocity
-    };
-  };
-  var _getEvent = function _getEvent2(e, preventDefault) {
-    preventDefault && !e._gsapAllow && e.preventDefault();
-    return e.changedTouches ? e.changedTouches[0] : e;
-  };
-  var _getAbsoluteMax = function _getAbsoluteMax2(a) {
-    var max = Math.max.apply(Math, a), min = Math.min.apply(Math, a);
-    return Math.abs(max) >= Math.abs(min) ? max : min;
-  };
-  var _setScrollTrigger = function _setScrollTrigger2() {
-    ScrollTrigger = gsap2.core.globals().ScrollTrigger;
-    ScrollTrigger && ScrollTrigger.core && _integrate();
-  };
-  var _initCore3 = function _initCore4(core) {
-    gsap2 = core || _getGSAP();
-    if (!_coreInitted2 && gsap2 && typeof document !== "undefined" && document.body) {
-      _win3 = window;
-      _doc3 = document;
-      _docEl = _doc3.documentElement;
-      _body = _doc3.body;
-      _root = [_win3, _doc3, _docEl, _body];
-      _clamp3 = gsap2.utils.clamp;
-      _context2 = gsap2.core.context || function() {
-      };
-      _pointerType = "onpointerenter" in _body ? "pointer" : "mouse";
-      _isTouch = Observer.isTouch = _win3.matchMedia && _win3.matchMedia("(hover: none), (pointer: coarse)").matches ? 1 : "ontouchstart" in _win3 || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0 ? 2 : 0;
-      _eventTypes = Observer.eventTypes = ("ontouchstart" in _docEl ? "touchstart,touchmove,touchcancel,touchend" : !("onpointerdown" in _docEl) ? "mousedown,mousemove,mouseup,mouseup" : "pointerdown,pointermove,pointercancel,pointerup").split(",");
-      setTimeout(function() {
-        return _startup = 0;
-      }, 500);
-      _setScrollTrigger();
-      _coreInitted2 = 1;
-    }
-    return _coreInitted2;
-  };
-  _horizontal.op = _vertical;
-  _scrollers.cache = 0;
-  var Observer = /* @__PURE__ */ function() {
-    function Observer2(vars) {
-      this.init(vars);
-    }
-    var _proto = Observer2.prototype;
-    _proto.init = function init5(vars) {
-      _coreInitted2 || _initCore3(gsap2) || console.warn("Please gsap.registerPlugin(Observer)");
-      ScrollTrigger || _setScrollTrigger();
-      var tolerance = vars.tolerance, dragMinimum = vars.dragMinimum, type = vars.type, target = vars.target, lineHeight = vars.lineHeight, debounce2 = vars.debounce, preventDefault = vars.preventDefault, onStop = vars.onStop, onStopDelay = vars.onStopDelay, ignore = vars.ignore, wheelSpeed = vars.wheelSpeed, event = vars.event, onDragStart = vars.onDragStart, onDragEnd = vars.onDragEnd, onDrag = vars.onDrag, onPress = vars.onPress, onRelease = vars.onRelease, onRight = vars.onRight, onLeft = vars.onLeft, onUp = vars.onUp, onDown = vars.onDown, onChangeX = vars.onChangeX, onChangeY = vars.onChangeY, onChange = vars.onChange, onToggleX = vars.onToggleX, onToggleY = vars.onToggleY, onHover = vars.onHover, onHoverEnd = vars.onHoverEnd, onMove = vars.onMove, ignoreCheck = vars.ignoreCheck, isNormalizer = vars.isNormalizer, onGestureStart = vars.onGestureStart, onGestureEnd = vars.onGestureEnd, onWheel = vars.onWheel, onEnable = vars.onEnable, onDisable = vars.onDisable, onClick = vars.onClick, scrollSpeed = vars.scrollSpeed, capture = vars.capture, allowClicks = vars.allowClicks, lockAxis = vars.lockAxis, onLockAxis = vars.onLockAxis;
-      this.target = target = _getTarget(target) || _docEl;
-      this.vars = vars;
-      ignore && (ignore = gsap2.utils.toArray(ignore));
-      tolerance = tolerance || 1e-9;
-      dragMinimum = dragMinimum || 0;
-      wheelSpeed = wheelSpeed || 1;
-      scrollSpeed = scrollSpeed || 1;
-      type = type || "wheel,touch,pointer";
-      debounce2 = debounce2 !== false;
-      lineHeight || (lineHeight = parseFloat(_win3.getComputedStyle(_body).lineHeight) || 22);
-      var id, onStopDelayedCall, dragged, moved, wheeled, locked, axis, self = this, prevDeltaX = 0, prevDeltaY = 0, passive = vars.passive || !preventDefault && vars.passive !== false, scrollFuncX = _getScrollFunc(target, _horizontal), scrollFuncY = _getScrollFunc(target, _vertical), scrollX = scrollFuncX(), scrollY = scrollFuncY(), limitToTouch = ~type.indexOf("touch") && !~type.indexOf("pointer") && _eventTypes[0] === "pointerdown", isViewport = _isViewport(target), ownerDoc = target.ownerDocument || _doc3, deltaX = [0, 0, 0], deltaY = [0, 0, 0], onClickTime = 0, clickCapture = function clickCapture2() {
-        return onClickTime = _getTime();
-      }, _ignoreCheck = function _ignoreCheck2(e, isPointerOrTouch) {
-        return (self.event = e) && ignore && _isWithin(e.target, ignore) || isPointerOrTouch && limitToTouch && e.pointerType !== "touch" || ignoreCheck && ignoreCheck(e, isPointerOrTouch);
-      }, onStopFunc = function onStopFunc2() {
-        self._vx.reset();
-        self._vy.reset();
-        onStopDelayedCall.pause();
-        onStop && onStop(self);
-      }, update = function update2() {
-        var dx = self.deltaX = _getAbsoluteMax(deltaX), dy = self.deltaY = _getAbsoluteMax(deltaY), changedX = Math.abs(dx) >= tolerance, changedY = Math.abs(dy) >= tolerance;
-        onChange && (changedX || changedY) && onChange(self, dx, dy, deltaX, deltaY);
-        if (changedX) {
-          onRight && self.deltaX > 0 && onRight(self);
-          onLeft && self.deltaX < 0 && onLeft(self);
-          onChangeX && onChangeX(self);
-          onToggleX && self.deltaX < 0 !== prevDeltaX < 0 && onToggleX(self);
-          prevDeltaX = self.deltaX;
-          deltaX[0] = deltaX[1] = deltaX[2] = 0;
-        }
-        if (changedY) {
-          onDown && self.deltaY > 0 && onDown(self);
-          onUp && self.deltaY < 0 && onUp(self);
-          onChangeY && onChangeY(self);
-          onToggleY && self.deltaY < 0 !== prevDeltaY < 0 && onToggleY(self);
-          prevDeltaY = self.deltaY;
-          deltaY[0] = deltaY[1] = deltaY[2] = 0;
-        }
-        if (moved || dragged) {
-          onMove && onMove(self);
-          if (dragged) {
-            onDragStart && dragged === 1 && onDragStart(self);
-            onDrag && onDrag(self);
-            dragged = 0;
-          }
-          moved = false;
-        }
-        locked && !(locked = false) && onLockAxis && onLockAxis(self);
-        if (wheeled) {
-          onWheel(self);
-          wheeled = false;
-        }
-        id = 0;
-      }, onDelta = function onDelta2(x, y, index) {
-        deltaX[index] += x;
-        deltaY[index] += y;
-        self._vx.update(x);
-        self._vy.update(y);
-        debounce2 ? id || (id = requestAnimationFrame(update)) : update();
-      }, onTouchOrPointerDelta = function onTouchOrPointerDelta2(x, y) {
-        if (lockAxis && !axis) {
-          self.axis = axis = Math.abs(x) > Math.abs(y) ? "x" : "y";
-          locked = true;
-        }
-        if (axis !== "y") {
-          deltaX[2] += x;
-          self._vx.update(x, true);
-        }
-        if (axis !== "x") {
-          deltaY[2] += y;
-          self._vy.update(y, true);
-        }
-        debounce2 ? id || (id = requestAnimationFrame(update)) : update();
-      }, _onDrag = function _onDrag2(e) {
-        if (_ignoreCheck(e, 1)) {
-          return;
-        }
-        e = _getEvent(e, preventDefault);
-        var x = e.clientX, y = e.clientY, dx = x - self.x, dy = y - self.y, isDragging = self.isDragging;
-        self.x = x;
-        self.y = y;
-        if (isDragging || (dx || dy) && (Math.abs(self.startX - x) >= dragMinimum || Math.abs(self.startY - y) >= dragMinimum)) {
-          dragged = isDragging ? 2 : 1;
-          isDragging || (self.isDragging = true);
-          onTouchOrPointerDelta(dx, dy);
-        }
-      }, _onPress = self.onPress = function(e) {
-        if (_ignoreCheck(e, 1) || e && e.button) {
-          return;
-        }
-        self.axis = axis = null;
-        onStopDelayedCall.pause();
-        self.isPressed = true;
-        e = _getEvent(e);
-        prevDeltaX = prevDeltaY = 0;
-        self.startX = self.x = e.clientX;
-        self.startY = self.y = e.clientY;
-        self._vx.reset();
-        self._vy.reset();
-        _addListener(isNormalizer ? target : ownerDoc, _eventTypes[1], _onDrag, passive, true);
-        self.deltaX = self.deltaY = 0;
-        onPress && onPress(self);
-      }, _onRelease = self.onRelease = function(e) {
-        if (_ignoreCheck(e, 1)) {
-          return;
-        }
-        _removeListener(isNormalizer ? target : ownerDoc, _eventTypes[1], _onDrag, true);
-        var isTrackingDrag = !isNaN(self.y - self.startY), wasDragging = self.isDragging, isDragNotClick = wasDragging && (Math.abs(self.x - self.startX) > 3 || Math.abs(self.y - self.startY) > 3), eventData = _getEvent(e);
-        if (!isDragNotClick && isTrackingDrag) {
-          self._vx.reset();
-          self._vy.reset();
-          if (preventDefault && allowClicks) {
-            gsap2.delayedCall(0.08, function() {
-              if (_getTime() - onClickTime > 300 && !e.defaultPrevented) {
-                if (e.target.click) {
-                  e.target.click();
-                } else if (ownerDoc.createEvent) {
-                  var syntheticEvent = ownerDoc.createEvent("MouseEvents");
-                  syntheticEvent.initMouseEvent("click", true, true, _win3, 1, eventData.screenX, eventData.screenY, eventData.clientX, eventData.clientY, false, false, false, false, 0, null);
-                  e.target.dispatchEvent(syntheticEvent);
-                }
-              }
-            });
-          }
-        }
-        self.isDragging = self.isGesturing = self.isPressed = false;
-        onStop && wasDragging && !isNormalizer && onStopDelayedCall.restart(true);
-        dragged && update();
-        onDragEnd && wasDragging && onDragEnd(self);
-        onRelease && onRelease(self, isDragNotClick);
-      }, _onGestureStart = function _onGestureStart2(e) {
-        return e.touches && e.touches.length > 1 && (self.isGesturing = true) && onGestureStart(e, self.isDragging);
-      }, _onGestureEnd = function _onGestureEnd2() {
-        return (self.isGesturing = false) || onGestureEnd(self);
-      }, onScroll = function onScroll2(e) {
-        if (_ignoreCheck(e)) {
-          return;
-        }
-        var x = scrollFuncX(), y = scrollFuncY();
-        onDelta((x - scrollX) * scrollSpeed, (y - scrollY) * scrollSpeed, 1);
-        scrollX = x;
-        scrollY = y;
-        onStop && onStopDelayedCall.restart(true);
-      }, _onWheel = function _onWheel2(e) {
-        if (_ignoreCheck(e)) {
-          return;
-        }
-        e = _getEvent(e, preventDefault);
-        onWheel && (wheeled = true);
-        var multiplier = (e.deltaMode === 1 ? lineHeight : e.deltaMode === 2 ? _win3.innerHeight : 1) * wheelSpeed;
-        onDelta(e.deltaX * multiplier, e.deltaY * multiplier, 0);
-        onStop && !isNormalizer && onStopDelayedCall.restart(true);
-      }, _onMove = function _onMove2(e) {
-        if (_ignoreCheck(e)) {
-          return;
-        }
-        var x = e.clientX, y = e.clientY, dx = x - self.x, dy = y - self.y;
-        self.x = x;
-        self.y = y;
-        moved = true;
-        onStop && onStopDelayedCall.restart(true);
-        (dx || dy) && onTouchOrPointerDelta(dx, dy);
-      }, _onHover = function _onHover2(e) {
-        self.event = e;
-        onHover(self);
-      }, _onHoverEnd = function _onHoverEnd2(e) {
-        self.event = e;
-        onHoverEnd(self);
-      }, _onClick = function _onClick2(e) {
-        return _ignoreCheck(e) || _getEvent(e, preventDefault) && onClick(self);
-      };
-      onStopDelayedCall = self._dc = gsap2.delayedCall(onStopDelay || 0.25, onStopFunc).pause();
-      self.deltaX = self.deltaY = 0;
-      self._vx = _getVelocityProp(0, 50, true);
-      self._vy = _getVelocityProp(0, 50, true);
-      self.scrollX = scrollFuncX;
-      self.scrollY = scrollFuncY;
-      self.isDragging = self.isGesturing = self.isPressed = false;
-      _context2(this);
-      self.enable = function(e) {
-        if (!self.isEnabled) {
-          _addListener(isViewport ? ownerDoc : target, "scroll", _onScroll);
-          type.indexOf("scroll") >= 0 && _addListener(isViewport ? ownerDoc : target, "scroll", onScroll, passive, capture);
-          type.indexOf("wheel") >= 0 && _addListener(target, "wheel", _onWheel, passive, capture);
-          if (type.indexOf("touch") >= 0 && _isTouch || type.indexOf("pointer") >= 0) {
-            _addListener(target, _eventTypes[0], _onPress, passive, capture);
-            _addListener(ownerDoc, _eventTypes[2], _onRelease);
-            _addListener(ownerDoc, _eventTypes[3], _onRelease);
-            allowClicks && _addListener(target, "click", clickCapture, true, true);
-            onClick && _addListener(target, "click", _onClick);
-            onGestureStart && _addListener(ownerDoc, "gesturestart", _onGestureStart);
-            onGestureEnd && _addListener(ownerDoc, "gestureend", _onGestureEnd);
-            onHover && _addListener(target, _pointerType + "enter", _onHover);
-            onHoverEnd && _addListener(target, _pointerType + "leave", _onHoverEnd);
-            onMove && _addListener(target, _pointerType + "move", _onMove);
-          }
-          self.isEnabled = true;
-          self.isDragging = self.isGesturing = self.isPressed = moved = dragged = false;
-          self._vx.reset();
-          self._vy.reset();
-          scrollX = scrollFuncX();
-          scrollY = scrollFuncY();
-          e && e.type && _onPress(e);
-          onEnable && onEnable(self);
-        }
-        return self;
-      };
-      self.disable = function() {
-        if (self.isEnabled) {
-          _observers.filter(function(o) {
-            return o !== self && _isViewport(o.target);
-          }).length || _removeListener(isViewport ? ownerDoc : target, "scroll", _onScroll);
-          if (self.isPressed) {
-            self._vx.reset();
-            self._vy.reset();
-            _removeListener(isNormalizer ? target : ownerDoc, _eventTypes[1], _onDrag, true);
-          }
-          _removeListener(isViewport ? ownerDoc : target, "scroll", onScroll, capture);
-          _removeListener(target, "wheel", _onWheel, capture);
-          _removeListener(target, _eventTypes[0], _onPress, capture);
-          _removeListener(ownerDoc, _eventTypes[2], _onRelease);
-          _removeListener(ownerDoc, _eventTypes[3], _onRelease);
-          _removeListener(target, "click", clickCapture, true);
-          _removeListener(target, "click", _onClick);
-          _removeListener(ownerDoc, "gesturestart", _onGestureStart);
-          _removeListener(ownerDoc, "gestureend", _onGestureEnd);
-          _removeListener(target, _pointerType + "enter", _onHover);
-          _removeListener(target, _pointerType + "leave", _onHoverEnd);
-          _removeListener(target, _pointerType + "move", _onMove);
-          self.isEnabled = self.isPressed = self.isDragging = false;
-          onDisable && onDisable(self);
-        }
-      };
-      self.kill = self.revert = function() {
-        self.disable();
-        var i = _observers.indexOf(self);
-        i >= 0 && _observers.splice(i, 1);
-        _normalizer === self && (_normalizer = 0);
-      };
-      _observers.push(self);
-      isNormalizer && _isViewport(target) && (_normalizer = self);
-      self.enable(event);
-    };
-    _createClass(Observer2, [{
-      key: "velocityX",
-      get: function get() {
-        return this._vx.getVelocity();
-      }
-    }, {
-      key: "velocityY",
-      get: function get() {
-        return this._vy.getVelocity();
-      }
-    }]);
-    return Observer2;
-  }();
-  Observer.version = "3.13.0";
-  Observer.create = function(vars) {
-    return new Observer(vars);
-  };
-  Observer.register = _initCore3;
-  Observer.getAll = function() {
-    return _observers.slice();
-  };
-  Observer.getById = function(id) {
-    return _observers.filter(function(o) {
-      return o.vars.id === id;
-    })[0];
-  };
-  _getGSAP() && gsap2.registerPlugin(Observer);
-
-  // node_modules/gsap/ScrollTrigger.js
-  var gsap3;
-  var _coreInitted3;
-  var _win4;
-  var _doc4;
-  var _docEl2;
-  var _body2;
-  var _root2;
-  var _resizeDelay;
-  var _toArray;
-  var _clamp4;
-  var _time2;
-  var _syncInterval;
-  var _refreshing;
-  var _pointerIsDown;
-  var _transformProp2;
-  var _i;
-  var _prevWidth;
-  var _prevHeight;
-  var _autoRefresh;
-  var _sort;
-  var _suppressOverwrites2;
-  var _ignoreResize;
-  var _normalizer2;
-  var _ignoreMobileResize;
-  var _baseScreenHeight;
-  var _baseScreenWidth;
-  var _fixIOSBug;
-  var _context3;
-  var _scrollRestoration;
-  var _div100vh;
-  var _100vh;
-  var _isReverted;
-  var _clampingMax;
-  var _limitCallbacks;
-  var _startup2 = 1;
-  var _getTime2 = Date.now;
-  var _time1 = _getTime2();
-  var _lastScrollTime = 0;
-  var _enabled = 0;
-  var _parseClamp = function _parseClamp2(value, type, self) {
-    var clamp4 = _isString3(value) && (value.substr(0, 6) === "clamp(" || value.indexOf("max") > -1);
-    self["_" + type + "Clamp"] = clamp4;
-    return clamp4 ? value.substr(6, value.length - 7) : value;
-  };
-  var _keepClamp = function _keepClamp2(value, clamp4) {
-    return clamp4 && (!_isString3(value) || value.substr(0, 6) !== "clamp(") ? "clamp(" + value + ")" : value;
-  };
-  var _rafBugFix = function _rafBugFix2() {
-    return _enabled && requestAnimationFrame(_rafBugFix2);
-  };
-  var _pointerDownHandler = function _pointerDownHandler2() {
-    return _pointerIsDown = 1;
-  };
-  var _pointerUpHandler = function _pointerUpHandler2() {
-    return _pointerIsDown = 0;
-  };
-  var _passThrough3 = function _passThrough4(v) {
-    return v;
-  };
-  var _round3 = function _round4(value) {
-    return Math.round(value * 1e5) / 1e5 || 0;
-  };
-  var _windowExists5 = function _windowExists6() {
-    return typeof window !== "undefined";
-  };
-  var _getGSAP3 = function _getGSAP4() {
-    return gsap3 || _windowExists5() && (gsap3 = window.gsap) && gsap3.registerPlugin && gsap3;
-  };
-  var _isViewport3 = function _isViewport4(e) {
-    return !!~_root2.indexOf(e);
-  };
-  var _getViewportDimension = function _getViewportDimension2(dimensionProperty) {
-    return (dimensionProperty === "Height" ? _100vh : _win4["inner" + dimensionProperty]) || _docEl2["client" + dimensionProperty] || _body2["client" + dimensionProperty];
-  };
-  var _getBoundsFunc = function _getBoundsFunc2(element) {
-    return _getProxyProp(element, "getBoundingClientRect") || (_isViewport3(element) ? function() {
-      _winOffsets.width = _win4.innerWidth;
-      _winOffsets.height = _100vh;
-      return _winOffsets;
-    } : function() {
-      return _getBounds(element);
-    });
-  };
-  var _getSizeFunc = function _getSizeFunc2(scroller, isViewport, _ref) {
-    var d = _ref.d, d2 = _ref.d2, a = _ref.a;
-    return (a = _getProxyProp(scroller, "getBoundingClientRect")) ? function() {
-      return a()[d];
-    } : function() {
-      return (isViewport ? _getViewportDimension(d2) : scroller["client" + d2]) || 0;
-    };
-  };
-  var _getOffsetsFunc = function _getOffsetsFunc2(element, isViewport) {
-    return !isViewport || ~_proxies.indexOf(element) ? _getBoundsFunc(element) : function() {
-      return _winOffsets;
-    };
-  };
-  var _maxScroll = function _maxScroll2(element, _ref2) {
-    var s = _ref2.s, d2 = _ref2.d2, d = _ref2.d, a = _ref2.a;
-    return Math.max(0, (s = "scroll" + d2) && (a = _getProxyProp(element, s)) ? a() - _getBoundsFunc(element)()[d] : _isViewport3(element) ? (_docEl2[s] || _body2[s]) - _getViewportDimension(d2) : element[s] - element["offset" + d2]);
-  };
-  var _iterateAutoRefresh = function _iterateAutoRefresh2(func, events) {
-    for (var i = 0; i < _autoRefresh.length; i += 3) {
-      (!events || ~events.indexOf(_autoRefresh[i + 1])) && func(_autoRefresh[i], _autoRefresh[i + 1], _autoRefresh[i + 2]);
-    }
-  };
-  var _isString3 = function _isString4(value) {
-    return typeof value === "string";
-  };
-  var _isFunction3 = function _isFunction4(value) {
-    return typeof value === "function";
-  };
-  var _isNumber3 = function _isNumber4(value) {
-    return typeof value === "number";
-  };
-  var _isObject3 = function _isObject4(value) {
-    return typeof value === "object";
-  };
-  var _endAnimation = function _endAnimation2(animation, reversed, pause) {
-    return animation && animation.progress(reversed ? 0 : 1) && pause && animation.pause();
-  };
-  var _callback3 = function _callback4(self, func) {
-    if (self.enabled) {
-      var result = self._ctx ? self._ctx.add(function() {
-        return func(self);
-      }) : func(self);
-      result && result.totalTime && (self.callbackAnimation = result);
-    }
-  };
-  var _abs = Math.abs;
-  var _left = "left";
-  var _top = "top";
-  var _right = "right";
-  var _bottom = "bottom";
-  var _width = "width";
-  var _height = "height";
-  var _Right = "Right";
-  var _Left = "Left";
-  var _Top = "Top";
-  var _Bottom = "Bottom";
-  var _padding = "padding";
-  var _margin = "margin";
-  var _Width = "Width";
-  var _Height = "Height";
-  var _px = "px";
-  var _getComputedStyle = function _getComputedStyle2(element) {
-    return _win4.getComputedStyle(element);
-  };
-  var _makePositionable = function _makePositionable2(element) {
-    var position = _getComputedStyle(element).position;
-    element.style.position = position === "absolute" || position === "fixed" ? position : "relative";
-  };
-  var _setDefaults3 = function _setDefaults4(obj, defaults2) {
-    for (var p in defaults2) {
-      p in obj || (obj[p] = defaults2[p]);
-    }
-    return obj;
-  };
-  var _getBounds = function _getBounds2(element, withoutTransforms) {
-    var tween = withoutTransforms && _getComputedStyle(element)[_transformProp2] !== "matrix(1, 0, 0, 1, 0, 0)" && gsap3.to(element, {
-      x: 0,
-      y: 0,
-      xPercent: 0,
-      yPercent: 0,
-      rotation: 0,
-      rotationX: 0,
-      rotationY: 0,
-      scale: 1,
-      skewX: 0,
-      skewY: 0
-    }).progress(1), bounds = element.getBoundingClientRect();
-    tween && tween.progress(0).kill();
-    return bounds;
-  };
-  var _getSize = function _getSize2(element, _ref3) {
-    var d2 = _ref3.d2;
-    return element["offset" + d2] || element["client" + d2] || 0;
-  };
-  var _getLabelRatioArray = function _getLabelRatioArray2(timeline2) {
-    var a = [], labels = timeline2.labels, duration = timeline2.duration(), p;
-    for (p in labels) {
-      a.push(labels[p] / duration);
-    }
-    return a;
-  };
-  var _getClosestLabel = function _getClosestLabel2(animation) {
-    return function(value) {
-      return gsap3.utils.snap(_getLabelRatioArray(animation), value);
-    };
-  };
-  var _snapDirectional = function _snapDirectional2(snapIncrementOrArray) {
-    var snap3 = gsap3.utils.snap(snapIncrementOrArray), a = Array.isArray(snapIncrementOrArray) && snapIncrementOrArray.slice(0).sort(function(a2, b) {
-      return a2 - b;
-    });
-    return a ? function(value, direction, threshold) {
-      if (threshold === void 0) {
-        threshold = 1e-3;
-      }
-      var i;
-      if (!direction) {
-        return snap3(value);
-      }
-      if (direction > 0) {
-        value -= threshold;
-        for (i = 0; i < a.length; i++) {
-          if (a[i] >= value) {
-            return a[i];
-          }
-        }
-        return a[i - 1];
-      } else {
-        i = a.length;
-        value += threshold;
-        while (i--) {
-          if (a[i] <= value) {
-            return a[i];
-          }
-        }
-      }
-      return a[0];
-    } : function(value, direction, threshold) {
-      if (threshold === void 0) {
-        threshold = 1e-3;
-      }
-      var snapped = snap3(value);
-      return !direction || Math.abs(snapped - value) < threshold || snapped - value < 0 === direction < 0 ? snapped : snap3(direction < 0 ? value - snapIncrementOrArray : value + snapIncrementOrArray);
-    };
-  };
-  var _getLabelAtDirection = function _getLabelAtDirection2(timeline2) {
-    return function(value, st) {
-      return _snapDirectional(_getLabelRatioArray(timeline2))(value, st.direction);
-    };
-  };
-  var _multiListener = function _multiListener2(func, element, types, callback) {
-    return types.split(",").forEach(function(type) {
-      return func(element, type, callback);
-    });
-  };
-  var _addListener3 = function _addListener4(element, type, func, nonPassive, capture) {
-    return element.addEventListener(type, func, {
-      passive: !nonPassive,
-      capture: !!capture
-    });
-  };
-  var _removeListener3 = function _removeListener4(element, type, func, capture) {
-    return element.removeEventListener(type, func, !!capture);
-  };
-  var _wheelListener = function _wheelListener2(func, el, scrollFunc) {
-    scrollFunc = scrollFunc && scrollFunc.wheelHandler;
-    if (scrollFunc) {
-      func(el, "wheel", scrollFunc);
-      func(el, "touchmove", scrollFunc);
-    }
-  };
-  var _markerDefaults = {
-    startColor: "green",
-    endColor: "red",
-    indent: 0,
-    fontSize: "16px",
-    fontWeight: "normal"
-  };
-  var _defaults2 = {
-    toggleActions: "play",
-    anticipatePin: 0
-  };
-  var _keywords = {
-    top: 0,
-    left: 0,
-    center: 0.5,
-    bottom: 1,
-    right: 1
-  };
-  var _offsetToPx = function _offsetToPx2(value, size) {
-    if (_isString3(value)) {
-      var eqIndex = value.indexOf("="), relative = ~eqIndex ? +(value.charAt(eqIndex - 1) + 1) * parseFloat(value.substr(eqIndex + 1)) : 0;
-      if (~eqIndex) {
-        value.indexOf("%") > eqIndex && (relative *= size / 100);
-        value = value.substr(0, eqIndex - 1);
-      }
-      value = relative + (value in _keywords ? _keywords[value] * size : ~value.indexOf("%") ? parseFloat(value) * size / 100 : parseFloat(value) || 0);
-    }
-    return value;
-  };
-  var _createMarker = function _createMarker2(type, name, container, direction, _ref4, offset, matchWidthEl, containerAnimation) {
-    var startColor = _ref4.startColor, endColor = _ref4.endColor, fontSize = _ref4.fontSize, indent = _ref4.indent, fontWeight = _ref4.fontWeight;
-    var e = _doc4.createElement("div"), useFixedPosition = _isViewport3(container) || _getProxyProp(container, "pinType") === "fixed", isScroller = type.indexOf("scroller") !== -1, parent = useFixedPosition ? _body2 : container, isStart = type.indexOf("start") !== -1, color = isStart ? startColor : endColor, css = "border-color:" + color + ";font-size:" + fontSize + ";color:" + color + ";font-weight:" + fontWeight + ";pointer-events:none;white-space:nowrap;font-family:sans-serif,Arial;z-index:1000;padding:4px 8px;border-width:0;border-style:solid;";
-    css += "position:" + ((isScroller || containerAnimation) && useFixedPosition ? "fixed;" : "absolute;");
-    (isScroller || containerAnimation || !useFixedPosition) && (css += (direction === _vertical ? _right : _bottom) + ":" + (offset + parseFloat(indent)) + "px;");
-    matchWidthEl && (css += "box-sizing:border-box;text-align:left;width:" + matchWidthEl.offsetWidth + "px;");
-    e._isStart = isStart;
-    e.setAttribute("class", "gsap-marker-" + type + (name ? " marker-" + name : ""));
-    e.style.cssText = css;
-    e.innerText = name || name === 0 ? type + "-" + name : type;
-    parent.children[0] ? parent.insertBefore(e, parent.children[0]) : parent.appendChild(e);
-    e._offset = e["offset" + direction.op.d2];
-    _positionMarker(e, 0, direction, isStart);
-    return e;
-  };
-  var _positionMarker = function _positionMarker2(marker, start, direction, flipped) {
-    var vars = {
-      display: "block"
-    }, side = direction[flipped ? "os2" : "p2"], oppositeSide = direction[flipped ? "p2" : "os2"];
-    marker._isFlipped = flipped;
-    vars[direction.a + "Percent"] = flipped ? -100 : 0;
-    vars[direction.a] = flipped ? "1px" : 0;
-    vars["border" + side + _Width] = 1;
-    vars["border" + oppositeSide + _Width] = 0;
-    vars[direction.p] = start + "px";
-    gsap3.set(marker, vars);
-  };
-  var _triggers = [];
-  var _ids = {};
-  var _rafID;
-  var _sync = function _sync2() {
-    return _getTime2() - _lastScrollTime > 34 && (_rafID || (_rafID = requestAnimationFrame(_updateAll)));
-  };
-  var _onScroll3 = function _onScroll4() {
-    if (!_normalizer2 || !_normalizer2.isPressed || _normalizer2.startX > _body2.clientWidth) {
-      _scrollers.cache++;
-      if (_normalizer2) {
-        _rafID || (_rafID = requestAnimationFrame(_updateAll));
-      } else {
-        _updateAll();
-      }
-      _lastScrollTime || _dispatch3("scrollStart");
-      _lastScrollTime = _getTime2();
-    }
-  };
-  var _setBaseDimensions = function _setBaseDimensions2() {
-    _baseScreenWidth = _win4.innerWidth;
-    _baseScreenHeight = _win4.innerHeight;
-  };
-  var _onResize = function _onResize2(force) {
-    _scrollers.cache++;
-    (force === true || !_refreshing && !_ignoreResize && !_doc4.fullscreenElement && !_doc4.webkitFullscreenElement && (!_ignoreMobileResize || _baseScreenWidth !== _win4.innerWidth || Math.abs(_win4.innerHeight - _baseScreenHeight) > _win4.innerHeight * 0.25)) && _resizeDelay.restart(true);
-  };
-  var _listeners2 = {};
-  var _emptyArray2 = [];
-  var _softRefresh = function _softRefresh2() {
-    return _removeListener3(ScrollTrigger2, "scrollEnd", _softRefresh2) || _refreshAll(true);
-  };
-  var _dispatch3 = function _dispatch4(type) {
-    return _listeners2[type] && _listeners2[type].map(function(f) {
-      return f();
-    }) || _emptyArray2;
-  };
-  var _savedStyles = [];
-  var _revertRecorded = function _revertRecorded2(media) {
-    for (var i = 0; i < _savedStyles.length; i += 5) {
-      if (!media || _savedStyles[i + 4] && _savedStyles[i + 4].query === media) {
-        _savedStyles[i].style.cssText = _savedStyles[i + 1];
-        _savedStyles[i].getBBox && _savedStyles[i].setAttribute("transform", _savedStyles[i + 2] || "");
-        _savedStyles[i + 3].uncache = 1;
-      }
-    }
-  };
-  var _revertAll = function _revertAll2(kill2, media) {
-    var trigger;
-    for (_i = 0; _i < _triggers.length; _i++) {
-      trigger = _triggers[_i];
-      if (trigger && (!media || trigger._ctx === media)) {
-        if (kill2) {
-          trigger.kill(1);
-        } else {
-          trigger.revert(true, true);
-        }
-      }
-    }
-    _isReverted = true;
-    media && _revertRecorded(media);
-    media || _dispatch3("revert");
-  };
-  var _clearScrollMemory = function _clearScrollMemory2(scrollRestoration, force) {
-    _scrollers.cache++;
-    (force || !_refreshingAll) && _scrollers.forEach(function(obj) {
-      return _isFunction3(obj) && obj.cacheID++ && (obj.rec = 0);
-    });
-    _isString3(scrollRestoration) && (_win4.history.scrollRestoration = _scrollRestoration = scrollRestoration);
-  };
-  var _refreshingAll;
-  var _refreshID = 0;
-  var _queueRefreshID;
-  var _queueRefreshAll = function _queueRefreshAll2() {
-    if (_queueRefreshID !== _refreshID) {
-      var id = _queueRefreshID = _refreshID;
-      requestAnimationFrame(function() {
-        return id === _refreshID && _refreshAll(true);
-      });
-    }
-  };
-  var _refresh100vh = function _refresh100vh2() {
-    _body2.appendChild(_div100vh);
-    _100vh = !_normalizer2 && _div100vh.offsetHeight || _win4.innerHeight;
-    _body2.removeChild(_div100vh);
-  };
-  var _hideAllMarkers = function _hideAllMarkers2(hide) {
-    return _toArray(".gsap-marker-start, .gsap-marker-end, .gsap-marker-scroller-start, .gsap-marker-scroller-end").forEach(function(el) {
-      return el.style.display = hide ? "none" : "block";
-    });
-  };
-  var _refreshAll = function _refreshAll2(force, skipRevert) {
-    _docEl2 = _doc4.documentElement;
-    _body2 = _doc4.body;
-    _root2 = [_win4, _doc4, _docEl2, _body2];
-    if (_lastScrollTime && !force && !_isReverted) {
-      _addListener3(ScrollTrigger2, "scrollEnd", _softRefresh);
-      return;
-    }
-    _refresh100vh();
-    _refreshingAll = ScrollTrigger2.isRefreshing = true;
-    _scrollers.forEach(function(obj) {
-      return _isFunction3(obj) && ++obj.cacheID && (obj.rec = obj());
-    });
-    var refreshInits = _dispatch3("refreshInit");
-    _sort && ScrollTrigger2.sort();
-    skipRevert || _revertAll();
-    _scrollers.forEach(function(obj) {
-      if (_isFunction3(obj)) {
-        obj.smooth && (obj.target.style.scrollBehavior = "auto");
-        obj(0);
-      }
-    });
-    _triggers.slice(0).forEach(function(t) {
-      return t.refresh();
-    });
-    _isReverted = false;
-    _triggers.forEach(function(t) {
-      if (t._subPinOffset && t.pin) {
-        var prop = t.vars.horizontal ? "offsetWidth" : "offsetHeight", original = t.pin[prop];
-        t.revert(true, 1);
-        t.adjustPinSpacing(t.pin[prop] - original);
-        t.refresh();
-      }
-    });
-    _clampingMax = 1;
-    _hideAllMarkers(true);
-    _triggers.forEach(function(t) {
-      var max = _maxScroll(t.scroller, t._dir), endClamp = t.vars.end === "max" || t._endClamp && t.end > max, startClamp = t._startClamp && t.start >= max;
-      (endClamp || startClamp) && t.setPositions(startClamp ? max - 1 : t.start, endClamp ? Math.max(startClamp ? max : t.start + 1, max) : t.end, true);
-    });
-    _hideAllMarkers(false);
-    _clampingMax = 0;
-    refreshInits.forEach(function(result) {
-      return result && result.render && result.render(-1);
-    });
-    _scrollers.forEach(function(obj) {
-      if (_isFunction3(obj)) {
-        obj.smooth && requestAnimationFrame(function() {
-          return obj.target.style.scrollBehavior = "smooth";
-        });
-        obj.rec && obj(obj.rec);
-      }
-    });
-    _clearScrollMemory(_scrollRestoration, 1);
-    _resizeDelay.pause();
-    _refreshID++;
-    _refreshingAll = 2;
-    _updateAll(2);
-    _triggers.forEach(function(t) {
-      return _isFunction3(t.vars.onRefresh) && t.vars.onRefresh(t);
-    });
-    _refreshingAll = ScrollTrigger2.isRefreshing = false;
-    _dispatch3("refresh");
-  };
-  var _lastScroll = 0;
-  var _direction = 1;
-  var _primary;
-  var _updateAll = function _updateAll2(force) {
-    if (force === 2 || !_refreshingAll && !_isReverted) {
-      ScrollTrigger2.isUpdating = true;
-      _primary && _primary.update(0);
-      var l = _triggers.length, time = _getTime2(), recordVelocity = time - _time1 >= 50, scroll = l && _triggers[0].scroll();
-      _direction = _lastScroll > scroll ? -1 : 1;
-      _refreshingAll || (_lastScroll = scroll);
-      if (recordVelocity) {
-        if (_lastScrollTime && !_pointerIsDown && time - _lastScrollTime > 200) {
-          _lastScrollTime = 0;
-          _dispatch3("scrollEnd");
-        }
-        _time2 = _time1;
-        _time1 = time;
-      }
-      if (_direction < 0) {
-        _i = l;
-        while (_i-- > 0) {
-          _triggers[_i] && _triggers[_i].update(0, recordVelocity);
-        }
-        _direction = 1;
-      } else {
-        for (_i = 0; _i < l; _i++) {
-          _triggers[_i] && _triggers[_i].update(0, recordVelocity);
-        }
-      }
-      ScrollTrigger2.isUpdating = false;
-    }
-    _rafID = 0;
-  };
-  var _propNamesToCopy = [_left, _top, _bottom, _right, _margin + _Bottom, _margin + _Right, _margin + _Top, _margin + _Left, "display", "flexShrink", "float", "zIndex", "gridColumnStart", "gridColumnEnd", "gridRowStart", "gridRowEnd", "gridArea", "justifySelf", "alignSelf", "placeSelf", "order"];
-  var _stateProps = _propNamesToCopy.concat([_width, _height, "boxSizing", "max" + _Width, "max" + _Height, "position", _margin, _padding, _padding + _Top, _padding + _Right, _padding + _Bottom, _padding + _Left]);
-  var _swapPinOut = function _swapPinOut2(pin, spacer, state) {
-    _setState(state);
-    var cache = pin._gsap;
-    if (cache.spacerIsNative) {
-      _setState(cache.spacerState);
-    } else if (pin._gsap.swappedIn) {
-      var parent = spacer.parentNode;
-      if (parent) {
-        parent.insertBefore(pin, spacer);
-        parent.removeChild(spacer);
-      }
-    }
-    pin._gsap.swappedIn = false;
-  };
-  var _swapPinIn = function _swapPinIn2(pin, spacer, cs, spacerState) {
-    if (!pin._gsap.swappedIn) {
-      var i = _propNamesToCopy.length, spacerStyle = spacer.style, pinStyle = pin.style, p;
-      while (i--) {
-        p = _propNamesToCopy[i];
-        spacerStyle[p] = cs[p];
-      }
-      spacerStyle.position = cs.position === "absolute" ? "absolute" : "relative";
-      cs.display === "inline" && (spacerStyle.display = "inline-block");
-      pinStyle[_bottom] = pinStyle[_right] = "auto";
-      spacerStyle.flexBasis = cs.flexBasis || "auto";
-      spacerStyle.overflow = "visible";
-      spacerStyle.boxSizing = "border-box";
-      spacerStyle[_width] = _getSize(pin, _horizontal) + _px;
-      spacerStyle[_height] = _getSize(pin, _vertical) + _px;
-      spacerStyle[_padding] = pinStyle[_margin] = pinStyle[_top] = pinStyle[_left] = "0";
-      _setState(spacerState);
-      pinStyle[_width] = pinStyle["max" + _Width] = cs[_width];
-      pinStyle[_height] = pinStyle["max" + _Height] = cs[_height];
-      pinStyle[_padding] = cs[_padding];
-      if (pin.parentNode !== spacer) {
-        pin.parentNode.insertBefore(spacer, pin);
-        spacer.appendChild(pin);
-      }
-      pin._gsap.swappedIn = true;
-    }
-  };
-  var _capsExp2 = /([A-Z])/g;
-  var _setState = function _setState2(state) {
-    if (state) {
-      var style = state.t.style, l = state.length, i = 0, p, value;
-      (state.t._gsap || gsap3.core.getCache(state.t)).uncache = 1;
-      for (; i < l; i += 2) {
-        value = state[i + 1];
-        p = state[i];
-        if (value) {
-          style[p] = value;
-        } else if (style[p]) {
-          style.removeProperty(p.replace(_capsExp2, "-$1").toLowerCase());
-        }
-      }
-    }
-  };
-  var _getState = function _getState2(element) {
-    var l = _stateProps.length, style = element.style, state = [], i = 0;
-    for (; i < l; i++) {
-      state.push(_stateProps[i], style[_stateProps[i]]);
-    }
-    state.t = element;
-    return state;
-  };
-  var _copyState = function _copyState2(state, override, omitOffsets) {
-    var result = [], l = state.length, i = omitOffsets ? 8 : 0, p;
-    for (; i < l; i += 2) {
-      p = state[i];
-      result.push(p, p in override ? override[p] : state[i + 1]);
-    }
-    result.t = state.t;
-    return result;
-  };
-  var _winOffsets = {
-    left: 0,
-    top: 0
-  };
-  var _parsePosition3 = function _parsePosition4(value, trigger, scrollerSize, direction, scroll, marker, markerScroller, self, scrollerBounds, borderWidth, useFixedPosition, scrollerMax, containerAnimation, clampZeroProp) {
-    _isFunction3(value) && (value = value(self));
-    if (_isString3(value) && value.substr(0, 3) === "max") {
-      value = scrollerMax + (value.charAt(4) === "=" ? _offsetToPx("0" + value.substr(3), scrollerSize) : 0);
-    }
-    var time = containerAnimation ? containerAnimation.time() : 0, p1, p2, element;
-    containerAnimation && containerAnimation.seek(0);
-    isNaN(value) || (value = +value);
-    if (!_isNumber3(value)) {
-      _isFunction3(trigger) && (trigger = trigger(self));
-      var offsets = (value || "0").split(" "), bounds, localOffset, globalOffset, display;
-      element = _getTarget(trigger, self) || _body2;
-      bounds = _getBounds(element) || {};
-      if ((!bounds || !bounds.left && !bounds.top) && _getComputedStyle(element).display === "none") {
-        display = element.style.display;
-        element.style.display = "block";
-        bounds = _getBounds(element);
-        display ? element.style.display = display : element.style.removeProperty("display");
-      }
-      localOffset = _offsetToPx(offsets[0], bounds[direction.d]);
-      globalOffset = _offsetToPx(offsets[1] || "0", scrollerSize);
-      value = bounds[direction.p] - scrollerBounds[direction.p] - borderWidth + localOffset + scroll - globalOffset;
-      markerScroller && _positionMarker(markerScroller, globalOffset, direction, scrollerSize - globalOffset < 20 || markerScroller._isStart && globalOffset > 20);
-      scrollerSize -= scrollerSize - globalOffset;
-    } else {
-      containerAnimation && (value = gsap3.utils.mapRange(containerAnimation.scrollTrigger.start, containerAnimation.scrollTrigger.end, 0, scrollerMax, value));
-      markerScroller && _positionMarker(markerScroller, scrollerSize, direction, true);
-    }
-    if (clampZeroProp) {
-      self[clampZeroProp] = value || -1e-3;
-      value < 0 && (value = 0);
-    }
-    if (marker) {
-      var position = value + scrollerSize, isStart = marker._isStart;
-      p1 = "scroll" + direction.d2;
-      _positionMarker(marker, position, direction, isStart && position > 20 || !isStart && (useFixedPosition ? Math.max(_body2[p1], _docEl2[p1]) : marker.parentNode[p1]) <= position + 1);
-      if (useFixedPosition) {
-        scrollerBounds = _getBounds(markerScroller);
-        useFixedPosition && (marker.style[direction.op.p] = scrollerBounds[direction.op.p] - direction.op.m - marker._offset + _px);
-      }
-    }
-    if (containerAnimation && element) {
-      p1 = _getBounds(element);
-      containerAnimation.seek(scrollerMax);
-      p2 = _getBounds(element);
-      containerAnimation._caScrollDist = p1[direction.p] - p2[direction.p];
-      value = value / containerAnimation._caScrollDist * scrollerMax;
-    }
-    containerAnimation && containerAnimation.seek(time);
-    return containerAnimation ? value : Math.round(value);
-  };
-  var _prefixExp = /(webkit|moz|length|cssText|inset)/i;
-  var _reparent = function _reparent2(element, parent, top, left) {
-    if (element.parentNode !== parent) {
-      var style = element.style, p, cs;
-      if (parent === _body2) {
-        element._stOrig = style.cssText;
-        cs = _getComputedStyle(element);
-        for (p in cs) {
-          if (!+p && !_prefixExp.test(p) && cs[p] && typeof style[p] === "string" && p !== "0") {
-            style[p] = cs[p];
-          }
-        }
-        style.top = top;
-        style.left = left;
-      } else {
-        style.cssText = element._stOrig;
-      }
-      gsap3.core.getCache(element).uncache = 1;
-      parent.appendChild(element);
-    }
-  };
-  var _interruptionTracker = function _interruptionTracker2(getValueFunc, initialValue, onInterrupt) {
-    var last1 = initialValue, last2 = last1;
-    return function(value) {
-      var current = Math.round(getValueFunc());
-      if (current !== last1 && current !== last2 && Math.abs(current - last1) > 3 && Math.abs(current - last2) > 3) {
-        value = current;
-        onInterrupt && onInterrupt();
-      }
-      last2 = last1;
-      last1 = Math.round(value);
-      return last1;
-    };
-  };
-  var _shiftMarker = function _shiftMarker2(marker, direction, value) {
-    var vars = {};
-    vars[direction.p] = "+=" + value;
-    gsap3.set(marker, vars);
-  };
-  var _getTweenCreator = function _getTweenCreator2(scroller, direction) {
-    var getScroll = _getScrollFunc(scroller, direction), prop = "_scroll" + direction.p2, getTween = function getTween2(scrollTo, vars, initialValue, change1, change2) {
-      var tween = getTween2.tween, onComplete = vars.onComplete, modifiers = {};
-      initialValue = initialValue || getScroll();
-      var checkForInterruption = _interruptionTracker(getScroll, initialValue, function() {
-        tween.kill();
-        getTween2.tween = 0;
-      });
-      change2 = change1 && change2 || 0;
-      change1 = change1 || scrollTo - initialValue;
-      tween && tween.kill();
-      vars[prop] = scrollTo;
-      vars.inherit = false;
-      vars.modifiers = modifiers;
-      modifiers[prop] = function() {
-        return checkForInterruption(initialValue + change1 * tween.ratio + change2 * tween.ratio * tween.ratio);
-      };
-      vars.onUpdate = function() {
-        _scrollers.cache++;
-        getTween2.tween && _updateAll();
-      };
-      vars.onComplete = function() {
-        getTween2.tween = 0;
-        onComplete && onComplete.call(tween);
-      };
-      tween = getTween2.tween = gsap3.to(scroller, vars);
-      return tween;
-    };
-    scroller[prop] = getScroll;
-    getScroll.wheelHandler = function() {
-      return getTween.tween && getTween.tween.kill() && (getTween.tween = 0);
-    };
-    _addListener3(scroller, "wheel", getScroll.wheelHandler);
-    ScrollTrigger2.isTouch && _addListener3(scroller, "touchmove", getScroll.wheelHandler);
-    return getTween;
-  };
-  var ScrollTrigger2 = /* @__PURE__ */ function() {
-    function ScrollTrigger3(vars, animation) {
-      _coreInitted3 || ScrollTrigger3.register(gsap3) || console.warn("Please gsap.registerPlugin(ScrollTrigger)");
-      _context3(this);
-      this.init(vars, animation);
-    }
-    var _proto = ScrollTrigger3.prototype;
-    _proto.init = function init5(vars, animation) {
-      this.progress = this.start = 0;
-      this.vars && this.kill(true, true);
-      if (!_enabled) {
-        this.update = this.refresh = this.kill = _passThrough3;
-        return;
-      }
-      vars = _setDefaults3(_isString3(vars) || _isNumber3(vars) || vars.nodeType ? {
-        trigger: vars
-      } : vars, _defaults2);
-      var _vars = vars, onUpdate = _vars.onUpdate, toggleClass = _vars.toggleClass, id = _vars.id, onToggle = _vars.onToggle, onRefresh = _vars.onRefresh, scrub = _vars.scrub, trigger = _vars.trigger, pin = _vars.pin, pinSpacing = _vars.pinSpacing, invalidateOnRefresh = _vars.invalidateOnRefresh, anticipatePin = _vars.anticipatePin, onScrubComplete = _vars.onScrubComplete, onSnapComplete = _vars.onSnapComplete, once = _vars.once, snap3 = _vars.snap, pinReparent = _vars.pinReparent, pinSpacer = _vars.pinSpacer, containerAnimation = _vars.containerAnimation, fastScrollEnd = _vars.fastScrollEnd, preventOverlaps = _vars.preventOverlaps, direction = vars.horizontal || vars.containerAnimation && vars.horizontal !== false ? _horizontal : _vertical, isToggle = !scrub && scrub !== 0, scroller = _getTarget(vars.scroller || _win4), scrollerCache = gsap3.core.getCache(scroller), isViewport = _isViewport3(scroller), useFixedPosition = ("pinType" in vars ? vars.pinType : _getProxyProp(scroller, "pinType") || isViewport && "fixed") === "fixed", callbacks = [vars.onEnter, vars.onLeave, vars.onEnterBack, vars.onLeaveBack], toggleActions = isToggle && vars.toggleActions.split(" "), markers = "markers" in vars ? vars.markers : _defaults2.markers, borderWidth = isViewport ? 0 : parseFloat(_getComputedStyle(scroller)["border" + direction.p2 + _Width]) || 0, self = this, onRefreshInit = vars.onRefreshInit && function() {
-        return vars.onRefreshInit(self);
-      }, getScrollerSize = _getSizeFunc(scroller, isViewport, direction), getScrollerOffsets = _getOffsetsFunc(scroller, isViewport), lastSnap = 0, lastRefresh = 0, prevProgress = 0, scrollFunc = _getScrollFunc(scroller, direction), tweenTo, pinCache, snapFunc, scroll1, scroll2, start, end, markerStart, markerEnd, markerStartTrigger, markerEndTrigger, markerVars, executingOnRefresh, change, pinOriginalState, pinActiveState, pinState, spacer, offset, pinGetter, pinSetter, pinStart, pinChange, spacingStart, spacerState, markerStartSetter, pinMoves, markerEndSetter, cs, snap1, snap22, scrubTween, scrubSmooth, snapDurClamp, snapDelayedCall, prevScroll, prevAnimProgress, caMarkerSetter, customRevertReturn;
-      self._startClamp = self._endClamp = false;
-      self._dir = direction;
-      anticipatePin *= 45;
-      self.scroller = scroller;
-      self.scroll = containerAnimation ? containerAnimation.time.bind(containerAnimation) : scrollFunc;
-      scroll1 = scrollFunc();
-      self.vars = vars;
-      animation = animation || vars.animation;
-      if ("refreshPriority" in vars) {
-        _sort = 1;
-        vars.refreshPriority === -9999 && (_primary = self);
-      }
-      scrollerCache.tweenScroll = scrollerCache.tweenScroll || {
-        top: _getTweenCreator(scroller, _vertical),
-        left: _getTweenCreator(scroller, _horizontal)
-      };
-      self.tweenTo = tweenTo = scrollerCache.tweenScroll[direction.p];
-      self.scrubDuration = function(value) {
-        scrubSmooth = _isNumber3(value) && value;
-        if (!scrubSmooth) {
-          scrubTween && scrubTween.progress(1).kill();
-          scrubTween = 0;
-        } else {
-          scrubTween ? scrubTween.duration(value) : scrubTween = gsap3.to(animation, {
-            ease: "expo",
-            totalProgress: "+=0",
-            inherit: false,
-            duration: scrubSmooth,
-            paused: true,
-            onComplete: function onComplete() {
-              return onScrubComplete && onScrubComplete(self);
-            }
-          });
-        }
-      };
-      if (animation) {
-        animation.vars.lazy = false;
-        animation._initted && !self.isReverted || animation.vars.immediateRender !== false && vars.immediateRender !== false && animation.duration() && animation.render(0, true, true);
-        self.animation = animation.pause();
-        animation.scrollTrigger = self;
-        self.scrubDuration(scrub);
-        snap1 = 0;
-        id || (id = animation.vars.id);
-      }
-      if (snap3) {
-        if (!_isObject3(snap3) || snap3.push) {
-          snap3 = {
-            snapTo: snap3
-          };
-        }
-        "scrollBehavior" in _body2.style && gsap3.set(isViewport ? [_body2, _docEl2] : scroller, {
-          scrollBehavior: "auto"
-        });
-        _scrollers.forEach(function(o) {
-          return _isFunction3(o) && o.target === (isViewport ? _doc4.scrollingElement || _docEl2 : scroller) && (o.smooth = false);
-        });
-        snapFunc = _isFunction3(snap3.snapTo) ? snap3.snapTo : snap3.snapTo === "labels" ? _getClosestLabel(animation) : snap3.snapTo === "labelsDirectional" ? _getLabelAtDirection(animation) : snap3.directional !== false ? function(value, st) {
-          return _snapDirectional(snap3.snapTo)(value, _getTime2() - lastRefresh < 500 ? 0 : st.direction);
-        } : gsap3.utils.snap(snap3.snapTo);
-        snapDurClamp = snap3.duration || {
-          min: 0.1,
-          max: 2
-        };
-        snapDurClamp = _isObject3(snapDurClamp) ? _clamp4(snapDurClamp.min, snapDurClamp.max) : _clamp4(snapDurClamp, snapDurClamp);
-        snapDelayedCall = gsap3.delayedCall(snap3.delay || scrubSmooth / 2 || 0.1, function() {
-          var scroll = scrollFunc(), refreshedRecently = _getTime2() - lastRefresh < 500, tween = tweenTo.tween;
-          if ((refreshedRecently || Math.abs(self.getVelocity()) < 10) && !tween && !_pointerIsDown && lastSnap !== scroll) {
-            var progress = (scroll - start) / change, totalProgress = animation && !isToggle ? animation.totalProgress() : progress, velocity = refreshedRecently ? 0 : (totalProgress - snap22) / (_getTime2() - _time2) * 1e3 || 0, change1 = gsap3.utils.clamp(-progress, 1 - progress, _abs(velocity / 2) * velocity / 0.185), naturalEnd = progress + (snap3.inertia === false ? 0 : change1), endValue, endScroll, _snap = snap3, onStart = _snap.onStart, _onInterrupt = _snap.onInterrupt, _onComplete = _snap.onComplete;
-            endValue = snapFunc(naturalEnd, self);
-            _isNumber3(endValue) || (endValue = naturalEnd);
-            endScroll = Math.max(0, Math.round(start + endValue * change));
-            if (scroll <= end && scroll >= start && endScroll !== scroll) {
-              if (tween && !tween._initted && tween.data <= _abs(endScroll - scroll)) {
-                return;
-              }
-              if (snap3.inertia === false) {
-                change1 = endValue - progress;
-              }
-              tweenTo(endScroll, {
-                duration: snapDurClamp(_abs(Math.max(_abs(naturalEnd - totalProgress), _abs(endValue - totalProgress)) * 0.185 / velocity / 0.05 || 0)),
-                ease: snap3.ease || "power3",
-                data: _abs(endScroll - scroll),
-                // record the distance so that if another snap tween occurs (conflict) we can prioritize the closest snap.
-                onInterrupt: function onInterrupt() {
-                  return snapDelayedCall.restart(true) && _onInterrupt && _onInterrupt(self);
-                },
-                onComplete: function onComplete() {
-                  self.update();
-                  lastSnap = scrollFunc();
-                  if (animation && !isToggle) {
-                    scrubTween ? scrubTween.resetTo("totalProgress", endValue, animation._tTime / animation._tDur) : animation.progress(endValue);
-                  }
-                  snap1 = snap22 = animation && !isToggle ? animation.totalProgress() : self.progress;
-                  onSnapComplete && onSnapComplete(self);
-                  _onComplete && _onComplete(self);
-                }
-              }, scroll, change1 * change, endScroll - scroll - change1 * change);
-              onStart && onStart(self, tweenTo.tween);
-            }
-          } else if (self.isActive && lastSnap !== scroll) {
-            snapDelayedCall.restart(true);
-          }
-        }).pause();
-      }
-      id && (_ids[id] = self);
-      trigger = self.trigger = _getTarget(trigger || pin !== true && pin);
-      customRevertReturn = trigger && trigger._gsap && trigger._gsap.stRevert;
-      customRevertReturn && (customRevertReturn = customRevertReturn(self));
-      pin = pin === true ? trigger : _getTarget(pin);
-      _isString3(toggleClass) && (toggleClass = {
-        targets: trigger,
-        className: toggleClass
-      });
-      if (pin) {
-        pinSpacing === false || pinSpacing === _margin || (pinSpacing = !pinSpacing && pin.parentNode && pin.parentNode.style && _getComputedStyle(pin.parentNode).display === "flex" ? false : _padding);
-        self.pin = pin;
-        pinCache = gsap3.core.getCache(pin);
-        if (!pinCache.spacer) {
-          if (pinSpacer) {
-            pinSpacer = _getTarget(pinSpacer);
-            pinSpacer && !pinSpacer.nodeType && (pinSpacer = pinSpacer.current || pinSpacer.nativeElement);
-            pinCache.spacerIsNative = !!pinSpacer;
-            pinSpacer && (pinCache.spacerState = _getState(pinSpacer));
-          }
-          pinCache.spacer = spacer = pinSpacer || _doc4.createElement("div");
-          spacer.classList.add("pin-spacer");
-          id && spacer.classList.add("pin-spacer-" + id);
-          pinCache.pinState = pinOriginalState = _getState(pin);
-        } else {
-          pinOriginalState = pinCache.pinState;
-        }
-        vars.force3D !== false && gsap3.set(pin, {
-          force3D: true
-        });
-        self.spacer = spacer = pinCache.spacer;
-        cs = _getComputedStyle(pin);
-        spacingStart = cs[pinSpacing + direction.os2];
-        pinGetter = gsap3.getProperty(pin);
-        pinSetter = gsap3.quickSetter(pin, direction.a, _px);
-        _swapPinIn(pin, spacer, cs);
-        pinState = _getState(pin);
-      }
-      if (markers) {
-        markerVars = _isObject3(markers) ? _setDefaults3(markers, _markerDefaults) : _markerDefaults;
-        markerStartTrigger = _createMarker("scroller-start", id, scroller, direction, markerVars, 0);
-        markerEndTrigger = _createMarker("scroller-end", id, scroller, direction, markerVars, 0, markerStartTrigger);
-        offset = markerStartTrigger["offset" + direction.op.d2];
-        var content = _getTarget(_getProxyProp(scroller, "content") || scroller);
-        markerStart = this.markerStart = _createMarker("start", id, content, direction, markerVars, offset, 0, containerAnimation);
-        markerEnd = this.markerEnd = _createMarker("end", id, content, direction, markerVars, offset, 0, containerAnimation);
-        containerAnimation && (caMarkerSetter = gsap3.quickSetter([markerStart, markerEnd], direction.a, _px));
-        if (!useFixedPosition && !(_proxies.length && _getProxyProp(scroller, "fixedMarkers") === true)) {
-          _makePositionable(isViewport ? _body2 : scroller);
-          gsap3.set([markerStartTrigger, markerEndTrigger], {
-            force3D: true
-          });
-          markerStartSetter = gsap3.quickSetter(markerStartTrigger, direction.a, _px);
-          markerEndSetter = gsap3.quickSetter(markerEndTrigger, direction.a, _px);
-        }
-      }
-      if (containerAnimation) {
-        var oldOnUpdate = containerAnimation.vars.onUpdate, oldParams = containerAnimation.vars.onUpdateParams;
-        containerAnimation.eventCallback("onUpdate", function() {
-          self.update(0, 0, 1);
-          oldOnUpdate && oldOnUpdate.apply(containerAnimation, oldParams || []);
-        });
-      }
-      self.previous = function() {
-        return _triggers[_triggers.indexOf(self) - 1];
-      };
-      self.next = function() {
-        return _triggers[_triggers.indexOf(self) + 1];
-      };
-      self.revert = function(revert, temp) {
-        if (!temp) {
-          return self.kill(true);
-        }
-        var r = revert !== false || !self.enabled, prevRefreshing = _refreshing;
-        if (r !== self.isReverted) {
-          if (r) {
-            prevScroll = Math.max(scrollFunc(), self.scroll.rec || 0);
-            prevProgress = self.progress;
-            prevAnimProgress = animation && animation.progress();
-          }
-          markerStart && [markerStart, markerEnd, markerStartTrigger, markerEndTrigger].forEach(function(m) {
-            return m.style.display = r ? "none" : "block";
-          });
-          if (r) {
-            _refreshing = self;
-            self.update(r);
-          }
-          if (pin && (!pinReparent || !self.isActive)) {
-            if (r) {
-              _swapPinOut(pin, spacer, pinOriginalState);
-            } else {
-              _swapPinIn(pin, spacer, _getComputedStyle(pin), spacerState);
-            }
-          }
-          r || self.update(r);
-          _refreshing = prevRefreshing;
-          self.isReverted = r;
-        }
-      };
-      self.refresh = function(soft, force, position, pinOffset) {
-        if ((_refreshing || !self.enabled) && !force) {
-          return;
-        }
-        if (pin && soft && _lastScrollTime) {
-          _addListener3(ScrollTrigger3, "scrollEnd", _softRefresh);
-          return;
-        }
-        !_refreshingAll && onRefreshInit && onRefreshInit(self);
-        _refreshing = self;
-        if (tweenTo.tween && !position) {
-          tweenTo.tween.kill();
-          tweenTo.tween = 0;
-        }
-        scrubTween && scrubTween.pause();
-        if (invalidateOnRefresh && animation) {
-          animation.revert({
-            kill: false
-          }).invalidate();
-          animation.getChildren && animation.getChildren(true, true, false).forEach(function(t) {
-            return t.vars.immediateRender && t.render(0, true, true);
-          });
-        }
-        self.isReverted || self.revert(true, true);
-        self._subPinOffset = false;
-        var size = getScrollerSize(), scrollerBounds = getScrollerOffsets(), max = containerAnimation ? containerAnimation.duration() : _maxScroll(scroller, direction), isFirstRefresh = change <= 0.01 || !change, offset2 = 0, otherPinOffset = pinOffset || 0, parsedEnd = _isObject3(position) ? position.end : vars.end, parsedEndTrigger = vars.endTrigger || trigger, parsedStart = _isObject3(position) ? position.start : vars.start || (vars.start === 0 || !trigger ? 0 : pin ? "0 0" : "0 100%"), pinnedContainer = self.pinnedContainer = vars.pinnedContainer && _getTarget(vars.pinnedContainer, self), triggerIndex = trigger && Math.max(0, _triggers.indexOf(self)) || 0, i = triggerIndex, cs2, bounds, scroll, isVertical, override, curTrigger, curPin, oppositeScroll, initted, revertedPins, forcedOverflow, markerStartOffset, markerEndOffset;
-        if (markers && _isObject3(position)) {
-          markerStartOffset = gsap3.getProperty(markerStartTrigger, direction.p);
-          markerEndOffset = gsap3.getProperty(markerEndTrigger, direction.p);
-        }
-        while (i-- > 0) {
-          curTrigger = _triggers[i];
-          curTrigger.end || curTrigger.refresh(0, 1) || (_refreshing = self);
-          curPin = curTrigger.pin;
-          if (curPin && (curPin === trigger || curPin === pin || curPin === pinnedContainer) && !curTrigger.isReverted) {
-            revertedPins || (revertedPins = []);
-            revertedPins.unshift(curTrigger);
-            curTrigger.revert(true, true);
-          }
-          if (curTrigger !== _triggers[i]) {
-            triggerIndex--;
-            i--;
-          }
-        }
-        _isFunction3(parsedStart) && (parsedStart = parsedStart(self));
-        parsedStart = _parseClamp(parsedStart, "start", self);
-        start = _parsePosition3(parsedStart, trigger, size, direction, scrollFunc(), markerStart, markerStartTrigger, self, scrollerBounds, borderWidth, useFixedPosition, max, containerAnimation, self._startClamp && "_startClamp") || (pin ? -1e-3 : 0);
-        _isFunction3(parsedEnd) && (parsedEnd = parsedEnd(self));
-        if (_isString3(parsedEnd) && !parsedEnd.indexOf("+=")) {
-          if (~parsedEnd.indexOf(" ")) {
-            parsedEnd = (_isString3(parsedStart) ? parsedStart.split(" ")[0] : "") + parsedEnd;
-          } else {
-            offset2 = _offsetToPx(parsedEnd.substr(2), size);
-            parsedEnd = _isString3(parsedStart) ? parsedStart : (containerAnimation ? gsap3.utils.mapRange(0, containerAnimation.duration(), containerAnimation.scrollTrigger.start, containerAnimation.scrollTrigger.end, start) : start) + offset2;
-            parsedEndTrigger = trigger;
-          }
-        }
-        parsedEnd = _parseClamp(parsedEnd, "end", self);
-        end = Math.max(start, _parsePosition3(parsedEnd || (parsedEndTrigger ? "100% 0" : max), parsedEndTrigger, size, direction, scrollFunc() + offset2, markerEnd, markerEndTrigger, self, scrollerBounds, borderWidth, useFixedPosition, max, containerAnimation, self._endClamp && "_endClamp")) || -1e-3;
-        offset2 = 0;
-        i = triggerIndex;
-        while (i--) {
-          curTrigger = _triggers[i];
-          curPin = curTrigger.pin;
-          if (curPin && curTrigger.start - curTrigger._pinPush <= start && !containerAnimation && curTrigger.end > 0) {
-            cs2 = curTrigger.end - (self._startClamp ? Math.max(0, curTrigger.start) : curTrigger.start);
-            if ((curPin === trigger && curTrigger.start - curTrigger._pinPush < start || curPin === pinnedContainer) && isNaN(parsedStart)) {
-              offset2 += cs2 * (1 - curTrigger.progress);
-            }
-            curPin === pin && (otherPinOffset += cs2);
-          }
-        }
-        start += offset2;
-        end += offset2;
-        self._startClamp && (self._startClamp += offset2);
-        if (self._endClamp && !_refreshingAll) {
-          self._endClamp = end || -1e-3;
-          end = Math.min(end, _maxScroll(scroller, direction));
-        }
-        change = end - start || (start -= 0.01) && 1e-3;
-        if (isFirstRefresh) {
-          prevProgress = gsap3.utils.clamp(0, 1, gsap3.utils.normalize(start, end, prevScroll));
-        }
-        self._pinPush = otherPinOffset;
-        if (markerStart && offset2) {
-          cs2 = {};
-          cs2[direction.a] = "+=" + offset2;
-          pinnedContainer && (cs2[direction.p] = "-=" + scrollFunc());
-          gsap3.set([markerStart, markerEnd], cs2);
-        }
-        if (pin && !(_clampingMax && self.end >= _maxScroll(scroller, direction))) {
-          cs2 = _getComputedStyle(pin);
-          isVertical = direction === _vertical;
-          scroll = scrollFunc();
-          pinStart = parseFloat(pinGetter(direction.a)) + otherPinOffset;
-          if (!max && end > 1) {
-            forcedOverflow = (isViewport ? _doc4.scrollingElement || _docEl2 : scroller).style;
-            forcedOverflow = {
-              style: forcedOverflow,
-              value: forcedOverflow["overflow" + direction.a.toUpperCase()]
-            };
-            if (isViewport && _getComputedStyle(_body2)["overflow" + direction.a.toUpperCase()] !== "scroll") {
-              forcedOverflow.style["overflow" + direction.a.toUpperCase()] = "scroll";
-            }
-          }
-          _swapPinIn(pin, spacer, cs2);
-          pinState = _getState(pin);
-          bounds = _getBounds(pin, true);
-          oppositeScroll = useFixedPosition && _getScrollFunc(scroller, isVertical ? _horizontal : _vertical)();
-          if (pinSpacing) {
-            spacerState = [pinSpacing + direction.os2, change + otherPinOffset + _px];
-            spacerState.t = spacer;
-            i = pinSpacing === _padding ? _getSize(pin, direction) + change + otherPinOffset : 0;
-            if (i) {
-              spacerState.push(direction.d, i + _px);
-              spacer.style.flexBasis !== "auto" && (spacer.style.flexBasis = i + _px);
-            }
-            _setState(spacerState);
-            if (pinnedContainer) {
-              _triggers.forEach(function(t) {
-                if (t.pin === pinnedContainer && t.vars.pinSpacing !== false) {
-                  t._subPinOffset = true;
-                }
-              });
-            }
-            useFixedPosition && scrollFunc(prevScroll);
-          } else {
-            i = _getSize(pin, direction);
-            i && spacer.style.flexBasis !== "auto" && (spacer.style.flexBasis = i + _px);
-          }
-          if (useFixedPosition) {
-            override = {
-              top: bounds.top + (isVertical ? scroll - start : oppositeScroll) + _px,
-              left: bounds.left + (isVertical ? oppositeScroll : scroll - start) + _px,
-              boxSizing: "border-box",
-              position: "fixed"
-            };
-            override[_width] = override["max" + _Width] = Math.ceil(bounds.width) + _px;
-            override[_height] = override["max" + _Height] = Math.ceil(bounds.height) + _px;
-            override[_margin] = override[_margin + _Top] = override[_margin + _Right] = override[_margin + _Bottom] = override[_margin + _Left] = "0";
-            override[_padding] = cs2[_padding];
-            override[_padding + _Top] = cs2[_padding + _Top];
-            override[_padding + _Right] = cs2[_padding + _Right];
-            override[_padding + _Bottom] = cs2[_padding + _Bottom];
-            override[_padding + _Left] = cs2[_padding + _Left];
-            pinActiveState = _copyState(pinOriginalState, override, pinReparent);
-            _refreshingAll && scrollFunc(0);
-          }
-          if (animation) {
-            initted = animation._initted;
-            _suppressOverwrites2(1);
-            animation.render(animation.duration(), true, true);
-            pinChange = pinGetter(direction.a) - pinStart + change + otherPinOffset;
-            pinMoves = Math.abs(change - pinChange) > 1;
-            useFixedPosition && pinMoves && pinActiveState.splice(pinActiveState.length - 2, 2);
-            animation.render(0, true, true);
-            initted || animation.invalidate(true);
-            animation.parent || animation.totalTime(animation.totalTime());
-            _suppressOverwrites2(0);
-          } else {
-            pinChange = change;
-          }
-          forcedOverflow && (forcedOverflow.value ? forcedOverflow.style["overflow" + direction.a.toUpperCase()] = forcedOverflow.value : forcedOverflow.style.removeProperty("overflow-" + direction.a));
-        } else if (trigger && scrollFunc() && !containerAnimation) {
-          bounds = trigger.parentNode;
-          while (bounds && bounds !== _body2) {
-            if (bounds._pinOffset) {
-              start -= bounds._pinOffset;
-              end -= bounds._pinOffset;
-            }
-            bounds = bounds.parentNode;
-          }
-        }
-        revertedPins && revertedPins.forEach(function(t) {
-          return t.revert(false, true);
-        });
-        self.start = start;
-        self.end = end;
-        scroll1 = scroll2 = _refreshingAll ? prevScroll : scrollFunc();
-        if (!containerAnimation && !_refreshingAll) {
-          scroll1 < prevScroll && scrollFunc(prevScroll);
-          self.scroll.rec = 0;
-        }
-        self.revert(false, true);
-        lastRefresh = _getTime2();
-        if (snapDelayedCall) {
-          lastSnap = -1;
-          snapDelayedCall.restart(true);
-        }
-        _refreshing = 0;
-        animation && isToggle && (animation._initted || prevAnimProgress) && animation.progress() !== prevAnimProgress && animation.progress(prevAnimProgress || 0, true).render(animation.time(), true, true);
-        if (isFirstRefresh || prevProgress !== self.progress || containerAnimation || invalidateOnRefresh || animation && !animation._initted) {
-          animation && !isToggle && (animation._initted || prevProgress || animation.vars.immediateRender !== false) && animation.totalProgress(containerAnimation && start < -1e-3 && !prevProgress ? gsap3.utils.normalize(start, end, 0) : prevProgress, true);
-          self.progress = isFirstRefresh || (scroll1 - start) / change === prevProgress ? 0 : prevProgress;
-        }
-        pin && pinSpacing && (spacer._pinOffset = Math.round(self.progress * pinChange));
-        scrubTween && scrubTween.invalidate();
-        if (!isNaN(markerStartOffset)) {
-          markerStartOffset -= gsap3.getProperty(markerStartTrigger, direction.p);
-          markerEndOffset -= gsap3.getProperty(markerEndTrigger, direction.p);
-          _shiftMarker(markerStartTrigger, direction, markerStartOffset);
-          _shiftMarker(markerStart, direction, markerStartOffset - (pinOffset || 0));
-          _shiftMarker(markerEndTrigger, direction, markerEndOffset);
-          _shiftMarker(markerEnd, direction, markerEndOffset - (pinOffset || 0));
-        }
-        isFirstRefresh && !_refreshingAll && self.update();
-        if (onRefresh && !_refreshingAll && !executingOnRefresh) {
-          executingOnRefresh = true;
-          onRefresh(self);
-          executingOnRefresh = false;
-        }
-      };
-      self.getVelocity = function() {
-        return (scrollFunc() - scroll2) / (_getTime2() - _time2) * 1e3 || 0;
-      };
-      self.endAnimation = function() {
-        _endAnimation(self.callbackAnimation);
-        if (animation) {
-          scrubTween ? scrubTween.progress(1) : !animation.paused() ? _endAnimation(animation, animation.reversed()) : isToggle || _endAnimation(animation, self.direction < 0, 1);
-        }
-      };
-      self.labelToScroll = function(label) {
-        return animation && animation.labels && (start || self.refresh() || start) + animation.labels[label] / animation.duration() * change || 0;
-      };
-      self.getTrailing = function(name) {
-        var i = _triggers.indexOf(self), a = self.direction > 0 ? _triggers.slice(0, i).reverse() : _triggers.slice(i + 1);
-        return (_isString3(name) ? a.filter(function(t) {
-          return t.vars.preventOverlaps === name;
-        }) : a).filter(function(t) {
-          return self.direction > 0 ? t.end <= start : t.start >= end;
-        });
-      };
-      self.update = function(reset, recordVelocity, forceFake) {
-        if (containerAnimation && !forceFake && !reset) {
-          return;
-        }
-        var scroll = _refreshingAll === true ? prevScroll : self.scroll(), p = reset ? 0 : (scroll - start) / change, clipped = p < 0 ? 0 : p > 1 ? 1 : p || 0, prevProgress2 = self.progress, isActive, wasActive, toggleState, action, stateChanged, toggled, isAtMax, isTakingAction;
-        if (recordVelocity) {
-          scroll2 = scroll1;
-          scroll1 = containerAnimation ? scrollFunc() : scroll;
-          if (snap3) {
-            snap22 = snap1;
-            snap1 = animation && !isToggle ? animation.totalProgress() : clipped;
-          }
-        }
-        if (anticipatePin && pin && !_refreshing && !_startup2 && _lastScrollTime) {
-          if (!clipped && start < scroll + (scroll - scroll2) / (_getTime2() - _time2) * anticipatePin) {
-            clipped = 1e-4;
-          } else if (clipped === 1 && end > scroll + (scroll - scroll2) / (_getTime2() - _time2) * anticipatePin) {
-            clipped = 0.9999;
-          }
-        }
-        if (clipped !== prevProgress2 && self.enabled) {
-          isActive = self.isActive = !!clipped && clipped < 1;
-          wasActive = !!prevProgress2 && prevProgress2 < 1;
-          toggled = isActive !== wasActive;
-          stateChanged = toggled || !!clipped !== !!prevProgress2;
-          self.direction = clipped > prevProgress2 ? 1 : -1;
-          self.progress = clipped;
-          if (stateChanged && !_refreshing) {
-            toggleState = clipped && !prevProgress2 ? 0 : clipped === 1 ? 1 : prevProgress2 === 1 ? 2 : 3;
-            if (isToggle) {
-              action = !toggled && toggleActions[toggleState + 1] !== "none" && toggleActions[toggleState + 1] || toggleActions[toggleState];
-              isTakingAction = animation && (action === "complete" || action === "reset" || action in animation);
-            }
-          }
-          preventOverlaps && (toggled || isTakingAction) && (isTakingAction || scrub || !animation) && (_isFunction3(preventOverlaps) ? preventOverlaps(self) : self.getTrailing(preventOverlaps).forEach(function(t) {
-            return t.endAnimation();
-          }));
-          if (!isToggle) {
-            if (scrubTween && !_refreshing && !_startup2) {
-              scrubTween._dp._time - scrubTween._start !== scrubTween._time && scrubTween.render(scrubTween._dp._time - scrubTween._start);
-              if (scrubTween.resetTo) {
-                scrubTween.resetTo("totalProgress", clipped, animation._tTime / animation._tDur);
-              } else {
-                scrubTween.vars.totalProgress = clipped;
-                scrubTween.invalidate().restart();
-              }
-            } else if (animation) {
-              animation.totalProgress(clipped, !!(_refreshing && (lastRefresh || reset)));
-            }
-          }
-          if (pin) {
-            reset && pinSpacing && (spacer.style[pinSpacing + direction.os2] = spacingStart);
-            if (!useFixedPosition) {
-              pinSetter(_round3(pinStart + pinChange * clipped));
-            } else if (stateChanged) {
-              isAtMax = !reset && clipped > prevProgress2 && end + 1 > scroll && scroll + 1 >= _maxScroll(scroller, direction);
-              if (pinReparent) {
-                if (!reset && (isActive || isAtMax)) {
-                  var bounds = _getBounds(pin, true), _offset = scroll - start;
-                  _reparent(pin, _body2, bounds.top + (direction === _vertical ? _offset : 0) + _px, bounds.left + (direction === _vertical ? 0 : _offset) + _px);
-                } else {
-                  _reparent(pin, spacer);
-                }
-              }
-              _setState(isActive || isAtMax ? pinActiveState : pinState);
-              pinMoves && clipped < 1 && isActive || pinSetter(pinStart + (clipped === 1 && !isAtMax ? pinChange : 0));
-            }
-          }
-          snap3 && !tweenTo.tween && !_refreshing && !_startup2 && snapDelayedCall.restart(true);
-          toggleClass && (toggled || once && clipped && (clipped < 1 || !_limitCallbacks)) && _toArray(toggleClass.targets).forEach(function(el) {
-            return el.classList[isActive || once ? "add" : "remove"](toggleClass.className);
-          });
-          onUpdate && !isToggle && !reset && onUpdate(self);
-          if (stateChanged && !_refreshing) {
-            if (isToggle) {
-              if (isTakingAction) {
-                if (action === "complete") {
-                  animation.pause().totalProgress(1);
-                } else if (action === "reset") {
-                  animation.restart(true).pause();
-                } else if (action === "restart") {
-                  animation.restart(true);
-                } else {
-                  animation[action]();
-                }
-              }
-              onUpdate && onUpdate(self);
-            }
-            if (toggled || !_limitCallbacks) {
-              onToggle && toggled && _callback3(self, onToggle);
-              callbacks[toggleState] && _callback3(self, callbacks[toggleState]);
-              once && (clipped === 1 ? self.kill(false, 1) : callbacks[toggleState] = 0);
-              if (!toggled) {
-                toggleState = clipped === 1 ? 1 : 3;
-                callbacks[toggleState] && _callback3(self, callbacks[toggleState]);
-              }
-            }
-            if (fastScrollEnd && !isActive && Math.abs(self.getVelocity()) > (_isNumber3(fastScrollEnd) ? fastScrollEnd : 2500)) {
-              _endAnimation(self.callbackAnimation);
-              scrubTween ? scrubTween.progress(1) : _endAnimation(animation, action === "reverse" ? 1 : !clipped, 1);
-            }
-          } else if (isToggle && onUpdate && !_refreshing) {
-            onUpdate(self);
-          }
-        }
-        if (markerEndSetter) {
-          var n = containerAnimation ? scroll / containerAnimation.duration() * (containerAnimation._caScrollDist || 0) : scroll;
-          markerStartSetter(n + (markerStartTrigger._isFlipped ? 1 : 0));
-          markerEndSetter(n);
-        }
-        caMarkerSetter && caMarkerSetter(-scroll / containerAnimation.duration() * (containerAnimation._caScrollDist || 0));
-      };
-      self.enable = function(reset, refresh) {
-        if (!self.enabled) {
-          self.enabled = true;
-          _addListener3(scroller, "resize", _onResize);
-          isViewport || _addListener3(scroller, "scroll", _onScroll3);
-          onRefreshInit && _addListener3(ScrollTrigger3, "refreshInit", onRefreshInit);
-          if (reset !== false) {
-            self.progress = prevProgress = 0;
-            scroll1 = scroll2 = lastSnap = scrollFunc();
-          }
-          refresh !== false && self.refresh();
-        }
-      };
-      self.getTween = function(snap4) {
-        return snap4 && tweenTo ? tweenTo.tween : scrubTween;
-      };
-      self.setPositions = function(newStart, newEnd, keepClamp, pinOffset) {
-        if (containerAnimation) {
-          var st = containerAnimation.scrollTrigger, duration = containerAnimation.duration(), _change = st.end - st.start;
-          newStart = st.start + _change * newStart / duration;
-          newEnd = st.start + _change * newEnd / duration;
-        }
-        self.refresh(false, false, {
-          start: _keepClamp(newStart, keepClamp && !!self._startClamp),
-          end: _keepClamp(newEnd, keepClamp && !!self._endClamp)
-        }, pinOffset);
-        self.update();
-      };
-      self.adjustPinSpacing = function(amount) {
-        if (spacerState && amount) {
-          var i = spacerState.indexOf(direction.d) + 1;
-          spacerState[i] = parseFloat(spacerState[i]) + amount + _px;
-          spacerState[1] = parseFloat(spacerState[1]) + amount + _px;
-          _setState(spacerState);
-        }
-      };
-      self.disable = function(reset, allowAnimation) {
-        if (self.enabled) {
-          reset !== false && self.revert(true, true);
-          self.enabled = self.isActive = false;
-          allowAnimation || scrubTween && scrubTween.pause();
-          prevScroll = 0;
-          pinCache && (pinCache.uncache = 1);
-          onRefreshInit && _removeListener3(ScrollTrigger3, "refreshInit", onRefreshInit);
-          if (snapDelayedCall) {
-            snapDelayedCall.pause();
-            tweenTo.tween && tweenTo.tween.kill() && (tweenTo.tween = 0);
-          }
-          if (!isViewport) {
-            var i = _triggers.length;
-            while (i--) {
-              if (_triggers[i].scroller === scroller && _triggers[i] !== self) {
-                return;
-              }
-            }
-            _removeListener3(scroller, "resize", _onResize);
-            isViewport || _removeListener3(scroller, "scroll", _onScroll3);
-          }
-        }
-      };
-      self.kill = function(revert, allowAnimation) {
-        self.disable(revert, allowAnimation);
-        scrubTween && !allowAnimation && scrubTween.kill();
-        id && delete _ids[id];
-        var i = _triggers.indexOf(self);
-        i >= 0 && _triggers.splice(i, 1);
-        i === _i && _direction > 0 && _i--;
-        i = 0;
-        _triggers.forEach(function(t) {
-          return t.scroller === self.scroller && (i = 1);
-        });
-        i || _refreshingAll || (self.scroll.rec = 0);
-        if (animation) {
-          animation.scrollTrigger = null;
-          revert && animation.revert({
-            kill: false
-          });
-          allowAnimation || animation.kill();
-        }
-        markerStart && [markerStart, markerEnd, markerStartTrigger, markerEndTrigger].forEach(function(m) {
-          return m.parentNode && m.parentNode.removeChild(m);
-        });
-        _primary === self && (_primary = 0);
-        if (pin) {
-          pinCache && (pinCache.uncache = 1);
-          i = 0;
-          _triggers.forEach(function(t) {
-            return t.pin === pin && i++;
-          });
-          i || (pinCache.spacer = 0);
-        }
-        vars.onKill && vars.onKill(self);
-      };
-      _triggers.push(self);
-      self.enable(false, false);
-      customRevertReturn && customRevertReturn(self);
-      if (animation && animation.add && !change) {
-        var updateFunc = self.update;
-        self.update = function() {
-          self.update = updateFunc;
-          _scrollers.cache++;
-          start || end || self.refresh();
-        };
-        gsap3.delayedCall(0.01, self.update);
-        change = 0.01;
-        start = end = 0;
-      } else {
-        self.refresh();
-      }
-      pin && _queueRefreshAll();
-    };
-    ScrollTrigger3.register = function register2(core) {
-      if (!_coreInitted3) {
-        gsap3 = core || _getGSAP3();
-        _windowExists5() && window.document && ScrollTrigger3.enable();
-        _coreInitted3 = _enabled;
-      }
-      return _coreInitted3;
-    };
-    ScrollTrigger3.defaults = function defaults2(config3) {
-      if (config3) {
-        for (var p in config3) {
-          _defaults2[p] = config3[p];
-        }
-      }
-      return _defaults2;
-    };
-    ScrollTrigger3.disable = function disable(reset, kill2) {
-      _enabled = 0;
-      _triggers.forEach(function(trigger) {
-        return trigger[kill2 ? "kill" : "disable"](reset);
-      });
-      _removeListener3(_win4, "wheel", _onScroll3);
-      _removeListener3(_doc4, "scroll", _onScroll3);
-      clearInterval(_syncInterval);
-      _removeListener3(_doc4, "touchcancel", _passThrough3);
-      _removeListener3(_body2, "touchstart", _passThrough3);
-      _multiListener(_removeListener3, _doc4, "pointerdown,touchstart,mousedown", _pointerDownHandler);
-      _multiListener(_removeListener3, _doc4, "pointerup,touchend,mouseup", _pointerUpHandler);
-      _resizeDelay.kill();
-      _iterateAutoRefresh(_removeListener3);
-      for (var i = 0; i < _scrollers.length; i += 3) {
-        _wheelListener(_removeListener3, _scrollers[i], _scrollers[i + 1]);
-        _wheelListener(_removeListener3, _scrollers[i], _scrollers[i + 2]);
-      }
-    };
-    ScrollTrigger3.enable = function enable() {
-      _win4 = window;
-      _doc4 = document;
-      _docEl2 = _doc4.documentElement;
-      _body2 = _doc4.body;
-      if (gsap3) {
-        _toArray = gsap3.utils.toArray;
-        _clamp4 = gsap3.utils.clamp;
-        _context3 = gsap3.core.context || _passThrough3;
-        _suppressOverwrites2 = gsap3.core.suppressOverwrites || _passThrough3;
-        _scrollRestoration = _win4.history.scrollRestoration || "auto";
-        _lastScroll = _win4.pageYOffset || 0;
-        gsap3.core.globals("ScrollTrigger", ScrollTrigger3);
-        if (_body2) {
-          _enabled = 1;
-          _div100vh = document.createElement("div");
-          _div100vh.style.height = "100vh";
-          _div100vh.style.position = "absolute";
-          _refresh100vh();
-          _rafBugFix();
-          Observer.register(gsap3);
-          ScrollTrigger3.isTouch = Observer.isTouch;
-          _fixIOSBug = Observer.isTouch && /(iPad|iPhone|iPod|Mac)/g.test(navigator.userAgent);
-          _ignoreMobileResize = Observer.isTouch === 1;
-          _addListener3(_win4, "wheel", _onScroll3);
-          _root2 = [_win4, _doc4, _docEl2, _body2];
-          if (gsap3.matchMedia) {
-            ScrollTrigger3.matchMedia = function(vars) {
-              var mm = gsap3.matchMedia(), p;
-              for (p in vars) {
-                mm.add(p, vars[p]);
-              }
-              return mm;
-            };
-            gsap3.addEventListener("matchMediaInit", function() {
-              return _revertAll();
-            });
-            gsap3.addEventListener("matchMediaRevert", function() {
-              return _revertRecorded();
-            });
-            gsap3.addEventListener("matchMedia", function() {
-              _refreshAll(0, 1);
-              _dispatch3("matchMedia");
-            });
-            gsap3.matchMedia().add("(orientation: portrait)", function() {
-              _setBaseDimensions();
-              return _setBaseDimensions;
-            });
-          } else {
-            console.warn("Requires GSAP 3.11.0 or later");
-          }
-          _setBaseDimensions();
-          _addListener3(_doc4, "scroll", _onScroll3);
-          var bodyHasStyle = _body2.hasAttribute("style"), bodyStyle = _body2.style, border = bodyStyle.borderTopStyle, AnimationProto = gsap3.core.Animation.prototype, bounds, i;
-          AnimationProto.revert || Object.defineProperty(AnimationProto, "revert", {
-            value: function value() {
-              return this.time(-0.01, true);
-            }
-          });
-          bodyStyle.borderTopStyle = "solid";
-          bounds = _getBounds(_body2);
-          _vertical.m = Math.round(bounds.top + _vertical.sc()) || 0;
-          _horizontal.m = Math.round(bounds.left + _horizontal.sc()) || 0;
-          border ? bodyStyle.borderTopStyle = border : bodyStyle.removeProperty("border-top-style");
-          if (!bodyHasStyle) {
-            _body2.setAttribute("style", "");
-            _body2.removeAttribute("style");
-          }
-          _syncInterval = setInterval(_sync, 250);
-          gsap3.delayedCall(0.5, function() {
-            return _startup2 = 0;
-          });
-          _addListener3(_doc4, "touchcancel", _passThrough3);
-          _addListener3(_body2, "touchstart", _passThrough3);
-          _multiListener(_addListener3, _doc4, "pointerdown,touchstart,mousedown", _pointerDownHandler);
-          _multiListener(_addListener3, _doc4, "pointerup,touchend,mouseup", _pointerUpHandler);
-          _transformProp2 = gsap3.utils.checkPrefix("transform");
-          _stateProps.push(_transformProp2);
-          _coreInitted3 = _getTime2();
-          _resizeDelay = gsap3.delayedCall(0.2, _refreshAll).pause();
-          _autoRefresh = [_doc4, "visibilitychange", function() {
-            var w = _win4.innerWidth, h = _win4.innerHeight;
-            if (_doc4.hidden) {
-              _prevWidth = w;
-              _prevHeight = h;
-            } else if (_prevWidth !== w || _prevHeight !== h) {
-              _onResize();
-            }
-          }, _doc4, "DOMContentLoaded", _refreshAll, _win4, "load", _refreshAll, _win4, "resize", _onResize];
-          _iterateAutoRefresh(_addListener3);
-          _triggers.forEach(function(trigger) {
-            return trigger.enable(0, 1);
-          });
-          for (i = 0; i < _scrollers.length; i += 3) {
-            _wheelListener(_removeListener3, _scrollers[i], _scrollers[i + 1]);
-            _wheelListener(_removeListener3, _scrollers[i], _scrollers[i + 2]);
-          }
-        }
-      }
-    };
-    ScrollTrigger3.config = function config3(vars) {
-      "limitCallbacks" in vars && (_limitCallbacks = !!vars.limitCallbacks);
-      var ms = vars.syncInterval;
-      ms && clearInterval(_syncInterval) || (_syncInterval = ms) && setInterval(_sync, ms);
-      "ignoreMobileResize" in vars && (_ignoreMobileResize = ScrollTrigger3.isTouch === 1 && vars.ignoreMobileResize);
-      if ("autoRefreshEvents" in vars) {
-        _iterateAutoRefresh(_removeListener3) || _iterateAutoRefresh(_addListener3, vars.autoRefreshEvents || "none");
-        _ignoreResize = (vars.autoRefreshEvents + "").indexOf("resize") === -1;
-      }
-    };
-    ScrollTrigger3.scrollerProxy = function scrollerProxy(target, vars) {
-      var t = _getTarget(target), i = _scrollers.indexOf(t), isViewport = _isViewport3(t);
-      if (~i) {
-        _scrollers.splice(i, isViewport ? 6 : 2);
-      }
-      if (vars) {
-        isViewport ? _proxies.unshift(_win4, vars, _body2, vars, _docEl2, vars) : _proxies.unshift(t, vars);
-      }
-    };
-    ScrollTrigger3.clearMatchMedia = function clearMatchMedia(query) {
-      _triggers.forEach(function(t) {
-        return t._ctx && t._ctx.query === query && t._ctx.kill(true, true);
-      });
-    };
-    ScrollTrigger3.isInViewport = function isInViewport(element, ratio, horizontal) {
-      var bounds = (_isString3(element) ? _getTarget(element) : element).getBoundingClientRect(), offset = bounds[horizontal ? _width : _height] * ratio || 0;
-      return horizontal ? bounds.right - offset > 0 && bounds.left + offset < _win4.innerWidth : bounds.bottom - offset > 0 && bounds.top + offset < _win4.innerHeight;
-    };
-    ScrollTrigger3.positionInViewport = function positionInViewport(element, referencePoint, horizontal) {
-      _isString3(element) && (element = _getTarget(element));
-      var bounds = element.getBoundingClientRect(), size = bounds[horizontal ? _width : _height], offset = referencePoint == null ? size / 2 : referencePoint in _keywords ? _keywords[referencePoint] * size : ~referencePoint.indexOf("%") ? parseFloat(referencePoint) * size / 100 : parseFloat(referencePoint) || 0;
-      return horizontal ? (bounds.left + offset) / _win4.innerWidth : (bounds.top + offset) / _win4.innerHeight;
-    };
-    ScrollTrigger3.killAll = function killAll(allowListeners) {
-      _triggers.slice(0).forEach(function(t) {
-        return t.vars.id !== "ScrollSmoother" && t.kill();
-      });
-      if (allowListeners !== true) {
-        var listeners = _listeners2.killAll || [];
-        _listeners2 = {};
-        listeners.forEach(function(f) {
-          return f();
-        });
-      }
-    };
-    return ScrollTrigger3;
-  }();
-  ScrollTrigger2.version = "3.13.0";
-  ScrollTrigger2.saveStyles = function(targets) {
-    return targets ? _toArray(targets).forEach(function(target) {
-      if (target && target.style) {
-        var i = _savedStyles.indexOf(target);
-        i >= 0 && _savedStyles.splice(i, 5);
-        _savedStyles.push(target, target.style.cssText, target.getBBox && target.getAttribute("transform"), gsap3.core.getCache(target), _context3());
-      }
-    }) : _savedStyles;
-  };
-  ScrollTrigger2.revert = function(soft, media) {
-    return _revertAll(!soft, media);
-  };
-  ScrollTrigger2.create = function(vars, animation) {
-    return new ScrollTrigger2(vars, animation);
-  };
-  ScrollTrigger2.refresh = function(safe) {
-    return safe ? _onResize(true) : (_coreInitted3 || ScrollTrigger2.register()) && _refreshAll(true);
-  };
-  ScrollTrigger2.update = function(force) {
-    return ++_scrollers.cache && _updateAll(force === true ? 2 : 0);
-  };
-  ScrollTrigger2.clearScrollMemory = _clearScrollMemory;
-  ScrollTrigger2.maxScroll = function(element, horizontal) {
-    return _maxScroll(element, horizontal ? _horizontal : _vertical);
-  };
-  ScrollTrigger2.getScrollFunc = function(element, horizontal) {
-    return _getScrollFunc(_getTarget(element), horizontal ? _horizontal : _vertical);
-  };
-  ScrollTrigger2.getById = function(id) {
-    return _ids[id];
-  };
-  ScrollTrigger2.getAll = function() {
-    return _triggers.filter(function(t) {
-      return t.vars.id !== "ScrollSmoother";
-    });
-  };
-  ScrollTrigger2.isScrolling = function() {
-    return !!_lastScrollTime;
-  };
-  ScrollTrigger2.snapDirectional = _snapDirectional;
-  ScrollTrigger2.addEventListener = function(type, callback) {
-    var a = _listeners2[type] || (_listeners2[type] = []);
-    ~a.indexOf(callback) || a.push(callback);
-  };
-  ScrollTrigger2.removeEventListener = function(type, callback) {
-    var a = _listeners2[type], i = a && a.indexOf(callback);
-    i >= 0 && a.splice(i, 1);
-  };
-  ScrollTrigger2.batch = function(targets, vars) {
-    var result = [], varsCopy = {}, interval = vars.interval || 0.016, batchMax = vars.batchMax || 1e9, proxyCallback = function proxyCallback2(type, callback) {
-      var elements = [], triggers = [], delay = gsap3.delayedCall(interval, function() {
-        callback(elements, triggers);
-        elements = [];
-        triggers = [];
-      }).pause();
-      return function(self) {
-        elements.length || delay.restart(true);
-        elements.push(self.trigger);
-        triggers.push(self);
-        batchMax <= elements.length && delay.progress(1);
-      };
-    }, p;
-    for (p in vars) {
-      varsCopy[p] = p.substr(0, 2) === "on" && _isFunction3(vars[p]) && p !== "onRefreshInit" ? proxyCallback(p, vars[p]) : vars[p];
-    }
-    if (_isFunction3(batchMax)) {
-      batchMax = batchMax();
-      _addListener3(ScrollTrigger2, "refresh", function() {
-        return batchMax = vars.batchMax();
-      });
-    }
-    _toArray(targets).forEach(function(target) {
-      var config3 = {};
-      for (p in varsCopy) {
-        config3[p] = varsCopy[p];
-      }
-      config3.trigger = target;
-      result.push(ScrollTrigger2.create(config3));
-    });
-    return result;
-  };
-  var _clampScrollAndGetDurationMultiplier = function _clampScrollAndGetDurationMultiplier2(scrollFunc, current, end, max) {
-    current > max ? scrollFunc(max) : current < 0 && scrollFunc(0);
-    return end > max ? (max - current) / (end - current) : end < 0 ? current / (current - end) : 1;
-  };
-  var _allowNativePanning = function _allowNativePanning2(target, direction) {
-    if (direction === true) {
-      target.style.removeProperty("touch-action");
-    } else {
-      target.style.touchAction = direction === true ? "auto" : direction ? "pan-" + direction + (Observer.isTouch ? " pinch-zoom" : "") : "none";
-    }
-    target === _docEl2 && _allowNativePanning2(_body2, direction);
-  };
-  var _overflow = {
-    auto: 1,
-    scroll: 1
-  };
-  var _nestedScroll = function _nestedScroll2(_ref5) {
-    var event = _ref5.event, target = _ref5.target, axis = _ref5.axis;
-    var node = (event.changedTouches ? event.changedTouches[0] : event).target, cache = node._gsap || gsap3.core.getCache(node), time = _getTime2(), cs;
-    if (!cache._isScrollT || time - cache._isScrollT > 2e3) {
-      while (node && node !== _body2 && (node.scrollHeight <= node.clientHeight && node.scrollWidth <= node.clientWidth || !(_overflow[(cs = _getComputedStyle(node)).overflowY] || _overflow[cs.overflowX]))) {
-        node = node.parentNode;
-      }
-      cache._isScroll = node && node !== target && !_isViewport3(node) && (_overflow[(cs = _getComputedStyle(node)).overflowY] || _overflow[cs.overflowX]);
-      cache._isScrollT = time;
-    }
-    if (cache._isScroll || axis === "x") {
-      event.stopPropagation();
-      event._gsapAllow = true;
-    }
-  };
-  var _inputObserver = function _inputObserver2(target, type, inputs, nested) {
-    return Observer.create({
-      target,
-      capture: true,
-      debounce: false,
-      lockAxis: true,
-      type,
-      onWheel: nested = nested && _nestedScroll,
-      onPress: nested,
-      onDrag: nested,
-      onScroll: nested,
-      onEnable: function onEnable() {
-        return inputs && _addListener3(_doc4, Observer.eventTypes[0], _captureInputs, false, true);
-      },
-      onDisable: function onDisable() {
-        return _removeListener3(_doc4, Observer.eventTypes[0], _captureInputs, true);
-      }
-    });
-  };
-  var _inputExp = /(input|label|select|textarea)/i;
-  var _inputIsFocused;
-  var _captureInputs = function _captureInputs2(e) {
-    var isInput = _inputExp.test(e.target.tagName);
-    if (isInput || _inputIsFocused) {
-      e._gsapAllow = true;
-      _inputIsFocused = isInput;
-    }
-  };
-  var _getScrollNormalizer = function _getScrollNormalizer2(vars) {
-    _isObject3(vars) || (vars = {});
-    vars.preventDefault = vars.isNormalizer = vars.allowClicks = true;
-    vars.type || (vars.type = "wheel,touch");
-    vars.debounce = !!vars.debounce;
-    vars.id = vars.id || "normalizer";
-    var _vars2 = vars, normalizeScrollX = _vars2.normalizeScrollX, momentum = _vars2.momentum, allowNestedScroll = _vars2.allowNestedScroll, onRelease = _vars2.onRelease, self, maxY, target = _getTarget(vars.target) || _docEl2, smoother = gsap3.core.globals().ScrollSmoother, smootherInstance = smoother && smoother.get(), content = _fixIOSBug && (vars.content && _getTarget(vars.content) || smootherInstance && vars.content !== false && !smootherInstance.smooth() && smootherInstance.content()), scrollFuncY = _getScrollFunc(target, _vertical), scrollFuncX = _getScrollFunc(target, _horizontal), scale = 1, initialScale = (Observer.isTouch && _win4.visualViewport ? _win4.visualViewport.scale * _win4.visualViewport.width : _win4.outerWidth) / _win4.innerWidth, wheelRefresh = 0, resolveMomentumDuration = _isFunction3(momentum) ? function() {
-      return momentum(self);
-    } : function() {
-      return momentum || 2.8;
-    }, lastRefreshID, skipTouchMove, inputObserver = _inputObserver(target, vars.type, true, allowNestedScroll), resumeTouchMove = function resumeTouchMove2() {
-      return skipTouchMove = false;
-    }, scrollClampX = _passThrough3, scrollClampY = _passThrough3, updateClamps = function updateClamps2() {
-      maxY = _maxScroll(target, _vertical);
-      scrollClampY = _clamp4(_fixIOSBug ? 1 : 0, maxY);
-      normalizeScrollX && (scrollClampX = _clamp4(0, _maxScroll(target, _horizontal)));
-      lastRefreshID = _refreshID;
-    }, removeContentOffset = function removeContentOffset2() {
-      content._gsap.y = _round3(parseFloat(content._gsap.y) + scrollFuncY.offset) + "px";
-      content.style.transform = "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, " + parseFloat(content._gsap.y) + ", 0, 1)";
-      scrollFuncY.offset = scrollFuncY.cacheID = 0;
-    }, ignoreDrag = function ignoreDrag2() {
-      if (skipTouchMove) {
-        requestAnimationFrame(resumeTouchMove);
-        var offset = _round3(self.deltaY / 2), scroll = scrollClampY(scrollFuncY.v - offset);
-        if (content && scroll !== scrollFuncY.v + scrollFuncY.offset) {
-          scrollFuncY.offset = scroll - scrollFuncY.v;
-          var y = _round3((parseFloat(content && content._gsap.y) || 0) - scrollFuncY.offset);
-          content.style.transform = "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, " + y + ", 0, 1)";
-          content._gsap.y = y + "px";
-          scrollFuncY.cacheID = _scrollers.cache;
-          _updateAll();
-        }
-        return true;
-      }
-      scrollFuncY.offset && removeContentOffset();
-      skipTouchMove = true;
-    }, tween, startScrollX, startScrollY, onStopDelayedCall, onResize = function onResize2() {
-      updateClamps();
-      if (tween.isActive() && tween.vars.scrollY > maxY) {
-        scrollFuncY() > maxY ? tween.progress(1) && scrollFuncY(maxY) : tween.resetTo("scrollY", maxY);
-      }
-    };
-    content && gsap3.set(content, {
-      y: "+=0"
-    });
-    vars.ignoreCheck = function(e) {
-      return _fixIOSBug && e.type === "touchmove" && ignoreDrag(e) || scale > 1.05 && e.type !== "touchstart" || self.isGesturing || e.touches && e.touches.length > 1;
-    };
-    vars.onPress = function() {
-      skipTouchMove = false;
-      var prevScale = scale;
-      scale = _round3((_win4.visualViewport && _win4.visualViewport.scale || 1) / initialScale);
-      tween.pause();
-      prevScale !== scale && _allowNativePanning(target, scale > 1.01 ? true : normalizeScrollX ? false : "x");
-      startScrollX = scrollFuncX();
-      startScrollY = scrollFuncY();
-      updateClamps();
-      lastRefreshID = _refreshID;
-    };
-    vars.onRelease = vars.onGestureStart = function(self2, wasDragging) {
-      scrollFuncY.offset && removeContentOffset();
-      if (!wasDragging) {
-        onStopDelayedCall.restart(true);
-      } else {
-        _scrollers.cache++;
-        var dur = resolveMomentumDuration(), currentScroll, endScroll;
-        if (normalizeScrollX) {
-          currentScroll = scrollFuncX();
-          endScroll = currentScroll + dur * 0.05 * -self2.velocityX / 0.227;
-          dur *= _clampScrollAndGetDurationMultiplier(scrollFuncX, currentScroll, endScroll, _maxScroll(target, _horizontal));
-          tween.vars.scrollX = scrollClampX(endScroll);
-        }
-        currentScroll = scrollFuncY();
-        endScroll = currentScroll + dur * 0.05 * -self2.velocityY / 0.227;
-        dur *= _clampScrollAndGetDurationMultiplier(scrollFuncY, currentScroll, endScroll, _maxScroll(target, _vertical));
-        tween.vars.scrollY = scrollClampY(endScroll);
-        tween.invalidate().duration(dur).play(0.01);
-        if (_fixIOSBug && tween.vars.scrollY >= maxY || currentScroll >= maxY - 1) {
-          gsap3.to({}, {
-            onUpdate: onResize,
-            duration: dur
-          });
-        }
-      }
-      onRelease && onRelease(self2);
-    };
-    vars.onWheel = function() {
-      tween._ts && tween.pause();
-      if (_getTime2() - wheelRefresh > 1e3) {
-        lastRefreshID = 0;
-        wheelRefresh = _getTime2();
-      }
-    };
-    vars.onChange = function(self2, dx, dy, xArray, yArray) {
-      _refreshID !== lastRefreshID && updateClamps();
-      dx && normalizeScrollX && scrollFuncX(scrollClampX(xArray[2] === dx ? startScrollX + (self2.startX - self2.x) : scrollFuncX() + dx - xArray[1]));
-      if (dy) {
-        scrollFuncY.offset && removeContentOffset();
-        var isTouch = yArray[2] === dy, y = isTouch ? startScrollY + self2.startY - self2.y : scrollFuncY() + dy - yArray[1], yClamped = scrollClampY(y);
-        isTouch && y !== yClamped && (startScrollY += yClamped - y);
-        scrollFuncY(yClamped);
-      }
-      (dy || dx) && _updateAll();
-    };
-    vars.onEnable = function() {
-      _allowNativePanning(target, normalizeScrollX ? false : "x");
-      ScrollTrigger2.addEventListener("refresh", onResize);
-      _addListener3(_win4, "resize", onResize);
-      if (scrollFuncY.smooth) {
-        scrollFuncY.target.style.scrollBehavior = "auto";
-        scrollFuncY.smooth = scrollFuncX.smooth = false;
-      }
-      inputObserver.enable();
-    };
-    vars.onDisable = function() {
-      _allowNativePanning(target, true);
-      _removeListener3(_win4, "resize", onResize);
-      ScrollTrigger2.removeEventListener("refresh", onResize);
-      inputObserver.kill();
-    };
-    vars.lockAxis = vars.lockAxis !== false;
-    self = new Observer(vars);
-    self.iOS = _fixIOSBug;
-    _fixIOSBug && !scrollFuncY() && scrollFuncY(1);
-    _fixIOSBug && gsap3.ticker.add(_passThrough3);
-    onStopDelayedCall = self._dc;
-    tween = gsap3.to(self, {
-      ease: "power4",
-      paused: true,
-      inherit: false,
-      scrollX: normalizeScrollX ? "+=0.1" : "+=0",
-      scrollY: "+=0.1",
-      modifiers: {
-        scrollY: _interruptionTracker(scrollFuncY, scrollFuncY(), function() {
-          return tween.pause();
-        })
-      },
-      onUpdate: _updateAll,
-      onComplete: onStopDelayedCall.vars.onComplete
-    });
-    return self;
-  };
-  ScrollTrigger2.sort = function(func) {
-    if (_isFunction3(func)) {
-      return _triggers.sort(func);
-    }
-    var scroll = _win4.pageYOffset || 0;
-    ScrollTrigger2.getAll().forEach(function(t) {
-      return t._sortY = t.trigger ? scroll + t.trigger.getBoundingClientRect().top : t.start + _win4.innerHeight;
-    });
-    return _triggers.sort(func || function(a, b) {
-      return (a.vars.refreshPriority || 0) * -1e6 + (a.vars.containerAnimation ? 1e6 : a._sortY) - ((b.vars.containerAnimation ? 1e6 : b._sortY) + (b.vars.refreshPriority || 0) * -1e6);
-    });
-  };
-  ScrollTrigger2.observe = function(vars) {
-    return new Observer(vars);
-  };
-  ScrollTrigger2.normalizeScroll = function(vars) {
-    if (typeof vars === "undefined") {
-      return _normalizer2;
-    }
-    if (vars === true && _normalizer2) {
-      return _normalizer2.enable();
-    }
-    if (vars === false) {
-      _normalizer2 && _normalizer2.kill();
-      _normalizer2 = vars;
-      return;
-    }
-    var normalizer = vars instanceof Observer ? vars : _getScrollNormalizer(vars);
-    _normalizer2 && _normalizer2.target === normalizer.target && _normalizer2.kill();
-    _isViewport3(normalizer.target) && (_normalizer2 = normalizer);
-    return normalizer;
-  };
-  ScrollTrigger2.core = {
-    // smaller file size way to leverage in ScrollSmoother and Observer
-    _getVelocityProp,
-    _inputObserver,
-    _scrollers,
-    _proxies,
-    bridge: {
-      // when normalizeScroll sets the scroll position (ss = setScroll)
-      ss: function ss() {
-        _lastScrollTime || _dispatch3("scrollStart");
-        _lastScrollTime = _getTime2();
-      },
-      // a way to get the _refreshing value in Observer
-      ref: function ref() {
-        return _refreshing;
-      }
-    }
-  };
-  _getGSAP3() && gsap3.registerPlugin(ScrollTrigger2);
-
-  // src/utils/deviceInfo.ts
-  init_live_reload();
-
-  // node_modules/@finsweet/ts-utils/dist/webflow/breakpoints.js
-  init_live_reload();
-  var WEBFLOW_BREAKPOINTS = /* @__PURE__ */ new Map([
-    ["tiny", "(max-width: 479px)"],
-    ["small", "(max-width: 767px)"],
-    ["medium", "(max-width: 991px)"],
-    ["main", "(min-width: 992px)"]
-  ]);
-
-  // src/utils/deviceInfo.ts
-  var breakpoints = () => {
-    let device = "";
-    const wBreakpoints = [...WEBFLOW_BREAKPOINTS];
-    const breakpoints2 = {
-      tiny: 0,
-      small: 0,
-      medium: 0,
-      main: 0
-    };
-    window.addEventListener("resize", () => {
-      init5();
-    });
-    init5();
-    function init5() {
-      for (const i in wBreakpoints) {
-        const nametTemp = wBreakpoints[i][0];
-        const pointTemp = parseInt(wBreakpoints[i][1].split(":")[1].split("p")[0]);
-        breakpoints2[nametTemp] = pointTemp;
-      }
-      const curWidth = window.innerWidth;
-      if (curWidth > breakpoints2.main) {
-        device = "desktop";
-      } else if (curWidth < breakpoints2.main && curWidth > breakpoints2.small) {
-        device = "tablet";
-      } else if (curWidth < breakpoints2.medium && curWidth > breakpoints2.tiny) {
-        device = "mobile-landscape";
-      } else if (curWidth < breakpoints2.small) {
-        device = "mobile-portrait";
-      }
-    }
-    return [device, window.innerWidth, window.innerHeight];
-  };
-  var isTouchDevice = () => {
-    return "ontouchstart" in window || navigator.maxTouchPoints > 0;
-  };
-
-  // src/utils/smoothScroll.ts
-  init_live_reload();
-  init_gsap();
-
-  // node_modules/lenis/dist/lenis.mjs
-  init_live_reload();
-  var version = "1.3.4";
-  function clamp3(min, input, max) {
-    return Math.max(min, Math.min(input, max));
-  }
-  function lerp(x, y, t) {
-    return (1 - t) * x + t * y;
-  }
-  function damp(x, y, lambda, deltaTime) {
-    return lerp(x, y, 1 - Math.exp(-lambda * deltaTime));
-  }
-  function modulo(n, d) {
-    return (n % d + d) % d;
-  }
-  var Animate = class {
-    isRunning = false;
-    value = 0;
-    from = 0;
-    to = 0;
-    currentTime = 0;
-    // These are instanciated in the fromTo method
-    lerp;
-    duration;
-    easing;
-    onUpdate;
-    /**
-     * Advance the animation by the given delta time
-     *
-     * @param deltaTime - The time in seconds to advance the animation
-     */
-    advance(deltaTime) {
-      if (!this.isRunning) return;
-      let completed = false;
-      if (this.duration && this.easing) {
-        this.currentTime += deltaTime;
-        const linearProgress = clamp3(0, this.currentTime / this.duration, 1);
-        completed = linearProgress >= 1;
-        const easedProgress = completed ? 1 : this.easing(linearProgress);
-        this.value = this.from + (this.to - this.from) * easedProgress;
-      } else if (this.lerp) {
-        this.value = damp(this.value, this.to, this.lerp * 60, deltaTime);
-        if (Math.round(this.value) === this.to) {
-          this.value = this.to;
-          completed = true;
-        }
-      } else {
-        this.value = this.to;
-        completed = true;
-      }
-      if (completed) {
-        this.stop();
-      }
-      this.onUpdate?.(this.value, completed);
-    }
-    /** Stop the animation */
-    stop() {
-      this.isRunning = false;
-    }
-    /**
-     * Set up the animation from a starting value to an ending value
-     * with optional parameters for lerping, duration, easing, and onUpdate callback
-     *
-     * @param from - The starting value
-     * @param to - The ending value
-     * @param options - Options for the animation
-     */
-    fromTo(from, to, { lerp: lerp2, duration, easing, onStart, onUpdate }) {
-      this.from = this.value = from;
-      this.to = to;
-      this.lerp = lerp2;
-      this.duration = duration;
-      this.easing = easing;
-      this.currentTime = 0;
-      this.isRunning = true;
-      onStart?.();
-      this.onUpdate = onUpdate;
-    }
-  };
-  function debounce(callback, delay) {
-    let timer;
-    return function(...args) {
-      let context3 = this;
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        timer = void 0;
-        callback.apply(context3, args);
-      }, delay);
-    };
-  }
-  var Dimensions = class {
-    constructor(wrapper, content, { autoResize = true, debounce: debounceValue = 250 } = {}) {
-      this.wrapper = wrapper;
-      this.content = content;
-      if (autoResize) {
-        this.debouncedResize = debounce(this.resize, debounceValue);
-        if (this.wrapper instanceof Window) {
-          window.addEventListener("resize", this.debouncedResize, false);
-        } else {
-          this.wrapperResizeObserver = new ResizeObserver(this.debouncedResize);
-          this.wrapperResizeObserver.observe(this.wrapper);
-        }
-        this.contentResizeObserver = new ResizeObserver(this.debouncedResize);
-        this.contentResizeObserver.observe(this.content);
-      }
-      this.resize();
-    }
-    width = 0;
-    height = 0;
-    scrollHeight = 0;
-    scrollWidth = 0;
-    // These are instanciated in the constructor as they need information from the options
-    debouncedResize;
-    wrapperResizeObserver;
-    contentResizeObserver;
-    destroy() {
-      this.wrapperResizeObserver?.disconnect();
-      this.contentResizeObserver?.disconnect();
-      if (this.wrapper === window && this.debouncedResize) {
-        window.removeEventListener("resize", this.debouncedResize, false);
-      }
-    }
-    resize = () => {
-      this.onWrapperResize();
-      this.onContentResize();
-    };
-    onWrapperResize = () => {
-      if (this.wrapper instanceof Window) {
-        this.width = window.innerWidth;
-        this.height = window.innerHeight;
-      } else {
-        this.width = this.wrapper.clientWidth;
-        this.height = this.wrapper.clientHeight;
-      }
-    };
-    onContentResize = () => {
-      if (this.wrapper instanceof Window) {
-        this.scrollHeight = this.content.scrollHeight;
-        this.scrollWidth = this.content.scrollWidth;
-      } else {
-        this.scrollHeight = this.wrapper.scrollHeight;
-        this.scrollWidth = this.wrapper.scrollWidth;
-      }
-    };
-    get limit() {
-      return {
-        x: this.scrollWidth - this.width,
-        y: this.scrollHeight - this.height
-      };
-    }
-  };
-  var Emitter = class {
-    events = {};
-    /**
-     * Emit an event with the given data
-     * @param event Event name
-     * @param args Data to pass to the event handlers
-     */
-    emit(event, ...args) {
-      let callbacks = this.events[event] || [];
-      for (let i = 0, length = callbacks.length; i < length; i++) {
-        callbacks[i]?.(...args);
-      }
-    }
-    /**
-     * Add a callback to the event
-     * @param event Event name
-     * @param cb Callback function
-     * @returns Unsubscribe function
-     */
-    on(event, cb) {
-      this.events[event]?.push(cb) || (this.events[event] = [cb]);
-      return () => {
-        this.events[event] = this.events[event]?.filter((i) => cb !== i);
-      };
-    }
-    /**
-     * Remove a callback from the event
-     * @param event Event name
-     * @param callback Callback function
-     */
-    off(event, callback) {
-      this.events[event] = this.events[event]?.filter((i) => callback !== i);
-    }
-    /**
-     * Remove all event listeners and clean up
-     */
-    destroy() {
-      this.events = {};
-    }
-  };
-  var LINE_HEIGHT = 100 / 6;
-  var listenerOptions = { passive: false };
-  var VirtualScroll = class {
-    constructor(element, options = { wheelMultiplier: 1, touchMultiplier: 1 }) {
-      this.element = element;
-      this.options = options;
-      window.addEventListener("resize", this.onWindowResize, false);
-      this.onWindowResize();
-      this.element.addEventListener("wheel", this.onWheel, listenerOptions);
-      this.element.addEventListener(
-        "touchstart",
-        this.onTouchStart,
-        listenerOptions
-      );
-      this.element.addEventListener(
-        "touchmove",
-        this.onTouchMove,
-        listenerOptions
-      );
-      this.element.addEventListener("touchend", this.onTouchEnd, listenerOptions);
-    }
-    touchStart = {
-      x: 0,
-      y: 0
-    };
-    lastDelta = {
-      x: 0,
-      y: 0
-    };
-    window = {
-      width: 0,
-      height: 0
-    };
-    emitter = new Emitter();
-    /**
-     * Add an event listener for the given event and callback
-     *
-     * @param event Event name
-     * @param callback Callback function
-     */
-    on(event, callback) {
-      return this.emitter.on(event, callback);
-    }
-    /** Remove all event listeners and clean up */
-    destroy() {
-      this.emitter.destroy();
-      window.removeEventListener("resize", this.onWindowResize, false);
-      this.element.removeEventListener("wheel", this.onWheel, listenerOptions);
-      this.element.removeEventListener(
-        "touchstart",
-        this.onTouchStart,
-        listenerOptions
-      );
-      this.element.removeEventListener(
-        "touchmove",
-        this.onTouchMove,
-        listenerOptions
-      );
-      this.element.removeEventListener(
-        "touchend",
-        this.onTouchEnd,
-        listenerOptions
-      );
-    }
-    /**
-     * Event handler for 'touchstart' event
-     *
-     * @param event Touch event
-     */
-    onTouchStart = (event) => {
-      const { clientX, clientY } = event.targetTouches ? event.targetTouches[0] : event;
-      this.touchStart.x = clientX;
-      this.touchStart.y = clientY;
-      this.lastDelta = {
-        x: 0,
-        y: 0
-      };
-      this.emitter.emit("scroll", {
-        deltaX: 0,
-        deltaY: 0,
-        event
-      });
-    };
-    /** Event handler for 'touchmove' event */
-    onTouchMove = (event) => {
-      const { clientX, clientY } = event.targetTouches ? event.targetTouches[0] : event;
-      const deltaX = -(clientX - this.touchStart.x) * this.options.touchMultiplier;
-      const deltaY = -(clientY - this.touchStart.y) * this.options.touchMultiplier;
-      this.touchStart.x = clientX;
-      this.touchStart.y = clientY;
-      this.lastDelta = {
-        x: deltaX,
-        y: deltaY
-      };
-      this.emitter.emit("scroll", {
-        deltaX,
-        deltaY,
-        event
-      });
-    };
-    onTouchEnd = (event) => {
-      this.emitter.emit("scroll", {
-        deltaX: this.lastDelta.x,
-        deltaY: this.lastDelta.y,
-        event
-      });
-    };
-    /** Event handler for 'wheel' event */
-    onWheel = (event) => {
-      let { deltaX, deltaY, deltaMode } = event;
-      const multiplierX = deltaMode === 1 ? LINE_HEIGHT : deltaMode === 2 ? this.window.width : 1;
-      const multiplierY = deltaMode === 1 ? LINE_HEIGHT : deltaMode === 2 ? this.window.height : 1;
-      deltaX *= multiplierX;
-      deltaY *= multiplierY;
-      deltaX *= this.options.wheelMultiplier;
-      deltaY *= this.options.wheelMultiplier;
-      this.emitter.emit("scroll", { deltaX, deltaY, event });
-    };
-    onWindowResize = () => {
-      this.window = {
-        width: window.innerWidth,
-        height: window.innerHeight
-      };
-    };
-  };
-  var defaultEasing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t));
-  var Lenis = class {
-    _isScrolling = false;
-    // true when scroll is animating
-    _isStopped = false;
-    // true if user should not be able to scroll - enable/disable programmatically
-    _isLocked = false;
-    // same as isStopped but enabled/disabled when scroll reaches target
-    _preventNextNativeScrollEvent = false;
-    _resetVelocityTimeout = null;
-    __rafID = null;
-    /**
-     * Whether or not the user is touching the screen
-     */
-    isTouching;
-    /**
-     * The time in ms since the lenis instance was created
-     */
-    time = 0;
-    /**
-     * User data that will be forwarded through the scroll event
-     *
-     * @example
-     * lenis.scrollTo(100, {
-     *   userData: {
-     *     foo: 'bar'
-     *   }
-     * })
-     */
-    userData = {};
-    /**
-     * The last velocity of the scroll
-     */
-    lastVelocity = 0;
-    /**
-     * The current velocity of the scroll
-     */
-    velocity = 0;
-    /**
-     * The direction of the scroll
-     */
-    direction = 0;
-    /**
-     * The options passed to the lenis instance
-     */
-    options;
-    /**
-     * The target scroll value
-     */
-    targetScroll;
-    /**
-     * The animated scroll value
-     */
-    animatedScroll;
-    // These are instanciated here as they don't need information from the options
-    animate = new Animate();
-    emitter = new Emitter();
-    // These are instanciated in the constructor as they need information from the options
-    dimensions;
-    // This is not private because it's used in the Snap class
-    virtualScroll;
-    constructor({
-      wrapper = window,
-      content = document.documentElement,
-      eventsTarget = wrapper,
-      smoothWheel = true,
-      syncTouch = false,
-      syncTouchLerp = 0.075,
-      touchInertiaMultiplier = 35,
-      duration,
-      // in seconds
-      easing,
-      lerp: lerp2 = 0.1,
-      infinite = false,
-      orientation = "vertical",
-      // vertical, horizontal
-      gestureOrientation = "vertical",
-      // vertical, horizontal, both
-      touchMultiplier = 1,
-      wheelMultiplier = 1,
-      autoResize = true,
-      prevent,
-      virtualScroll,
-      overscroll = true,
-      autoRaf = false,
-      anchors = false,
-      autoToggle = false,
-      // https://caniuse.com/?search=transition-behavior
-      allowNestedScroll = false,
-      __experimental__naiveDimensions = false
-    } = {}) {
-      window.lenisVersion = version;
-      if (!wrapper || wrapper === document.documentElement) {
-        wrapper = window;
-      }
-      if (typeof duration === "number" && typeof easing !== "function") {
-        easing = defaultEasing;
-      } else if (typeof easing === "function" && typeof duration !== "number") {
-        duration = 1;
-      }
-      this.options = {
-        wrapper,
-        content,
-        eventsTarget,
-        smoothWheel,
-        syncTouch,
-        syncTouchLerp,
-        touchInertiaMultiplier,
-        duration,
-        easing,
-        lerp: lerp2,
-        infinite,
-        gestureOrientation,
-        orientation,
-        touchMultiplier,
-        wheelMultiplier,
-        autoResize,
-        prevent,
-        virtualScroll,
-        overscroll,
-        autoRaf,
-        anchors,
-        autoToggle,
-        allowNestedScroll,
-        __experimental__naiveDimensions
-      };
-      this.dimensions = new Dimensions(wrapper, content, { autoResize });
-      this.updateClassName();
-      this.targetScroll = this.animatedScroll = this.actualScroll;
-      this.options.wrapper.addEventListener("scroll", this.onNativeScroll, false);
-      this.options.wrapper.addEventListener("scrollend", this.onScrollEnd, {
-        capture: true
-      });
-      if (this.options.anchors && this.options.wrapper === window) {
-        this.options.wrapper.addEventListener(
-          "click",
-          this.onClick,
-          false
-        );
-      }
-      this.options.wrapper.addEventListener(
-        "pointerdown",
-        this.onPointerDown,
-        false
-      );
-      this.virtualScroll = new VirtualScroll(eventsTarget, {
-        touchMultiplier,
-        wheelMultiplier
-      });
-      this.virtualScroll.on("scroll", this.onVirtualScroll);
-      if (this.options.autoToggle) {
-        this.rootElement.addEventListener("transitionend", this.onTransitionEnd, {
-          passive: true
-        });
-      }
-      if (this.options.autoRaf) {
-        this.__rafID = requestAnimationFrame(this.raf);
-      }
-    }
-    /**
-     * Destroy the lenis instance, remove all event listeners and clean up the class name
-     */
-    destroy() {
-      this.emitter.destroy();
-      this.options.wrapper.removeEventListener(
-        "scroll",
-        this.onNativeScroll,
-        false
-      );
-      this.options.wrapper.removeEventListener("scrollend", this.onScrollEnd, {
-        capture: true
-      });
-      this.options.wrapper.removeEventListener(
-        "pointerdown",
-        this.onPointerDown,
-        false
-      );
-      if (this.options.anchors && this.options.wrapper === window) {
-        this.options.wrapper.removeEventListener(
-          "click",
-          this.onClick,
-          false
-        );
-      }
-      this.virtualScroll.destroy();
-      this.dimensions.destroy();
-      this.cleanUpClassName();
-      if (this.__rafID) {
-        cancelAnimationFrame(this.__rafID);
-      }
-    }
-    on(event, callback) {
-      return this.emitter.on(event, callback);
-    }
-    off(event, callback) {
-      return this.emitter.off(event, callback);
-    }
-    onScrollEnd = (e) => {
-      if (!(e instanceof CustomEvent)) {
-        if (this.isScrolling === "smooth" || this.isScrolling === false) {
-          e.stopPropagation();
-        }
-      }
-    };
-    dispatchScrollendEvent = () => {
-      this.options.wrapper.dispatchEvent(
-        new CustomEvent("scrollend", {
-          bubbles: this.options.wrapper === window,
-          // cancelable: false,
-          detail: {
-            lenisScrollEnd: true
-          }
-        })
-      );
-    };
-    onTransitionEnd = (event) => {
-      if (event.propertyName.includes("overflow")) {
-        const property = this.isHorizontal ? "overflow-x" : "overflow-y";
-        const overflow = getComputedStyle(this.rootElement)[property];
-        if (["hidden", "clip"].includes(overflow)) {
-          this.stop();
-        } else {
-          this.start();
-        }
-      }
-    };
-    setScroll(scroll) {
-      if (this.isHorizontal) {
-        this.options.wrapper.scrollTo({ left: scroll, behavior: "instant" });
-      } else {
-        this.options.wrapper.scrollTo({ top: scroll, behavior: "instant" });
-      }
-    }
-    onClick = (event) => {
-      const path = event.composedPath();
-      const anchor = path.find(
-        (node) => node instanceof HTMLAnchorElement && (node.getAttribute("href")?.startsWith("#") || node.getAttribute("href")?.startsWith("/#") || node.getAttribute("href")?.startsWith("./#"))
-      );
-      if (anchor) {
-        const id = anchor.getAttribute("href");
-        if (id) {
-          const options = typeof this.options.anchors === "object" && this.options.anchors ? this.options.anchors : void 0;
-          let target = `#${id.split("#")[1]}`;
-          if (["#", "/#", "./#", "#top", "/#top", "./#top"].includes(id)) {
-            target = 0;
-          }
-          this.scrollTo(target, options);
-        }
-      }
-    };
-    onPointerDown = (event) => {
-      if (event.button === 1) {
-        this.reset();
-      }
-    };
-    onVirtualScroll = (data) => {
-      if (typeof this.options.virtualScroll === "function" && this.options.virtualScroll(data) === false)
-        return;
-      const { deltaX, deltaY, event } = data;
-      this.emitter.emit("virtual-scroll", { deltaX, deltaY, event });
-      if (event.ctrlKey) return;
-      if (event.lenisStopPropagation) return;
-      const isTouch = event.type.includes("touch");
-      const isWheel = event.type.includes("wheel");
-      this.isTouching = event.type === "touchstart" || event.type === "touchmove";
-      const isClickOrTap = deltaX === 0 && deltaY === 0;
-      const isTapToStop = this.options.syncTouch && isTouch && event.type === "touchstart" && isClickOrTap && !this.isStopped && !this.isLocked;
-      if (isTapToStop) {
-        this.reset();
-        return;
-      }
-      const isUnknownGesture = this.options.gestureOrientation === "vertical" && deltaY === 0 || this.options.gestureOrientation === "horizontal" && deltaX === 0;
-      if (isClickOrTap || isUnknownGesture) {
-        return;
-      }
-      let composedPath = event.composedPath();
-      composedPath = composedPath.slice(0, composedPath.indexOf(this.rootElement));
-      const prevent = this.options.prevent;
-      if (!!composedPath.find(
-        (node) => node instanceof HTMLElement && (typeof prevent === "function" && prevent?.(node) || node.hasAttribute?.("data-lenis-prevent") || isTouch && node.hasAttribute?.("data-lenis-prevent-touch") || isWheel && node.hasAttribute?.("data-lenis-prevent-wheel") || this.options.allowNestedScroll && this.checkNestedScroll(node, { deltaX, deltaY }))
-      ))
-        return;
-      if (this.isStopped || this.isLocked) {
-        event.preventDefault();
-        return;
-      }
-      const isSmooth = this.options.syncTouch && isTouch || this.options.smoothWheel && isWheel;
-      if (!isSmooth) {
-        this.isScrolling = "native";
-        this.animate.stop();
-        event.lenisStopPropagation = true;
-        return;
-      }
-      let delta = deltaY;
-      if (this.options.gestureOrientation === "both") {
-        delta = Math.abs(deltaY) > Math.abs(deltaX) ? deltaY : deltaX;
-      } else if (this.options.gestureOrientation === "horizontal") {
-        delta = deltaX;
-      }
-      if (!this.options.overscroll || this.options.infinite || this.options.wrapper !== window && (this.animatedScroll > 0 && this.animatedScroll < this.limit || this.animatedScroll === 0 && deltaY > 0 || this.animatedScroll === this.limit && deltaY < 0)) {
-        event.lenisStopPropagation = true;
-      }
-      event.preventDefault();
-      const isSyncTouch = isTouch && this.options.syncTouch;
-      const isTouchEnd = isTouch && event.type === "touchend";
-      const hasTouchInertia = isTouchEnd && Math.abs(delta) > 5;
-      if (hasTouchInertia) {
-        delta = this.velocity * this.options.touchInertiaMultiplier;
-      }
-      this.scrollTo(this.targetScroll + delta, {
-        programmatic: false,
-        ...isSyncTouch ? {
-          lerp: hasTouchInertia ? this.options.syncTouchLerp : 1
-          // immediate: !hasTouchInertia,
-        } : {
-          lerp: this.options.lerp,
-          duration: this.options.duration,
-          easing: this.options.easing
-        }
-      });
-    };
-    /**
-     * Force lenis to recalculate the dimensions
-     */
-    resize() {
-      this.dimensions.resize();
-      this.animatedScroll = this.targetScroll = this.actualScroll;
-      this.emit();
-    }
-    emit() {
-      this.emitter.emit("scroll", this);
-    }
-    onNativeScroll = () => {
-      if (this._resetVelocityTimeout !== null) {
-        clearTimeout(this._resetVelocityTimeout);
-        this._resetVelocityTimeout = null;
-      }
-      if (this._preventNextNativeScrollEvent) {
-        this._preventNextNativeScrollEvent = false;
-        return;
-      }
-      if (this.isScrolling === false || this.isScrolling === "native") {
-        const lastScroll = this.animatedScroll;
-        this.animatedScroll = this.targetScroll = this.actualScroll;
-        this.lastVelocity = this.velocity;
-        this.velocity = this.animatedScroll - lastScroll;
-        this.direction = Math.sign(
-          this.animatedScroll - lastScroll
-        );
-        if (!this.isStopped) {
-          this.isScrolling = "native";
-        }
-        this.emit();
-        if (this.velocity !== 0) {
-          this._resetVelocityTimeout = setTimeout(() => {
-            this.lastVelocity = this.velocity;
-            this.velocity = 0;
-            this.isScrolling = false;
-            this.emit();
-          }, 400);
-        }
-      }
-    };
-    reset() {
-      this.isLocked = false;
-      this.isScrolling = false;
-      this.animatedScroll = this.targetScroll = this.actualScroll;
-      this.lastVelocity = this.velocity = 0;
-      this.animate.stop();
-    }
-    /**
-     * Start lenis scroll after it has been stopped
-     */
-    start() {
-      if (!this.isStopped) return;
-      this.reset();
-      this.isStopped = false;
-      this.emit();
-    }
-    /**
-     * Stop lenis scroll
-     */
-    stop() {
-      if (this.isStopped) return;
-      this.reset();
-      this.isStopped = true;
-      this.emit();
-    }
-    /**
-     * RequestAnimationFrame for lenis
-     *
-     * @param time The time in ms from an external clock like `requestAnimationFrame` or Tempus
-     */
-    raf = (time) => {
-      const deltaTime = time - (this.time || time);
-      this.time = time;
-      this.animate.advance(deltaTime * 1e-3);
-      if (this.options.autoRaf) {
-        this.__rafID = requestAnimationFrame(this.raf);
-      }
-    };
-    /**
-     * Scroll to a target value
-     *
-     * @param target The target value to scroll to
-     * @param options The options for the scroll
-     *
-     * @example
-     * lenis.scrollTo(100, {
-     *   offset: 100,
-     *   duration: 1,
-     *   easing: (t) => 1 - Math.cos((t * Math.PI) / 2),
-     *   lerp: 0.1,
-     *   onStart: () => {
-     *     console.log('onStart')
-     *   },
-     *   onComplete: () => {
-     *     console.log('onComplete')
-     *   },
-     * })
-     */
-    scrollTo(target, {
-      offset = 0,
-      immediate = false,
-      lock = false,
-      duration = this.options.duration,
-      easing = this.options.easing,
-      lerp: lerp2 = this.options.lerp,
-      onStart,
-      onComplete,
-      force = false,
-      // scroll even if stopped
-      programmatic = true,
-      // called from outside of the class
-      userData
-    } = {}) {
-      if ((this.isStopped || this.isLocked) && !force) return;
-      if (typeof target === "string" && ["top", "left", "start"].includes(target)) {
-        target = 0;
-      } else if (typeof target === "string" && ["bottom", "right", "end"].includes(target)) {
-        target = this.limit;
-      } else {
-        let node;
-        if (typeof target === "string") {
-          node = document.querySelector(target);
-        } else if (target instanceof HTMLElement && target?.nodeType) {
-          node = target;
-        }
-        if (node) {
-          if (this.options.wrapper !== window) {
-            const wrapperRect = this.rootElement.getBoundingClientRect();
-            offset -= this.isHorizontal ? wrapperRect.left : wrapperRect.top;
-          }
-          const rect = node.getBoundingClientRect();
-          target = (this.isHorizontal ? rect.left : rect.top) + this.animatedScroll;
-        }
-      }
-      if (typeof target !== "number") return;
-      target += offset;
-      target = Math.round(target);
-      if (this.options.infinite) {
-        if (programmatic) {
-          this.targetScroll = this.animatedScroll = this.scroll;
-          const distance = target - this.animatedScroll;
-          if (distance > this.limit / 2) {
-            target = target - this.limit;
-          } else if (distance < -this.limit / 2) {
-            target = target + this.limit;
-          }
-        }
-      } else {
-        target = clamp3(0, target, this.limit);
-      }
-      if (target === this.targetScroll) {
-        onStart?.(this);
-        onComplete?.(this);
-        return;
-      }
-      this.userData = userData ?? {};
-      if (immediate) {
-        this.animatedScroll = this.targetScroll = target;
-        this.setScroll(this.scroll);
-        this.reset();
-        this.preventNextNativeScrollEvent();
-        this.emit();
-        onComplete?.(this);
-        this.userData = {};
-        requestAnimationFrame(() => {
-          this.dispatchScrollendEvent();
-        });
-        return;
-      }
-      if (!programmatic) {
-        this.targetScroll = target;
-      }
-      if (typeof duration === "number" && typeof easing !== "function") {
-        easing = defaultEasing;
-      } else if (typeof easing === "function" && typeof duration !== "number") {
-        duration = 1;
-      }
-      this.animate.fromTo(this.animatedScroll, target, {
-        duration,
-        easing,
-        lerp: lerp2,
-        onStart: () => {
-          if (lock) this.isLocked = true;
-          this.isScrolling = "smooth";
-          onStart?.(this);
-        },
-        onUpdate: (value, completed) => {
-          this.isScrolling = "smooth";
-          this.lastVelocity = this.velocity;
-          this.velocity = value - this.animatedScroll;
-          this.direction = Math.sign(this.velocity);
-          this.animatedScroll = value;
-          this.setScroll(this.scroll);
-          if (programmatic) {
-            this.targetScroll = value;
-          }
-          if (!completed) this.emit();
-          if (completed) {
-            this.reset();
-            this.emit();
-            onComplete?.(this);
-            this.userData = {};
-            requestAnimationFrame(() => {
-              this.dispatchScrollendEvent();
-            });
-            this.preventNextNativeScrollEvent();
-          }
-        }
-      });
-    }
-    preventNextNativeScrollEvent() {
-      this._preventNextNativeScrollEvent = true;
-      requestAnimationFrame(() => {
-        this._preventNextNativeScrollEvent = false;
-      });
-    }
-    checkNestedScroll(node, { deltaX, deltaY }) {
-      const time = Date.now();
-      const cache = node._lenis ??= {};
-      let hasOverflowX, hasOverflowY, isScrollableX, isScrollableY, scrollWidth, scrollHeight, clientWidth, clientHeight;
-      const gestureOrientation = this.options.gestureOrientation;
-      if (time - (cache.time ?? 0) > 2e3) {
-        cache.time = Date.now();
-        const computedStyle = window.getComputedStyle(node);
-        cache.computedStyle = computedStyle;
-        const overflowXString = computedStyle.overflowX;
-        const overflowYString = computedStyle.overflowY;
-        hasOverflowX = ["auto", "overlay", "scroll"].includes(overflowXString);
-        hasOverflowY = ["auto", "overlay", "scroll"].includes(overflowYString);
-        cache.hasOverflowX = hasOverflowX;
-        cache.hasOverflowY = hasOverflowY;
-        if (!hasOverflowX && !hasOverflowY) return false;
-        if (gestureOrientation === "vertical" && !hasOverflowY) return false;
-        if (gestureOrientation === "horizontal" && !hasOverflowX) return false;
-        scrollWidth = node.scrollWidth;
-        scrollHeight = node.scrollHeight;
-        clientWidth = node.clientWidth;
-        clientHeight = node.clientHeight;
-        isScrollableX = scrollWidth > clientWidth;
-        isScrollableY = scrollHeight > clientHeight;
-        cache.isScrollableX = isScrollableX;
-        cache.isScrollableY = isScrollableY;
-        cache.scrollWidth = scrollWidth;
-        cache.scrollHeight = scrollHeight;
-        cache.clientWidth = clientWidth;
-        cache.clientHeight = clientHeight;
-      } else {
-        isScrollableX = cache.isScrollableX;
-        isScrollableY = cache.isScrollableY;
-        hasOverflowX = cache.hasOverflowX;
-        hasOverflowY = cache.hasOverflowY;
-        scrollWidth = cache.scrollWidth;
-        scrollHeight = cache.scrollHeight;
-        clientWidth = cache.clientWidth;
-        clientHeight = cache.clientHeight;
-      }
-      if (!hasOverflowX && !hasOverflowY || !isScrollableX && !isScrollableY) {
-        return false;
-      }
-      if (gestureOrientation === "vertical" && (!hasOverflowY || !isScrollableY))
-        return false;
-      if (gestureOrientation === "horizontal" && (!hasOverflowX || !isScrollableX))
-        return false;
-      let orientation;
-      if (gestureOrientation === "horizontal") {
-        orientation = "x";
-      } else if (gestureOrientation === "vertical") {
-        orientation = "y";
-      } else {
-        const isScrollingX = deltaX !== 0;
-        const isScrollingY = deltaY !== 0;
-        if (isScrollingX && hasOverflowX && isScrollableX) {
-          orientation = "x";
-        }
-        if (isScrollingY && hasOverflowY && isScrollableY) {
-          orientation = "y";
-        }
-      }
-      if (!orientation) return false;
-      let scroll, maxScroll, delta, hasOverflow, isScrollable;
-      if (orientation === "x") {
-        scroll = node.scrollLeft;
-        maxScroll = scrollWidth - clientWidth;
-        delta = deltaX;
-        hasOverflow = hasOverflowX;
-        isScrollable = isScrollableX;
-      } else if (orientation === "y") {
-        scroll = node.scrollTop;
-        maxScroll = scrollHeight - clientHeight;
-        delta = deltaY;
-        hasOverflow = hasOverflowY;
-        isScrollable = isScrollableY;
-      } else {
-        return false;
-      }
-      const willScroll = delta > 0 ? scroll < maxScroll : scroll > 0;
-      return willScroll && hasOverflow && isScrollable;
-    }
-    /**
-     * The root element on which lenis is instanced
-     */
-    get rootElement() {
-      return this.options.wrapper === window ? document.documentElement : this.options.wrapper;
-    }
-    /**
-     * The limit which is the maximum scroll value
-     */
-    get limit() {
-      if (this.options.__experimental__naiveDimensions) {
-        if (this.isHorizontal) {
-          return this.rootElement.scrollWidth - this.rootElement.clientWidth;
-        } else {
-          return this.rootElement.scrollHeight - this.rootElement.clientHeight;
-        }
-      } else {
-        return this.dimensions.limit[this.isHorizontal ? "x" : "y"];
-      }
-    }
-    /**
-     * Whether or not the scroll is horizontal
-     */
-    get isHorizontal() {
-      return this.options.orientation === "horizontal";
-    }
-    /**
-     * The actual scroll value
-     */
-    get actualScroll() {
-      const wrapper = this.options.wrapper;
-      return this.isHorizontal ? wrapper.scrollX ?? wrapper.scrollLeft : wrapper.scrollY ?? wrapper.scrollTop;
-    }
-    /**
-     * The current scroll value
-     */
-    get scroll() {
-      return this.options.infinite ? modulo(this.animatedScroll, this.limit) : this.animatedScroll;
-    }
-    /**
-     * The progress of the scroll relative to the limit
-     */
-    get progress() {
-      return this.limit === 0 ? 1 : this.scroll / this.limit;
-    }
-    /**
-     * Current scroll state
-     */
-    get isScrolling() {
-      return this._isScrolling;
-    }
-    set isScrolling(value) {
-      if (this._isScrolling !== value) {
-        this._isScrolling = value;
-        this.updateClassName();
-      }
-    }
-    /**
-     * Check if lenis is stopped
-     */
-    get isStopped() {
-      return this._isStopped;
-    }
-    set isStopped(value) {
-      if (this._isStopped !== value) {
-        this._isStopped = value;
-        this.updateClassName();
-      }
-    }
-    /**
-     * Check if lenis is locked
-     */
-    get isLocked() {
-      return this._isLocked;
-    }
-    set isLocked(value) {
-      if (this._isLocked !== value) {
-        this._isLocked = value;
-        this.updateClassName();
-      }
-    }
-    /**
-     * Check if lenis is smooth scrolling
-     */
-    get isSmooth() {
-      return this.isScrolling === "smooth";
-    }
-    /**
-     * The class name applied to the wrapper element
-     */
-    get className() {
-      let className = "lenis";
-      if (this.options.autoToggle) className += " lenis-autoToggle";
-      if (this.isStopped) className += " lenis-stopped";
-      if (this.isLocked) className += " lenis-locked";
-      if (this.isScrolling) className += " lenis-scrolling";
-      if (this.isScrolling === "smooth") className += " lenis-smooth";
-      return className;
-    }
-    updateClassName() {
-      this.cleanUpClassName();
-      this.rootElement.className = `${this.rootElement.className} ${this.className}`.trim();
-    }
-    cleanUpClassName() {
-      this.rootElement.className = this.rootElement.className.replace(/lenis(-\w+)?/g, "").trim();
-    }
-  };
-
-  // src/utils/webflowEnv.ts
-  init_live_reload();
-  function getWebflowEnv() {
-    const wf = window.Webflow;
-    const isEditor = document.documentElement.hasAttribute("w-editor") || typeof window.WebflowEditor !== "undefined" || wf?.env?.("editor") === true;
-    const isPreview = wf?.env?.("preview") === true;
-    return isEditor ? "editor" : isPreview ? "preview" : "published";
-  }
-
-  // src/utils/smoothScroll.ts
-  gsapWithCSS.registerPlugin(ScrollTrigger2);
-  var lenis = null;
-  function initSmoothScroll() {
-    window.addEventListener("load", () => {
-      const env = getWebflowEnv();
-      if (env === "editor") {
-        console.log("[SmoothScroll] Editor detected \u2014 disabling Lenis.");
-        disableScrollStyles();
-        return;
-      }
-      lenis = new Lenis({
-        duration: 1.4,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(90, -2 * t)),
-        wheelMultiplier: 0.8,
-        touchMultiplier: 2,
-        orientation: "vertical",
-        gestureOrientation: "vertical",
-        smoothWheel: true,
-        infinite: false
-      });
-      function raf(time) {
-        if (!lenis) return;
-        lenis.raf(time);
-        ScrollTrigger2.update();
-        requestAnimationFrame(raf);
-      }
-      requestAnimationFrame(raf);
-      ScrollTrigger2.refresh();
-    });
-  }
-  function lenisInstance() {
-    return lenis;
-  }
-  function disableScrollStyles() {
-    document.documentElement.style.scrollBehavior = "auto";
-    document.body.style.overflow = "";
-  }
-
-  // src/components/scrollController.ts
-  gsapWithCSS.registerPlugin(ScrollTrigger2);
-  var ScrollController = class {
-    container;
-    track;
-    wideSections;
-    wideLayouts;
-    fxSections;
-    heroSection;
-    contactSection;
-    footerSection;
-    horizontalTween = null;
-    constructor() {
-      this.container = document.querySelector(".page_horizontal");
-      this.track = document.querySelector(".page_scroll-track");
-      this.wideSections = [...this.track.querySelectorAll("[data-section-wide]")];
-      this.wideLayouts = [
-        ...this.track.querySelectorAll("[data-section-wide] .section_layout")
-      ];
-      this.fxSections = [...this.track.querySelectorAll(".section_fx")];
-      this.heroSection = document.querySelector(".section_hero");
-      this.contactSection = document.querySelector(".section_contact");
-      this.footerSection = document.querySelector(".footer_component");
-      const bp = breakpoints();
-      const isTouch = isTouchDevice();
-      console.log("BP", bp, "touch", isTouch);
-      if (!this.container || !this.track) {
-        console.error("Container or track not found.");
-        return;
-      }
-      if (isTouch) {
-        console.log("[Scroller] Touch Device - Bypassing scroller setup");
-        return;
-      }
-      if (bp[0] !== "Desktop") {
-        console.log("[Scroller] Non Desktop Device - Bypassing scroller setup");
-      }
-      this.setup();
-      this.bindResize();
-    }
-    setup() {
-      const root = document.documentElement;
-      const navMargin = getComputedStyle(root).getPropertyValue("--custom--nav-width-plus-gutter").trim();
-      const siteMargin = getComputedStyle(root).getPropertyValue("--site--margin").trim();
-      gsapWithCSS.set(this.track, {
-        display: "flex",
-        flexFlow: "row nowrap",
-        width: "max-content"
-      });
-      gsapWithCSS.set(this.fxSections, { flex: "0 0 100vw", height: "100vh" });
-      gsapWithCSS.set(this.heroSection, { flex: "0 0 100vw", height: "100vh" });
-      gsapWithCSS.set(this.contactSection, { flex: "0 0 133vw", height: "100vh" });
-      gsapWithCSS.set(this.contactSection.children[0], {
-        width: "auto",
-        paddingRight: `calc(${navMargin})`
-      });
-      gsapWithCSS.set(this.footerSection, { paddingRight: `calc(${siteMargin})` });
-      gsapWithCSS.set(this.wideSections, {
-        width: "auto",
-        minWidth: "100vw",
-        height: "100vh",
-        paddingRight: `calc(${navMargin})`
-      });
-      this.wideLayouts.forEach((e) => {
-        gsapWithCSS.set(e, {
-          display: "grid",
-          gridAutoFlow: "column",
-          gridAutoColumns: "var(--custom--site-frame)",
-          height: "100%"
-        });
-      });
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          this.initScroll();
-          ScrollTrigger2.refresh();
-        });
-      });
-    }
-    bindResize() {
-      window.addEventListener(
-        "resize",
-        () => {
-          ScrollTrigger2.refresh();
-        },
-        { passive: true }
-      );
-    }
-    initScroll() {
-      const getScrollLength = () => {
-        const last = this.track.lastElementChild;
-        if (!last) return 0;
-        const len = last.offsetLeft + last.offsetWidth - this.container.clientWidth;
-        return Math.max(0, Math.round(len));
-      };
-      this.horizontalTween = gsapWithCSS.to(this.track, {
-        x: () => -getScrollLength(),
-        ease: "none",
-        scrollTrigger: {
-          trigger: this.container,
-          start: "top top",
-          end: () => `+=${getScrollLength()}`,
-          scrub: true,
-          pin: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          markers: true
-        }
-      });
-      this.initParallax();
-      const lenis2 = lenisInstance();
-      if (lenis2) {
-        requestAnimationFrame(function raf(time) {
-          lenis2.raf(time);
-          ScrollTrigger2.update();
-          requestAnimationFrame(raf);
-        });
-      }
-    }
-    initParallax() {
-      if (!this.horizontalTween) return;
-      const fxSections = [...this.track.querySelectorAll(".section_fx")];
-      fxSections.forEach((section) => {
-        const image = section.querySelector(".fx_img");
-        if (!image) return;
-        const maxScale = 1.6;
-        const minScale = 1.4;
-        const offset = -(minScale - 1) * 100;
-        const beforeWidth = image.getBoundingClientRect().width;
-        gsapWithCSS.set(image, { scale: maxScale });
-        const afterWidth = image.getBoundingClientRect().width;
-        const offsetWidth = (afterWidth - beforeWidth) / 2;
-        console.log("before", beforeWidth, "after", afterWidth, "offset", offsetWidth);
-        gsapWithCSS.set(image, { x: offsetWidth });
-        gsapWithCSS.fromTo(
-          image,
-          { xPercent: 0 },
-          {
-            scale: minScale,
-            // opacity: 0.2,
-            x: offset,
-            ease: "none",
-            scrollTrigger: {
-              containerAnimation: this.horizontalTween || void 0,
-              trigger: section,
-              start: "left 90%",
-              end: "right 10%",
-              scrub: true
-              // markers: true,
-            }
-          }
-        );
-      });
-    }
-  };
-  var scrollControler = () => {
-    new ScrollController();
-  };
-  var scrollController_default = scrollControler;
+  // src/index.ts
+  init_scrollController();
 
   // src/utils/loadComponent.ts
   init_live_reload();
@@ -9742,6 +8850,7 @@
   var loadComponent_default = loadComponent;
 
   // src/index.ts
+  init_smoothScroll();
   window.Webflow ||= [];
   window.Webflow.push(() => {
     console.log("/// mainJS ///");
@@ -9775,35 +8884,6 @@ gsap/CSSPlugin.js:
    * @author: Jack Doyle, jack@greensock.com
   *)
 
-gsap/SplitText.js:
-  (*!
-   * SplitText 3.13.0
-   * https://gsap.com
-   *
-   * @license Copyright 2025, GreenSock. All rights reserved. Subject to the terms at https://gsap.com/standard-license.
-   * @author: Jack Doyle
-   *)
-
-gsap/utils/paths.js:
-  (*!
-   * paths 3.13.0
-   * https://gsap.com
-   *
-   * Copyright 2008-2025, GreenSock. All rights reserved.
-   * Subject to the terms at https://gsap.com/standard-license
-   * @author: Jack Doyle, jack@greensock.com
-  *)
-
-gsap/MorphSVGPlugin.js:
-  (*!
-   * MorphSVGPlugin 3.13.0
-   * https://gsap.com
-   *
-   * @license Copyright 2008-2025, GreenSock. All rights reserved.
-   * Subject to the terms at https://gsap.com/standard-license
-   * @author: Jack Doyle, jack@greensock.com
-  *)
-
 gsap/Observer.js:
   (*!
    * Observer 3.13.0
@@ -9823,5 +8903,14 @@ gsap/ScrollTrigger.js:
    * Subject to the terms at https://gsap.com/standard-license
    * @author: Jack Doyle, jack@greensock.com
   *)
+
+gsap/SplitText.js:
+  (*!
+   * SplitText 3.13.0
+   * https://gsap.com
+   *
+   * @license Copyright 2025, GreenSock. All rights reserved. Subject to the terms at https://gsap.com/standard-license.
+   * @author: Jack Doyle
+   *)
 */
 //# sourceMappingURL=index.js.map
