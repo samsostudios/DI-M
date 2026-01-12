@@ -1,7 +1,7 @@
 import { gsap } from 'gsap';
 
 import { getScrollController } from '$components/scrollController';
-
+import { breakpoints } from '$utils/deviceInfo';
 import { lenisInstance } from '$utils/smoothScroll';
 
 class Menu {
@@ -14,6 +14,7 @@ class Menu {
   private iconLeft: HTMLElement;
   private iconRight: HTMLElement;
   private isOpen: boolean = false;
+  private bp: string;
 
   constructor() {
     this.component = document.querySelector('.component_nav') as HTMLElement;
@@ -24,6 +25,9 @@ class Menu {
     this.close = document.querySelector('#menuClose') as HTMLElement;
     this.iconLeft = document.querySelector('.nav-ui_svg-left') as HTMLElement;
     this.iconRight = document.querySelector('.nav-ui_svg-right') as HTMLElement;
+    this.bp = breakpoints()[0] as string;
+
+    console.log('menu', this.bp);
 
     // const scroller = getScrollController();
     // console.log('HERE', scroller);
@@ -35,7 +39,8 @@ class Menu {
   private setupUI() {
     // gsap.set(this.links, {opacity: 0,})
     // console.log('MENU', this.open, this.close);
-    gsap.set(this.component, { x: '-100%' });
+    if (this.bp === 'desktop') gsap.set(this.component, { x: '-100%' });
+    if (this.bp !== 'desktop') gsap.set(this.component, { y: '-100%' });
     gsap.set([this.linkSpans, this.spanHighlights], { width: 0 });
   }
 
@@ -124,7 +129,10 @@ class Menu {
     tl.set(this.component, { display: 'block' });
     tl.to(this.iconLeft, { x: '-6', ease: 'expo.out' });
     tl.to(this.iconRight, { x: '6', ease: 'expo.out' }, '<');
-    tl.to(this.component, { x: '0%', duration: 1.5, ease: 'expo.inOut' }, '<');
+    if (this.bp === 'desktop')
+      tl.to(this.component, { x: '0%', duration: 1, ease: 'expo.inOut' }, '<');
+    if (this.bp !== 'desktop')
+      tl.to(this.component, { y: '0%', duration: 1, ease: 'expo.inOut' }, '<');
     tl.fromTo(
       this.links,
       { opacity: 0, y: '4rem' },
@@ -136,7 +144,10 @@ class Menu {
   private closeMenu() {
     // console.log('OPEN');
     const tl = gsap.timeline();
-    tl.to(this.component, { x: '-100%', duration: 1, ease: 'expo.inOut' });
+    if (this.bp === 'desktop')
+      tl.to(this.component, { x: '-100%', duration: 1, ease: 'expo.inOut' });
+    if (this.bp !== 'desktop')
+      tl.to(this.component, { y: '-100%', duration: 1, ease: 'expo.inOut' });
     tl.to(this.iconLeft, { x: '0', ease: 'expo.out' }, '<');
     tl.to(this.iconRight, { x: '0', ease: 'expo.out' }, '<');
     tl.set(this.component, { display: 'none' });

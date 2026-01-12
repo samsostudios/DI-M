@@ -7965,6 +7965,7 @@
           this.setup();
           this.bindResize();
         }
+        // CORE
         setup() {
           const root = document.documentElement;
           const navMargin = getComputedStyle(root).getPropertyValue("--custom--nav-width-plus-gutter").trim();
@@ -8046,6 +8047,7 @@
             });
           }
         }
+        // FEATURE - PARALAX
         initParallax() {
           if (!this.horizontalTween) return;
           const fxSections = [...this.track.querySelectorAll(".section_fx")];
@@ -8081,6 +8083,7 @@
             );
           });
         }
+        // FEATURE - MENU SCROLL TO
         clamp(n, min, max) {
           return Math.max(min, Math.min(max, n));
         }
@@ -8095,6 +8098,15 @@
             index.set(id, target);
           }
           return index;
+        }
+        rebuildMenuIndex() {
+          this.menuSectionIndex = this.buildMenuIndex();
+        }
+        getMenuSectionX(id) {
+          return this.menuSectionIndex.get(id) ?? null;
+        }
+        getMenuSectionMap() {
+          return Object.fromEntries(this.menuSectionIndex.entries());
         }
         scrollToMenuSection(id, opts) {
           const x = this.getMenuSectionX(id);
@@ -8111,19 +8123,14 @@
             opts?.onComplete?.();
           }
         }
+        // FEATURE - MENU THEME SYNC
+        menuThemeSync() {
+        }
+        // HELPERS
         isHorizontalEnabled() {
           const bp = breakpoints();
           const isTouch = isTouchDevice();
-          return !isTouch && bp[0] === "Desktop";
-        }
-        rebuildMenuIndex() {
-          this.menuSectionIndex = this.buildMenuIndex();
-        }
-        getMenuSectionX(id) {
-          return this.menuSectionIndex.get(id) ?? null;
-        }
-        getMenuSectionMap() {
-          return Object.fromEntries(this.menuSectionIndex.entries());
+          return !isTouch && bp[0] === "desktop";
         }
       };
       scrollControllerInstance = null;
@@ -8615,6 +8622,7 @@
       init_live_reload();
       init_gsap();
       init_scrollController();
+      init_deviceInfo();
       init_smoothScroll();
       Menu = class {
         component;
@@ -8626,6 +8634,7 @@
         iconLeft;
         iconRight;
         isOpen = false;
+        bp;
         constructor() {
           this.component = document.querySelector(".component_nav");
           this.links = [...this.component.querySelectorAll(".nav_link")];
@@ -8635,11 +8644,14 @@
           this.close = document.querySelector("#menuClose");
           this.iconLeft = document.querySelector(".nav-ui_svg-left");
           this.iconRight = document.querySelector(".nav-ui_svg-right");
+          this.bp = breakpoints()[0];
+          console.log("menu", this.bp);
           this.setupUI();
           this.setListeners();
         }
         setupUI() {
-          gsapWithCSS.set(this.component, { x: "-100%" });
+          if (this.bp === "desktop") gsapWithCSS.set(this.component, { x: "-100%" });
+          if (this.bp !== "desktop") gsapWithCSS.set(this.component, { y: "-100%" });
           gsapWithCSS.set([this.linkSpans, this.spanHighlights], { width: 0 });
         }
         setListeners() {
@@ -8701,7 +8713,10 @@
           tl.set(this.component, { display: "block" });
           tl.to(this.iconLeft, { x: "-6", ease: "expo.out" });
           tl.to(this.iconRight, { x: "6", ease: "expo.out" }, "<");
-          tl.to(this.component, { x: "0%", duration: 1.5, ease: "expo.inOut" }, "<");
+          if (this.bp === "desktop")
+            tl.to(this.component, { x: "0%", duration: 1, ease: "expo.inOut" }, "<");
+          if (this.bp !== "desktop")
+            tl.to(this.component, { y: "0%", duration: 1, ease: "expo.inOut" }, "<");
           tl.fromTo(
             this.links,
             { opacity: 0, y: "4rem" },
@@ -8711,7 +8726,10 @@
         }
         closeMenu() {
           const tl = gsapWithCSS.timeline();
-          tl.to(this.component, { x: "-100%", duration: 1, ease: "expo.inOut" });
+          if (this.bp === "desktop")
+            tl.to(this.component, { x: "-100%", duration: 1, ease: "expo.inOut" });
+          if (this.bp !== "desktop")
+            tl.to(this.component, { y: "-100%", duration: 1, ease: "expo.inOut" });
           tl.to(this.iconLeft, { x: "0", ease: "expo.out" }, "<");
           tl.to(this.iconRight, { x: "0", ease: "expo.out" }, "<");
           tl.set(this.component, { display: "none" });

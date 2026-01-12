@@ -57,6 +57,7 @@ class ScrollController {
     this.bindResize();
   }
 
+  // CORE
   private setup() {
     const root = document.documentElement;
     const navMargin = getComputedStyle(root)
@@ -198,6 +199,7 @@ class ScrollController {
     }
   }
 
+  // FEATURE - PARALAX
   private initParallax() {
     if (!this.horizontalTween) return;
 
@@ -243,6 +245,7 @@ class ScrollController {
     });
   }
 
+  // FEATURE - MENU SCROLL TO
   private clamp(n: number, min: number, max: number) {
     return Math.max(min, Math.min(max, n));
   }
@@ -267,6 +270,18 @@ class ScrollController {
     return index;
   }
 
+  public rebuildMenuIndex(): void {
+    this.menuSectionIndex = this.buildMenuIndex();
+  }
+
+  public getMenuSectionX(id: string): number | null {
+    return this.menuSectionIndex.get(id) ?? null;
+  }
+
+  public getMenuSectionMap(): Record<string, number> {
+    return Object.fromEntries(this.menuSectionIndex.entries());
+  }
+
   public scrollToMenuSection(
     id: string,
     opts?: { duration?: number; easing?: (t: number) => number; onComplete?: () => void },
@@ -289,22 +304,14 @@ class ScrollController {
     }
   }
 
+  // FEATURE - MENU THEME SYNC
+  private menuThemeSync() {}
+
+  // HELPERS
   public isHorizontalEnabled(): boolean {
     const bp = breakpoints();
     const isTouch = isTouchDevice();
-    return !isTouch && bp[0] === 'Desktop';
-  }
-
-  public rebuildMenuIndex(): void {
-    this.menuSectionIndex = this.buildMenuIndex();
-  }
-
-  public getMenuSectionX(id: string): number | null {
-    return this.menuSectionIndex.get(id) ?? null;
-  }
-
-  public getMenuSectionMap(): Record<string, number> {
-    return Object.fromEntries(this.menuSectionIndex.entries());
+    return !isTouch && bp[0] === 'desktop';
   }
 }
 
