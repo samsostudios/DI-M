@@ -7958,7 +7958,7 @@
             console.log("[Scroller] Touch Device - Bypassing scroller setup");
             return;
           }
-          if (bp[0] !== "Desktop") {
+          if (bp[0] !== "desktop") {
             console.log("[Scroller] Non Desktop Device - Bypassing scroller setup");
             return;
           }
