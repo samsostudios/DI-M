@@ -14,12 +14,13 @@ class ScrollController {
   private fxSections: HTMLElement[];
   private heroSection: HTMLElement;
   private contactSection: HTMLElement;
+  private navComponent: HTMLElement;
   private footerSection: HTMLElement;
   private horizontalTween: gsap.core.Animation | null = null;
-
   private menuSections: HTMLElement[] = [];
   private menuSectionIndex: Map<string, number> = new Map();
   private getScrollLengthFn: (() => number) | null = null;
+  private menuThemeTriggers: ScrollTrigger[] = [];
 
   constructor() {
     this.container = document.querySelector('.page_horizontal') as HTMLElement;
@@ -32,29 +33,40 @@ class ScrollController {
     this.fxSections = [...this.track.querySelectorAll('.section_fx')] as HTMLElement[];
     this.heroSection = document.querySelector('.section_hero') as HTMLElement;
     this.contactSection = document.querySelector('.section_contact') as HTMLElement;
+    this.navComponent = document.querySelector('.component_nav-ui') as HTMLElement;
     this.footerSection = document.querySelector('.footer_component') as HTMLElement;
 
     const bp = breakpoints();
     const isTouch = isTouchDevice();
     console.log('BP', bp, 'touch', isTouch);
 
-    if (!this.container || !this.track) {
-      console.error('Container or track not found.');
-      return;
-    }
+    const horizontalEnabled = !isTouch && bp[0] === 'desktop';
 
-    if (isTouch) {
+    // if (!this.container || !this.track) {
+    //   console.error('Container or track not found.');
+    //   return;
+    // }
+
+    // if (isTouch) {
+    //   console.log('[Scroller] Touch Device - Bypassing scroller setup');
+    //   return;
+    // }
+
+    // if (bp[0] !== 'desktop') {
+    //   console.log('[Scroller] Non Desktop Device - Bypassing scroller setup');
+    //   return;
+    // }
+
+    if (horizontalEnabled) {
       console.log('[Scroller] Touch Device - Bypassing scroller setup');
-      return;
+      this.setup();
+      this.bindResize();
+    } else {
+      console.log('[Scroller] Touch Device - Bypassing scroller setup');
+      this.bindResize();
+      this.initMenuSync();
+      ScrollTrigger.refresh();
     }
-
-    if (bp[0] !== 'desktop') {
-      console.log('[Scroller] Non Desktop Device - Bypassing scroller setup');
-      return;
-    }
-
-    this.setup();
-    this.bindResize();
   }
 
   // CORE
@@ -181,12 +193,16 @@ class ScrollController {
         pin: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
-        markers: true,
-        onRefresh: () => this.rebuildMenuIndex(),
+        // markers: true,
+        onRefresh: () => {
+          this.rebuildMenuIndex();
+          this.initMenuSync();
+        },
       },
     });
 
     this.rebuildMenuIndex();
+    this.initMenuSync();
     this.initParallax();
 
     const lenis = lenisInstance();
@@ -305,7 +321,76 @@ class ScrollController {
   }
 
   // FEATURE - MENU THEME SYNC
-  private menuThemeSync() {}
+  private initMenuSync() {
+    console.log('MENU SYNC');
+    // if (!this.horizontalTween) return;
+    if (!this.navComponent) {
+      console.warn('[Scroller - menuThemeSync] No nav component found');
+    }
+
+    console.log('^^', this.navComponent.getBoundingClientRect().right);
+
+    this.menuThemeTriggers.forEach((t) => t.kill());
+    this.menuThemeTriggers = [];
+
+    this.menuSections = [...this.track.querySelectorAll('[data-menu-section]')] as HTMLElement[];
+
+    const THEME_PREFIX = 'u-theme-';
+
+    const getThemeClass = (el: HTMLElement) =>
+      [...el.classList].find((c) => c.startsWith(THEME_PREFIX)) ?? null;
+
+    const clearNavThemes = () => {
+      if (!this.navComponent) return;
+      [...this.navComponent.classList].forEach((c) => {
+        if (c.startsWith(THEME_PREFIX)) this.navComponent!.classList.remove(c);
+      });
+    };
+
+    const applyThemeFromSection = (section: HTMLElement) => {
+      if (!this.navComponent) return;
+
+      const theme = getThemeClass(section);
+      if (!theme) return;
+
+      // avoid churn
+      if (this.navComponent.classList.contains(theme)) return;
+
+      clearNavThemes();
+      this.navComponent.classList.add(theme);
+    };
+
+    const navX = this.navComponent.getBoundingClientRect().right;
+    const navY = this.navComponent.getBoundingClientRect().bottom;
+
+    const yLine = `top+=${Math.round(navY)}`;
+
+    const horizontalMode = !!this.horizontalTween;
+
+    this.menuSections.forEach((section) => {
+      const trig = ScrollTrigger.create({
+        trigger: section,
+        ...(horizontalMode
+          ? {
+              containerAnimation: this.horizontalTween!, // key for horizontal pinned scroller
+              start: `left ${navX}px`,
+              end: `right ${navX}px`,
+            }
+          : { start: `top ${yLine}`, end: `bottom ${yLine}` }),
+
+        // When entering / re-entering, apply that theme
+        onEnter: () => applyThemeFromSection(section),
+        onEnterBack: () => applyThemeFromSection(section),
+        onLeave: () => clearNavThemes(),
+        onLeaveBack: () => clearNavThemes(),
+
+        // Optional: if you want to debug
+        markers: true,
+      });
+
+      this.menuThemeTriggers.push(trig);
+    });
+  }
 
   // HELPERS
   public isHorizontalEnabled(): boolean {
