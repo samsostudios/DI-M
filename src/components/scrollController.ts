@@ -236,7 +236,7 @@ class ScrollController {
       const afterWidth = image.getBoundingClientRect().width;
       const offsetWidth = (afterWidth - beforeWidth) / 2;
 
-      console.log('before', beforeWidth, 'after', afterWidth, 'offset', offsetWidth);
+      // console.log('before', beforeWidth, 'after', afterWidth, 'offset', offsetWidth);
 
       gsap.set(image, { x: offsetWidth });
 
@@ -322,13 +322,13 @@ class ScrollController {
 
   // FEATURE - MENU THEME SYNC
   private initMenuSync() {
-    console.log('MENU SYNC');
+    // console.log('MENU SYNC');
     // if (!this.horizontalTween) return;
     if (!this.navComponent) {
       console.warn('[Scroller - menuThemeSync] No nav component found');
     }
 
-    console.log('^^', this.navComponent.getBoundingClientRect().right);
+    // console.log('^^', this.navComponent.getBoundingClientRect().right);
 
     this.menuThemeTriggers.forEach((t) => t.kill());
     this.menuThemeTriggers = [];

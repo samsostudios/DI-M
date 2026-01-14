@@ -8065,7 +8065,6 @@
             gsapWithCSS.set(image, { scale: maxScale });
             const afterWidth = image.getBoundingClientRect().width;
             const offsetWidth = (afterWidth - beforeWidth) / 2;
-            console.log("before", beforeWidth, "after", afterWidth, "offset", offsetWidth);
             gsapWithCSS.set(image, { x: offsetWidth });
             gsapWithCSS.fromTo(
               image,
@@ -8129,11 +8128,9 @@
         }
         // FEATURE - MENU THEME SYNC
         initMenuSync() {
-          console.log("MENU SYNC");
           if (!this.navComponent) {
             console.warn("[Scroller - menuThemeSync] No nav component found");
           }
-          console.log("^^", this.navComponent.getBoundingClientRect().right);
           this.menuThemeTriggers.forEach((t) => t.kill());
           this.menuThemeTriggers = [];
           this.menuSections = [...this.track.querySelectorAll("[data-menu-section]")];
@@ -8853,6 +8850,75 @@
     }
   });
 
+  // src/components/stepForm.ts
+  var stepForm_exports = {};
+  __export(stepForm_exports, {
+    default: () => stepForm_default,
+    stepFrom: () => stepFrom
+  });
+  var StepFrom, stepFrom, stepForm_default;
+  var init_stepForm = __esm({
+    "src/components/stepForm.ts"() {
+      "use strict";
+      init_live_reload();
+      init_gsap();
+      StepFrom = class {
+        component;
+        form;
+        formSteps;
+        formAdvance;
+        formPrevious;
+        formSubmit;
+        numTrack;
+        currentStep = 0;
+        constructor() {
+          this.component = document.querySelector(".section_contact");
+          this.form = document.querySelector(".contact_form");
+          this.formSteps = [...document.querySelectorAll(".form_step")];
+          this.formAdvance = document.querySelector("#formAdvance");
+          this.formPrevious = document.querySelector("#formPrevious");
+          this.formSubmit = document.querySelector("#formSubmit");
+          this.numTrack = document.querySelector(".form_progress-track");
+          if (!this.form) return;
+          console.log("***", this.formSteps);
+          this.setListeners();
+          this.handleSequence();
+        }
+        setListeners() {
+          this.formAdvance.addEventListener("click", () => {
+            const currentStep = this.formSteps[this.currentStep];
+            const nextStep = this.formSteps[this.currentStep + 1];
+            console.log("next", currentStep, nextStep);
+            const tl = gsapWithCSS.timeline();
+            tl.to(currentStep, { y: "-5rem", opacity: 0, duration: 1, ease: "expo.out" });
+            tl.to(
+              this.numTrack,
+              { y: `-${this.currentStep + 1 * 33}%`, duration: 1, ease: "expo.out" },
+              "<"
+            );
+            tl.set(nextStep, { display: "flex" });
+            tl.fromTo(
+              nextStep,
+              { y: "5rem", opacity: 0 },
+              { y: "0rem", opacity: 1, duration: 1, ease: "expo.out" }
+            );
+          });
+          this.formPrevious.addEventListener("click", () => {
+            const currentStep = this.formSteps[this.currentStep];
+            const prevStep = this.formSteps[this.currentStep - 1];
+            const tl = gsapWithCSS.timeline();
+          });
+        }
+        handleSequence() {
+        }
+      };
+      stepFrom = () => {
+        new StepFrom();
+      };
+      stepForm_default = stepFrom;
+    }
+  });
+
   // src/index.ts
   init_live_reload();
 
@@ -8929,6 +8995,7 @@
     loadComponent_default(".component_preloader", () => Promise.resolve().then(() => (init_preloader(), preloader_exports)));
     loadComponent_default(".component_nav", () => Promise.resolve().then(() => (init_menu(), menu_exports)));
     loadComponent_default(".section_hero", () => Promise.resolve().then(() => (init_heroSlider(), heroSlider_exports)));
+    loadComponent_default(".section_contact", () => Promise.resolve().then(() => (init_stepForm(), stepForm_exports)));
   });
 })();
 /*! Bundled license information:
