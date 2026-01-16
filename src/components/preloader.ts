@@ -19,7 +19,7 @@ class Preloader {
   private heroTag: HTMLElement;
   private nav: HTMLElement;
   private scrollGlyph: HTMLElement;
-  private bypass: boolean = true;
+  private bypass: boolean = false;
 
   constructor() {
     this.component = document.querySelector('.component_preloader') as HTMLElement;

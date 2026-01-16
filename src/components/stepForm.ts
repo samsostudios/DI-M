@@ -7,6 +7,7 @@ class StepFrom {
   private formAdvance: HTMLButtonElement;
   private formPrevious: HTMLButtonElement;
   private formSubmit: HTMLButtonElement;
+  private webflowSubmit: HTMLButtonElement;
   private numTrack: HTMLElement;
   private currentStep: number = 0;
 
@@ -17,11 +18,12 @@ class StepFrom {
     this.formAdvance = document.querySelector('#formAdvance') as HTMLButtonElement;
     this.formPrevious = document.querySelector('#formPrevious') as HTMLButtonElement;
     this.formSubmit = document.querySelector('#formSubmit') as HTMLButtonElement;
+    this.webflowSubmit = document.querySelector('#webflowSubmit') as HTMLButtonElement;
     this.numTrack = document.querySelector('.form_progress-track') as HTMLElement;
 
     if (!this.form) return;
 
-    console.log('***', this.formSteps);
+    console.log('***', this.formSubmit, this.webflowSubmit);
 
     this.setListeners();
   }
@@ -30,8 +32,6 @@ class StepFrom {
     this.formAdvance.addEventListener('click', () => {
       const current = this.formSteps[this.currentStep];
       const next = this.formSteps[this.currentStep + 1];
-
-      console.log('HERE', this.formSteps);
 
       if (this.currentStep < this.formSteps.length - 1) {
         const err = this.checkSteps(current);
@@ -50,6 +50,13 @@ class StepFrom {
         this.showPrev(current, prev);
         this.currentStep -= 1;
       }
+    });
+
+    this.formSubmit.addEventListener('click', () => {
+      if (!this.webflowSubmit || !this.form) return;
+
+      console.log('SUBMIT');
+      this.webflowSubmit.click();
     });
   }
   private showNext(current: HTMLElement, next: HTMLElement) {
@@ -83,23 +90,47 @@ class StepFrom {
 
   private checkSteps(currentStep: HTMLElement) {
     console.log('$$$', currentStep.querySelectorAll('input'));
-    const inputs = currentStep.querySelectorAll('input');
+    const inputs = [...currentStep.querySelectorAll('input')];
     const errors: HTMLElement[] = [];
+    const validatedRadioGroups = new Set<string>();
 
     inputs.forEach((item: HTMLInputElement) => {
       const req = item.required;
-      console.log('^^^', item.type);
 
-      if (req) {
-        const val = item.value;
-        if (item.type === 'radio') {
+      if (item.type === 'radio') {
+        const groupName = item.name;
+        if (!groupName) return;
+
+        if (validatedRadioGroups.has(groupName)) return;
+        validatedRadioGroups.add(groupName);
+
+        const checked = currentStep.querySelector<HTMLInputElement>(
+          `input[type="radio"][name="${CSS.escape(groupName)}"]:checked`,
+        );
+
+        if (!checked) {
+          this.showStepError();
+          errors.push(item); // push one representative element for the group
         }
-        if (val === '') {
+
+        console.log('RADIO', item.name);
+
+        return;
+      }
+
+      if (item.type === 'checkbox') {
+        if (!item.checked) {
           this.showStepError();
           errors.push(item);
         }
+        return;
       }
-      console.log('**', req, errors);
+
+      const val = item.value?.trim() ?? '';
+      if (val === '') {
+        this.showStepError();
+        errors.push(item);
+      }
     });
     return errors;
   }
