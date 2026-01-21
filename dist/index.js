@@ -7933,11 +7933,21 @@
         contactSection;
         navComponent;
         footerSection;
+        absImages;
+        // GSAP State
         horizontalTween = null;
+        menuThemeTriggers = [];
+        // Responsive Context
+        mm = null;
+        horizontalCtx = null;
+        verticalCtx = null;
+        onResizeDesktop = null;
+        // Menu Helpers
         menuSections = [];
         menuSectionIndex = /* @__PURE__ */ new Map();
         getScrollLengthFn = null;
-        menuThemeTriggers = [];
+        // Debug
+        debugScrollMetrics = false;
         constructor() {
           this.container = document.querySelector(".page_horizontal");
           this.track = document.querySelector(".page_scroll-track");
@@ -7950,23 +7960,54 @@
           this.contactSection = document.querySelector(".section_contact");
           this.navComponent = document.querySelector(".component_nav-ui");
           this.footerSection = document.querySelector(".footer_component");
-          const bp = breakpoints();
-          const isTouch = isTouchDevice();
-          console.log("BP", bp, "touch", isTouch);
-          const horizontalEnabled = !isTouch && bp[0] === "desktop";
-          if (horizontalEnabled) {
-            console.log("[Scroller] Touch Device - Bypassing scroller setup");
-            this.setup();
-            this.bindResize();
-          } else {
-            console.log("[Scroller] Touch Device - Bypassing scroller setup");
-            this.bindResize();
-            this.initMenuSync();
-            ScrollTrigger2.refresh();
-          }
+          this.absImages = [...document.querySelectorAll(".u-img-fill.set-abs")];
+          this.initResposive();
         }
-        // CORE
-        setup() {
+        // RESPONSIVE LIFECYLCE
+        initResposive() {
+          this.mm?.kill();
+          this.mm = gsapWithCSS.matchMedia();
+          const DESKTOP_QUERY = "(min-width: 992px) and (pointer: fine)";
+          this.mm.add(DESKTOP_QUERY, () => {
+            this.horizontalCtx = gsapWithCSS.context(() => {
+              this.enableHorizontal();
+            }, this.container);
+            return () => {
+              this.disableHorizontal();
+            };
+          });
+          this.mm.add(`not all and ${DESKTOP_QUERY}`, () => {
+            this.verticalCtx = gsapWithCSS.context(() => {
+              this.enableVertical();
+            }, this.container);
+            return () => {
+              this.disableVertical();
+            };
+          });
+        }
+        // HORIZONTAL MODE
+        enableHorizontal() {
+          this.horizontalTween = null;
+          this.getScrollLengthFn = null;
+          this.setupHorizontalLayout();
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              this.initScroll();
+              ScrollTrigger2.refresh();
+            });
+          });
+          this.bindResizeDesktopOnly();
+        }
+        disableHorizontal() {
+          this.killMenuTriggers();
+          this.killHorizontalTween();
+          this.unbindResizeDesktopOnly();
+          this.resetLayoutStyles();
+          this.horizontalCtx?.revert();
+          this.horizontalCtx = null;
+          ScrollTrigger2.refresh();
+        }
+        setupHorizontalLayout() {
           const root = document.documentElement;
           const navMargin = getComputedStyle(root).getPropertyValue("--custom--nav-width-plus-gutter").trim();
           const siteMargin = getComputedStyle(root).getPropertyValue("--site--margin").trim();
@@ -7975,7 +8016,7 @@
             flexFlow: "row nowrap",
             width: "max-content"
           });
-          gsapWithCSS.set(this.fxSections, { flex: "0 0 100vw", height: "100vh" });
+          gsapWithCSS.set(this.fxSections, { flex: "0 0 100vw" });
           gsapWithCSS.set(this.heroSection, { flex: "0 0 100vw", height: "100vh" });
           gsapWithCSS.set(this.contactSection, { flex: "0 0 133vw", height: "100vh" });
           gsapWithCSS.set(this.contactSection.children[0], {
@@ -7997,21 +8038,7 @@
               height: "100%"
             });
           });
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              this.initScroll();
-              ScrollTrigger2.refresh();
-            });
-          });
-        }
-        bindResize() {
-          window.addEventListener(
-            "resize",
-            () => {
-              ScrollTrigger2.refresh();
-            },
-            { passive: true }
-          );
+          if (this.absImages.length > 0) gsapWithCSS.set(this.absImages, { position: "absolute" });
         }
         initScroll() {
           const getScrollLength = () => {
@@ -8021,6 +8048,9 @@
             return Math.max(0, Math.round(len));
           };
           this.getScrollLengthFn = getScrollLength;
+          if (this.debugScrollMetrics) {
+            this.debugScrollLength(getScrollLength);
+          }
           this.horizontalTween = gsapWithCSS.to(this.track, {
             x: () => -getScrollLength(),
             ease: "none",
@@ -8041,15 +8071,18 @@
           });
           this.rebuildMenuIndex();
           this.initMenuSync();
-          this.initParallax();
-          const lenis2 = lenisInstance();
-          if (lenis2) {
-            requestAnimationFrame(function raf(time) {
-              lenis2.raf(time);
-              ScrollTrigger2.update();
-              requestAnimationFrame(raf);
-            });
-          }
+        }
+        // VERTICAL MODE
+        enableVertical() {
+          this.horizontalTween = null;
+          this.rebuildMenuIndex();
+          this.initMenuSync();
+          ScrollTrigger2.refresh();
+        }
+        disableVertical() {
+          this.killMenuTriggers();
+          this.verticalCtx?.revert();
+          this.verticalCtx = null;
         }
         // FEATURE - PARALAX
         initParallax() {
@@ -8131,8 +8164,7 @@
           if (!this.navComponent) {
             console.warn("[Scroller - menuThemeSync] No nav component found");
           }
-          this.menuThemeTriggers.forEach((t) => t.kill());
-          this.menuThemeTriggers = [];
+          this.killMenuTriggers();
           this.menuSections = [...this.track.querySelectorAll("[data-menu-section]")];
           const THEME_PREFIX = "u-theme-";
           const getThemeClass = (el) => [...el.classList].find((c) => c.startsWith(THEME_PREFIX)) ?? null;
@@ -8167,18 +8199,96 @@
               onEnter: () => applyThemeFromSection(section),
               onEnterBack: () => applyThemeFromSection(section),
               onLeave: () => clearNavThemes(),
-              onLeaveBack: () => clearNavThemes(),
+              onLeaveBack: () => clearNavThemes()
               // Optional: if you want to debug
-              markers: true
+              // markers: true,
             });
             this.menuThemeTriggers.push(trig);
           });
         }
-        // HELPERS
+        // SCROLL HELPERS
+        killMenuTriggers() {
+          this.menuThemeTriggers.forEach((t) => t.kill());
+          this.menuThemeTriggers = [];
+        }
+        killHorizontalTween() {
+          if (!this.horizontalTween) return;
+          this.horizontalTween.scrollTrigger?.kill(true);
+          this.horizontalTween.kill();
+          this.horizontalTween = null;
+        }
+        resetLayoutStyles() {
+          gsapWithCSS.set(this.track, { x: 0, clearProps: "transform" });
+          const toClear = [
+            this.track,
+            ...this.fxSections,
+            this.heroSection,
+            this.contactSection,
+            this.contactSection?.children?.[0],
+            this.footerSection,
+            ...this.wideSections,
+            ...this.wideLayouts,
+            ...this.absImages
+          ].filter(Boolean);
+          gsapWithCSS.set(toClear, { clearProps: "all" });
+        }
+        bindResizeDesktopOnly() {
+          this.unbindResizeDesktopOnly();
+          this.onResizeDesktop = () => {
+            ScrollTrigger2.refresh();
+          };
+          window.addEventListener("resize", this.onResizeDesktop, { passive: true });
+        }
+        unbindResizeDesktopOnly() {
+          if (!this.onResizeDesktop) return;
+          window.removeEventListener("resize", this.onResizeDesktop);
+          this.onResizeDesktop = null;
+        }
+        // PUBLIC HELPERS
         isHorizontalEnabled() {
           const bp = breakpoints();
           const isTouch = isTouchDevice();
           return !isTouch && bp[0] === "desktop";
+        }
+        debugScrollLength(getScrollLength, maxFrames = 240) {
+          const getLastMetrics = () => {
+            const last = this.track.lastElementChild;
+            if (!last) return null;
+            return {
+              trackScrollWidth: this.track.scrollWidth,
+              lastEnd: last.offsetLeft + last.offsetWidth,
+              containerW: this.container.clientWidth,
+              len: last.offsetLeft + last.offsetWidth - this.container.clientWidth
+            };
+          };
+          let prev = getLastMetrics();
+          console.log("[Scroller][metrics:init]", prev);
+          let frames = 0;
+          const watch = () => {
+            const next = getLastMetrics();
+            if (prev && next && next.len !== prev.len) {
+              console.log("[Scroller][metrics:changed]", {
+                frame: frames,
+                prev,
+                next
+              });
+            }
+            prev = next ?? prev;
+            frames++;
+            if (frames < maxFrames) {
+              requestAnimationFrame(watch);
+            } else {
+              console.log("[Scroller][metrics:end]");
+            }
+          };
+          requestAnimationFrame(watch);
+          const footer = this.track.querySelector(".footer_component");
+          console.log("[Scroller][metrics:snapshot]", {
+            len: getScrollLength(),
+            footerEnd: footer ? footer.offsetLeft + footer.offsetWidth : null,
+            lastEnd: prev ? prev.lastEnd : null,
+            containerW: this.container.clientWidth
+          });
         }
       };
       scrollControllerInstance = null;
@@ -8542,7 +8652,7 @@
         heroTag;
         nav;
         scrollGlyph;
-        bypass = false;
+        bypass = true;
         constructor() {
           this.component = document.querySelector(".component_preloader");
           this.loaderTracks = [...document.querySelectorAll(".preloader_track")];
@@ -8946,7 +9056,6 @@
           const errors = [];
           const validatedRadioGroups = /* @__PURE__ */ new Set();
           inputs.forEach((item) => {
-            const req = item.required;
             if (item.type === "radio") {
               const groupName = item.name;
               if (!groupName) return;

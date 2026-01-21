@@ -16,11 +16,25 @@ class ScrollController {
   private contactSection: HTMLElement;
   private navComponent: HTMLElement;
   private footerSection: HTMLElement;
+  private absImages: HTMLImageElement[];
+
+  // GSAP State
   private horizontalTween: gsap.core.Animation | null = null;
+  private menuThemeTriggers: ScrollTrigger[] = [];
+
+  // Responsive Context
+  private mm: gsap.MatchMedia | null = null;
+  private horizontalCtx: gsap.Context | null = null;
+  private verticalCtx: gsap.Context | null = null;
+  private onResizeDesktop: (() => void) | null = null;
+
+  // Menu Helpers
   private menuSections: HTMLElement[] = [];
   private menuSectionIndex: Map<string, number> = new Map();
   private getScrollLengthFn: (() => number) | null = null;
-  private menuThemeTriggers: ScrollTrigger[] = [];
+
+  // Debug
+  private debugScrollMetrics = false;
 
   constructor() {
     this.container = document.querySelector('.page_horizontal') as HTMLElement;
@@ -35,42 +49,69 @@ class ScrollController {
     this.contactSection = document.querySelector('.section_contact') as HTMLElement;
     this.navComponent = document.querySelector('.component_nav-ui') as HTMLElement;
     this.footerSection = document.querySelector('.footer_component') as HTMLElement;
+    this.absImages = [...document.querySelectorAll('.u-img-fill.set-abs')] as HTMLImageElement[];
 
-    const bp = breakpoints();
-    const isTouch = isTouchDevice();
-    console.log('BP', bp, 'touch', isTouch);
-
-    const horizontalEnabled = !isTouch && bp[0] === 'desktop';
-
-    // if (!this.container || !this.track) {
-    //   console.error('Container or track not found.');
-    //   return;
-    // }
-
-    // if (isTouch) {
-    //   console.log('[Scroller] Touch Device - Bypassing scroller setup');
-    //   return;
-    // }
-
-    // if (bp[0] !== 'desktop') {
-    //   console.log('[Scroller] Non Desktop Device - Bypassing scroller setup');
-    //   return;
-    // }
-
-    if (horizontalEnabled) {
-      console.log('[Scroller] Touch Device - Bypassing scroller setup');
-      this.setup();
-      this.bindResize();
-    } else {
-      console.log('[Scroller] Touch Device - Bypassing scroller setup');
-      this.bindResize();
-      this.initMenuSync();
-      ScrollTrigger.refresh();
-    }
+    this.initResposive();
   }
 
-  // CORE
-  private setup() {
+  // RESPONSIVE LIFECYLCE
+  private initResposive() {
+    this.mm?.kill();
+    this.mm = gsap.matchMedia();
+
+    const DESKTOP_QUERY = '(min-width: 992px) and (pointer: fine)';
+
+    this.mm.add(DESKTOP_QUERY, () => {
+      this.horizontalCtx = gsap.context(() => {
+        this.enableHorizontal();
+      }, this.container);
+
+      return () => {
+        this.disableHorizontal();
+      };
+    });
+
+    this.mm.add(`not all and ${DESKTOP_QUERY}`, () => {
+      this.verticalCtx = gsap.context(() => {
+        this.enableVertical();
+      }, this.container);
+
+      return () => {
+        this.disableVertical();
+      };
+    });
+  }
+
+  // HORIZONTAL MODE
+  private enableHorizontal() {
+    this.horizontalTween = null;
+    this.getScrollLengthFn = null;
+
+    this.setupHorizontalLayout();
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.initScroll();
+        ScrollTrigger.refresh();
+      });
+    });
+
+    this.bindResizeDesktopOnly();
+  }
+
+  private disableHorizontal() {
+    this.killMenuTriggers();
+    this.killHorizontalTween();
+    this.unbindResizeDesktopOnly();
+    this.resetLayoutStyles();
+
+    this.horizontalCtx?.revert();
+    this.horizontalCtx = null;
+
+    ScrollTrigger.refresh();
+  }
+
+  private setupHorizontalLayout() {
     const root = document.documentElement;
     const navMargin = getComputedStyle(root)
       .getPropertyValue('--custom--nav-width-plus-gutter')
@@ -82,7 +123,7 @@ class ScrollController {
       flexFlow: 'row nowrap',
       width: 'max-content',
     });
-    gsap.set(this.fxSections, { flex: '0 0 100vw', height: '100vh' });
+    gsap.set(this.fxSections, { flex: '0 0 100vw' });
     gsap.set(this.heroSection, { flex: '0 0 100vw', height: '100vh' });
     gsap.set(this.contactSection, { flex: '0 0 133vw', height: '100vh' });
     gsap.set(this.contactSection.children[0], {
@@ -104,32 +145,10 @@ class ScrollController {
         height: '100%',
       });
     });
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        this.initScroll();
-        ScrollTrigger.refresh();
-      });
-    });
-    // this.initScroll();
-    // setTimeout(() => {
-    //   ScrollTrigger.refresh(true);
-    // }, 250);
-  }
-
-  private bindResize() {
-    window.addEventListener(
-      'resize',
-      () => {
-        // Let ScrollTrigger recalc distances
-        ScrollTrigger.refresh();
-      },
-      { passive: true },
-    );
+    if (this.absImages.length > 0) gsap.set(this.absImages, { position: 'absolute' });
   }
 
   private initScroll() {
-    // const totalScrollLength = this.track.scrollWidth - window.innerWidth;
     const getScrollLength = () => {
       const last = this.track.lastElementChild as HTMLElement | null;
       if (!last) return 0;
@@ -140,47 +159,11 @@ class ScrollController {
 
     // Store scroll length for menu movement
     this.getScrollLengthFn = getScrollLength;
+
     // DEBUG
-    // const getLastMetrics = () => {
-    //   const last = this.track.lastElementChild as HTMLElement | null;
-    //   if (!last) return null;
-
-    //   return {
-    //     trackScrollWidth: this.track.scrollWidth,
-    //     lastEnd: last.offsetLeft + last.offsetWidth,
-    //     containerW: this.container.clientWidth,
-    //     len: last.offsetLeft + last.offsetWidth - this.container.clientWidth,
-    //   };
-    // };
-
-    // let prev = getLastMetrics();
-    // console.log('[metrics init]', prev);
-
-    // let frames = 0;
-    // const watch = () => {
-    //   const next = getLastMetrics();
-    //   if (prev && next && next.len !== prev.len) {
-    //     console.log('[metrics changed]', { frames, prev, next });
-    //   }
-    //   prev = next ?? prev;
-    //   frames++;
-    //   if (frames < 240) requestAnimationFrame(watch); // ~4s
-    // };
-    // requestAnimationFrame(watch);
-
-    // const footer = this.track.querySelector('.footer_component') as HTMLElement | null;
-    // console.log('[len]', {
-    //   len: getScrollLength(),
-    //   footerEnd: footer ? footer.offsetLeft + footer.offsetWidth : null,
-    //   lastEnd: (this.track.lastElementChild as HTMLElement | null)
-    //     ? (this.track.lastElementChild as HTMLElement).offsetLeft +
-    //       (this.track.lastElementChild as HTMLElement).offsetWidth
-    //     : null,
-    //   containerW: this.container.clientWidth,
-    // });
-    // END DEBUG
-
-    // console.log('scroll length', totalScrollLength, getScrollLength());ca
+    if (this.debugScrollMetrics) {
+      this.debugScrollLength(getScrollLength);
+    }
 
     this.horizontalTween = gsap.to(this.track, {
       x: () => -getScrollLength(),
@@ -203,16 +186,23 @@ class ScrollController {
 
     this.rebuildMenuIndex();
     this.initMenuSync();
-    this.initParallax();
+    // this.initParallax();
+  }
 
-    const lenis = lenisInstance();
-    if (lenis) {
-      requestAnimationFrame(function raf(time) {
-        lenis.raf(time);
-        ScrollTrigger.update();
-        requestAnimationFrame(raf);
-      });
-    }
+  // VERTICAL MODE
+  private enableVertical() {
+    this.horizontalTween = null;
+
+    this.rebuildMenuIndex();
+    this.initMenuSync();
+    ScrollTrigger.refresh();
+  }
+
+  private disableVertical() {
+    this.killMenuTriggers();
+
+    this.verticalCtx?.revert();
+    this.verticalCtx = null;
   }
 
   // FEATURE - PARALAX
@@ -322,16 +312,13 @@ class ScrollController {
 
   // FEATURE - MENU THEME SYNC
   private initMenuSync() {
-    // console.log('MENU SYNC');
-    // if (!this.horizontalTween) return;
     if (!this.navComponent) {
       console.warn('[Scroller - menuThemeSync] No nav component found');
     }
 
     // console.log('^^', this.navComponent.getBoundingClientRect().right);
 
-    this.menuThemeTriggers.forEach((t) => t.kill());
-    this.menuThemeTriggers = [];
+    this.killMenuTriggers();
 
     this.menuSections = [...this.track.querySelectorAll('[data-menu-section]')] as HTMLElement[];
 
@@ -385,18 +372,118 @@ class ScrollController {
         onLeaveBack: () => clearNavThemes(),
 
         // Optional: if you want to debug
-        markers: true,
+        // markers: true,
       });
 
       this.menuThemeTriggers.push(trig);
     });
   }
 
-  // HELPERS
+  // SCROLL HELPERS
+  private killMenuTriggers() {
+    this.menuThemeTriggers.forEach((t) => t.kill());
+    this.menuThemeTriggers = [];
+  }
+
+  private killHorizontalTween() {
+    if (!this.horizontalTween) return;
+    this.horizontalTween.scrollTrigger?.kill(true);
+    this.horizontalTween.kill();
+    this.horizontalTween = null;
+  }
+
+  private resetLayoutStyles() {
+    gsap.set(this.track, { x: 0, clearProps: 'transform' });
+
+    const toClear: any[] = [
+      this.track,
+      ...this.fxSections,
+      this.heroSection,
+      this.contactSection,
+      this.contactSection?.children?.[0] as any,
+      this.footerSection,
+      ...this.wideSections,
+      ...this.wideLayouts,
+      ...this.absImages,
+    ].filter(Boolean);
+
+    gsap.set(toClear, { clearProps: 'all' });
+  }
+
+  private bindResizeDesktopOnly() {
+    this.unbindResizeDesktopOnly();
+
+    this.onResizeDesktop = () => {
+      // Only recalc distances; mode switching is handled by matchMedia.
+      ScrollTrigger.refresh();
+    };
+
+    window.addEventListener('resize', this.onResizeDesktop, { passive: true });
+  }
+
+  private unbindResizeDesktopOnly() {
+    if (!this.onResizeDesktop) return;
+    window.removeEventListener('resize', this.onResizeDesktop);
+    this.onResizeDesktop = null;
+  }
+
+  // PUBLIC HELPERS
   public isHorizontalEnabled(): boolean {
     const bp = breakpoints();
     const isTouch = isTouchDevice();
     return !isTouch && bp[0] === 'desktop';
+  }
+
+  private debugScrollLength(getScrollLength: () => number, maxFrames = 240) {
+    const getLastMetrics = () => {
+      const last = this.track.lastElementChild as HTMLElement | null;
+      if (!last) return null;
+
+      return {
+        trackScrollWidth: this.track.scrollWidth,
+        lastEnd: last.offsetLeft + last.offsetWidth,
+        containerW: this.container.clientWidth,
+        len: last.offsetLeft + last.offsetWidth - this.container.clientWidth,
+      };
+    };
+
+    let prev = getLastMetrics();
+    console.log('[Scroller][metrics:init]', prev);
+
+    let frames = 0;
+
+    const watch = () => {
+      const next = getLastMetrics();
+
+      if (prev && next && next.len !== prev.len) {
+        console.log('[Scroller][metrics:changed]', {
+          frame: frames,
+          prev,
+          next,
+        });
+      }
+
+      prev = next ?? prev;
+      frames++;
+
+      if (frames < maxFrames) {
+        requestAnimationFrame(watch);
+      } else {
+        console.log('[Scroller][metrics:end]');
+      }
+    };
+
+    requestAnimationFrame(watch);
+
+    // One-time snapshot for sanity checking
+    const footer = this.track.querySelector('.footer_component') as HTMLElement | null;
+
+    console.log('[Scroller][metrics:snapshot]', {
+      len: getScrollLength(),
+      footerEnd: footer ? footer.offsetLeft + footer.offsetWidth : null,
+      lastEnd: prev ? prev.lastEnd : null,
+      containerW: this.container.clientWidth,
+    });
   }
 }
 

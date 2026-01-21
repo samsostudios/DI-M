@@ -95,7 +95,7 @@ class StepFrom {
     const validatedRadioGroups = new Set<string>();
 
     inputs.forEach((item: HTMLInputElement) => {
-      const req = item.required;
+      // const req = item.required;
 
       if (item.type === 'radio') {
         const groupName = item.name;
