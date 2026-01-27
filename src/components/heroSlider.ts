@@ -14,6 +14,8 @@ class HeroSlider {
 
     this.duration = parseInt(this.container.dataset.sliderDuration as string);
 
+    if (this.images.length === 0) return;
+
     this.setup();
   }
 

@@ -186,7 +186,7 @@ class ScrollController {
 
     this.rebuildMenuIndex();
     this.initMenuSync();
-    // this.initParallax();
+    this.initParallax();
   }
 
   // VERTICAL MODE
