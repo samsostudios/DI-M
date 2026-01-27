@@ -59,6 +59,7 @@ class StepFrom {
       this.webflowSubmit.click();
     });
   }
+
   private showNext(current: HTMLElement, next: HTMLElement) {
     console.log('next', this.currentStep);
     this.clearStepError();
@@ -74,6 +75,7 @@ class StepFrom {
     );
     tl.set(current, { display: 'none' });
   }
+
   private showPrev(current: HTMLElement, prev: HTMLElement) {
     console.log('prev', this.currentStep);
     const tl = gsap.timeline();
