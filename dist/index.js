@@ -9150,10 +9150,10 @@
         minute: "2-digit",
         hour12: true
       }).split(" ");
-      this.day.textContent = weekday;
-      this.date.textContent = monthDay;
-      this.time.textContent = timeStr;
-      this.ampm.textContent = ampmStr;
+      if (this.day) this.day.textContent = weekday;
+      if (this.date) this.date.textContent = monthDay;
+      if (this.time) this.time.textContent = timeStr;
+      if (this.ampm) this.ampm.textContent = ampmStr;
     }
   };
   var navHUD = () => {
