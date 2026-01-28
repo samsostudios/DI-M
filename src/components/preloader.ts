@@ -70,7 +70,7 @@ class Preloader {
 
   private animate() {
     const tl = gsap.timeline({
-      delay: 0.5,
+      delay: 1,
       onComplete: () => {
         this.reveal();
       },

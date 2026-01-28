@@ -8696,7 +8696,7 @@
         }
         animate() {
           const tl = gsapWithCSS.timeline({
-            delay: 0.5,
+            delay: 1,
             onComplete: () => {
               this.reveal();
             }
