@@ -6,7 +6,7 @@ class StepFrom {
   private formSteps: HTMLElement[];
   private formAdvance: HTMLButtonElement;
   private formPrevious: HTMLButtonElement;
-  private formSubmit: HTMLButtonElement;
+  private triggerSubmit: HTMLButtonElement;
   private webflowSubmit: HTMLButtonElement;
   private numTrack: HTMLElement;
   private currentStep: number = 0;
@@ -14,18 +14,38 @@ class StepFrom {
   constructor() {
     this.component = document.querySelector('.section_contact') as HTMLElement;
     this.form = document.querySelector('.contact_form') as HTMLFormElement;
-    this.formSteps = [...document.querySelectorAll('.form_step')] as HTMLElement[];
-    this.formAdvance = document.querySelector('#formAdvance') as HTMLButtonElement;
-    this.formPrevious = document.querySelector('#formPrevious') as HTMLButtonElement;
-    this.formSubmit = document.querySelector('#formSubmit') as HTMLButtonElement;
-    this.webflowSubmit = document.querySelector('#webflowSubmit') as HTMLButtonElement;
-    this.numTrack = document.querySelector('.form_progress-track') as HTMLElement;
+    this.formSteps = [...this.form.querySelectorAll('.form_step')] as HTMLElement[];
+    this.formAdvance = this.component.querySelector('#formAdvance') as HTMLButtonElement;
+    this.formPrevious = this.component.querySelector('#formPrevious') as HTMLButtonElement;
+    this.triggerSubmit = this.component.querySelector('#triggerSubmit') as HTMLButtonElement;
+    this.webflowSubmit = this.component.querySelector('#webflowSubmit') as HTMLButtonElement;
+    this.numTrack = this.component.querySelector('.form_progress-track') as HTMLElement;
 
     if (!this.form) return;
 
-    console.log('***', this.formSubmit, this.webflowSubmit);
+    // console.log('***', this.formSubmit, this.webflowSubmit);
 
     this.setListeners();
+    this.syncControls();
+  }
+
+  private isLastStep(): boolean {
+    return this.currentStep >= this.formSteps.length - 1;
+  }
+
+  private syncControls() {
+    const last = this.isLastStep();
+    const atStart = this.currentStep === 0;
+
+    console.log('%%', last, atStart);
+
+    if (last) {
+      const tl = gsap.timeline();
+      tl.to(this.formAdvance, { opacity: 0 });
+      tl.set(this.formAdvance, { display: 'none' });
+      tl.set(this.triggerSubmit, { display: 'flex' });
+      tl.from(this.triggerSubmit, { opacity: 0 });
+    }
   }
 
   private setListeners() {
@@ -39,6 +59,7 @@ class StepFrom {
           this.clearStepError();
           this.showNext(current, next);
           this.currentStep += 1;
+          this.syncControls();
         }
       }
     });
@@ -49,10 +70,11 @@ class StepFrom {
       if (this.currentStep > 0) {
         this.showPrev(current, prev);
         this.currentStep -= 1;
+        this.syncControls();
       }
     });
 
-    this.formSubmit.addEventListener('click', () => {
+    this.triggerSubmit.addEventListener('click', () => {
       if (!this.webflowSubmit || !this.form) return;
 
       console.log('SUBMIT');

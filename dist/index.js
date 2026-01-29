@@ -8653,7 +8653,7 @@
         heroTag;
         nav;
         scrollGlyph;
-        bypass = true;
+        bypass = false;
         constructor() {
           this.component = document.querySelector(".component_preloader");
           this.loaderTracks = [...document.querySelectorAll(".preloader_track")];
@@ -8661,6 +8661,7 @@
           this.tags = [...document.querySelectorAll(".preloader_tag")];
           this.bgImg = document.querySelector(".preloader_img");
           this.overlayPanel = document.querySelector(".preloader_reveal");
+          console.log("!!", this.loaderTracks);
           this.heroText = document.querySelector(".section_hero h1");
           document.fonts.ready.then(() => {
           });
@@ -8696,7 +8697,7 @@
         }
         animate() {
           const tl = gsapWithCSS.timeline({
-            delay: 1,
+            // delay: 1,
             onComplete: () => {
               this.reveal();
             }
@@ -8710,18 +8711,9 @@
           tl.to(this.vTracks[0], { y: "0%", duration: 0.5, ease: "power2.inOut" }, "1.5");
           tl.to(this.hTracks, { y: "-100%", ease: "power2.inOut" });
           tl.to(this.vTracks, { x: "-100%", ease: "power2.inOut" }, "<");
-          tl.to(this.overlayPanel, { width: "100%", duration: 1.5, ease: "expo.inOut" });
-          tl.to(
-            [this.tags, this.logo, this.bgImg],
-            { opacity: 0, duration: 1, ease: "power2.inOut" },
-            "<1"
-          );
-          tl.to(this.component, {
-            opacity: 0,
-            duration: 1,
-            ease: "power2.in"
-          });
-          tl.set(this.component, { display: "none" });
+          tl.to(this.overlayPanel, { width: "100%", duration: 1.5, ease: "expo.in" });
+          tl.to([this.tags, this.logo, this.bgImg], { opacity: 0, duration: 1, ease: "power2.inOut" });
+          tl.to(this.component, { duration: 1.5, x: "100%", ease: "power3.out" });
         }
         reveal() {
           const tl = gsapWithCSS.timeline();
@@ -8980,22 +8972,37 @@
         formSteps;
         formAdvance;
         formPrevious;
-        formSubmit;
+        triggerSubmit;
         webflowSubmit;
         numTrack;
         currentStep = 0;
         constructor() {
           this.component = document.querySelector(".section_contact");
           this.form = document.querySelector(".contact_form");
-          this.formSteps = [...document.querySelectorAll(".form_step")];
-          this.formAdvance = document.querySelector("#formAdvance");
-          this.formPrevious = document.querySelector("#formPrevious");
-          this.formSubmit = document.querySelector("#formSubmit");
-          this.webflowSubmit = document.querySelector("#webflowSubmit");
-          this.numTrack = document.querySelector(".form_progress-track");
+          this.formSteps = [...this.form.querySelectorAll(".form_step")];
+          this.formAdvance = this.component.querySelector("#formAdvance");
+          this.formPrevious = this.component.querySelector("#formPrevious");
+          this.triggerSubmit = this.component.querySelector("#triggerSubmit");
+          this.webflowSubmit = this.component.querySelector("#webflowSubmit");
+          this.numTrack = this.component.querySelector(".form_progress-track");
           if (!this.form) return;
-          console.log("***", this.formSubmit, this.webflowSubmit);
           this.setListeners();
+          this.syncControls();
+        }
+        isLastStep() {
+          return this.currentStep >= this.formSteps.length - 1;
+        }
+        syncControls() {
+          const last = this.isLastStep();
+          const atStart = this.currentStep === 0;
+          console.log("%%", last, atStart);
+          if (last) {
+            const tl = gsapWithCSS.timeline();
+            tl.to(this.formAdvance, { opacity: 0 });
+            tl.set(this.formAdvance, { display: "none" });
+            tl.set(this.triggerSubmit, { display: "flex" });
+            tl.from(this.triggerSubmit, { opacity: 0 });
+          }
         }
         setListeners() {
           this.formAdvance.addEventListener("click", () => {
@@ -9007,6 +9014,7 @@
                 this.clearStepError();
                 this.showNext(current, next);
                 this.currentStep += 1;
+                this.syncControls();
               }
             }
           });
@@ -9016,9 +9024,10 @@
             if (this.currentStep > 0) {
               this.showPrev(current, prev);
               this.currentStep -= 1;
+              this.syncControls();
             }
           });
-          this.formSubmit.addEventListener("click", () => {
+          this.triggerSubmit.addEventListener("click", () => {
             if (!this.webflowSubmit || !this.form) return;
             console.log("SUBMIT");
             this.webflowSubmit.click();
@@ -9181,34 +9190,6 @@
   window.Webflow ||= [];
   window.Webflow.push(() => {
     console.log("/// mainJS ///");
-    const imgs = [...document.querySelectorAll("img")];
-    const sized = [];
-    imgs.forEach((i) => {
-      if (i.sizes) {
-        sized.push(i);
-        console.log("SIZE:", i, i.sizes);
-      }
-    });
-    console.log("All", imgs);
-    console.log("Sized", sized);
-    console.log("window", window.innerWidth);
-    const img = document.querySelector("img.fx_img");
-    const log = (label) => {
-      const r = img.getBoundingClientRect().width;
-      console.log(label, {
-        rect: r,
-        sizesAttr: img.getAttribute("sizes"),
-        sizesProp: img.sizes,
-        parent: img.parentElement?.className
-      });
-    };
-    log("now");
-    document.addEventListener("DOMContentLoaded", () => log("DOMContentLoaded"));
-    window.addEventListener("load", () => log("load"));
-    new MutationObserver(() => log("MUTATION")).observe(img, {
-      attributes: true,
-      attributeFilter: ["sizes", "srcset"]
-    });
     initSmoothScroll();
     navHUD_default();
     scrollController_default();

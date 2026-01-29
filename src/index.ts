@@ -8,6 +8,22 @@ window.Webflow.push(() => {
   console.log('/// mainJS ///');
 
   // DEBUG
+  // debugImages();
+
+  initSmoothScroll();
+  navHUD();
+  scrollControler();
+
+  loadComponent('.component_preloader', () => import('$components/preloader'));
+  loadComponent('.component_nav', () => import('$components/menu'));
+  loadComponent('.section_hero', () => import('$components/heroSlider'));
+  loadComponent('.section_contact', () => import('$components/stepForm'));
+  // loadComponent('.section_hero', () => import('$components/landingPageHero'));
+
+  // loadComponent('.section_fx', () => import('$components/fxScrollSection'));
+});
+
+function debugImages() {
   const imgs = [...document.querySelectorAll('img')];
   const sized: HTMLElement[] = [];
   imgs.forEach((i) => {
@@ -40,17 +56,4 @@ window.Webflow.push(() => {
     attributes: true,
     attributeFilter: ['sizes', 'srcset'],
   });
-  // END DEBUG
-
-  initSmoothScroll();
-  navHUD();
-  scrollControler();
-
-  loadComponent('.component_preloader', () => import('$components/preloader'));
-  loadComponent('.component_nav', () => import('$components/menu'));
-  loadComponent('.section_hero', () => import('$components/heroSlider'));
-  loadComponent('.section_contact', () => import('$components/stepForm'));
-  // loadComponent('.section_hero', () => import('$components/landingPageHero'));
-
-  // loadComponent('.section_fx', () => import('$components/fxScrollSection'));
-});
+}

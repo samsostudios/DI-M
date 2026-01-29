@@ -19,7 +19,7 @@ class Preloader {
   private heroTag: HTMLElement;
   private nav: HTMLElement;
   private scrollGlyph: HTMLElement;
-  private bypass: boolean = true;
+  private bypass: boolean = false;
 
   constructor() {
     this.component = document.querySelector('.component_preloader') as HTMLElement;
@@ -28,6 +28,8 @@ class Preloader {
     this.tags = [...document.querySelectorAll('.preloader_tag')] as HTMLElement[];
     this.bgImg = document.querySelector('.preloader_img') as HTMLElement;
     this.overlayPanel = document.querySelector('.preloader_reveal') as HTMLElement;
+
+    console.log('!!', this.loaderTracks);
 
     this.heroText = document.querySelector('.section_hero h1') as HTMLElement;
     document.fonts.ready.then(() => {});
@@ -70,7 +72,7 @@ class Preloader {
 
   private animate() {
     const tl = gsap.timeline({
-      delay: 1,
+      // delay: 1,
       onComplete: () => {
         this.reveal();
       },
@@ -88,19 +90,19 @@ class Preloader {
 
     tl.to(this.hTracks, { y: '-100%', ease: 'power2.inOut' });
     tl.to(this.vTracks, { x: '-100%', ease: 'power2.inOut' }, '<');
-    tl.to(this.overlayPanel, { width: '100%', duration: 1.5, ease: 'expo.inOut' });
 
-    tl.to(
-      [this.tags, this.logo, this.bgImg],
-      { opacity: 0, duration: 1, ease: 'power2.inOut' },
-      '<1',
-    );
-    tl.to(this.component, {
-      opacity: 0,
-      duration: 1,
-      ease: 'power2.in',
-    });
-    tl.set(this.component, { display: 'none' });
+    tl.to(this.overlayPanel, { width: '100%', duration: 1.5, ease: 'expo.in' });
+    tl.to([this.tags, this.logo, this.bgImg], { opacity: 0, duration: 1, ease: 'power2.inOut' });
+    tl.to(this.component, { duration: 1.5, x: '100%', ease: 'power3.out' });
+    // tl.to(this.overlayPanel, { x: '100%', duration: 1.5, ease: 'expo.out' });
+
+    // tl.to(this.component, {
+    //   opacity: 0,
+    //   duration: 1,
+    //   ease: 'power2.in',
+    // });
+
+    // tl.set(this.component, { display: 'none' });
   }
 
   private reveal() {
