@@ -23,8 +23,6 @@ class StepFrom {
 
     if (!this.form) return;
 
-    // console.log('***', this.formSubmit, this.webflowSubmit);
-
     this.setListeners();
     this.syncControls();
   }
@@ -35,9 +33,7 @@ class StepFrom {
 
   private syncControls() {
     const last = this.isLastStep();
-    const atStart = this.currentStep === 0;
-
-    console.log('%%', last, atStart);
+    // const atStart = this.currentStep === 0;
 
     if (last) {
       const tl = gsap.timeline();
@@ -77,13 +73,11 @@ class StepFrom {
     this.triggerSubmit.addEventListener('click', () => {
       if (!this.webflowSubmit || !this.form) return;
 
-      console.log('SUBMIT');
       this.webflowSubmit.click();
     });
   }
 
   private showNext(current: HTMLElement, next: HTMLElement) {
-    console.log('next', this.currentStep);
     this.clearStepError();
     const tl = gsap.timeline();
     tl.to(current, { y: '-5rem', opacity: 0, duration: 1, ease: 'expo.out' });
@@ -99,7 +93,6 @@ class StepFrom {
   }
 
   private showPrev(current: HTMLElement, prev: HTMLElement) {
-    console.log('prev', this.currentStep);
     const tl = gsap.timeline();
     tl.to(current, { y: '5rem', opacity: 0, duration: 1, ease: 'expo.out' });
     tl.to(this.numTrack, { y: '+=33%', duration: 1, ease: 'expo.out' }, '<');
@@ -113,7 +106,6 @@ class StepFrom {
   }
 
   private checkSteps(currentStep: HTMLElement) {
-    console.log('$$$', currentStep.querySelectorAll('input'));
     const inputs = [...currentStep.querySelectorAll('input')];
     const errors: HTMLElement[] = [];
     const validatedRadioGroups = new Set<string>();
@@ -136,8 +128,6 @@ class StepFrom {
           this.showStepError();
           errors.push(item); // push one representative element for the group
         }
-
-        console.log('RADIO', item.name);
 
         return;
       }
@@ -171,7 +161,6 @@ class StepFrom {
   }
 
   private clearStepError() {
-    console.log('CLEAR');
     const errorElement = document.querySelector('.form_error');
     const tl = gsap.timeline();
     tl.to(errorElement, { opacity: 0, duration: 1, ease: 'power4.out' });

@@ -29,8 +29,6 @@ class Preloader {
     this.bgImg = document.querySelector('.preloader_img') as HTMLElement;
     this.overlayPanel = document.querySelector('.preloader_reveal') as HTMLElement;
 
-    console.log('!!', this.loaderTracks);
-
     this.heroText = document.querySelector('.section_hero h1') as HTMLElement;
     document.fonts.ready.then(() => {});
     this.split = SplitText.create(this.heroText, {
@@ -59,15 +57,12 @@ class Preloader {
     gsap.set(this.scrollGlyph, { x: '5rem' });
 
     this.loaderTracks.forEach((item) => {
-      // console.log(item.classList);
       if (item.classList.contains('is-vert')) {
         this.vTracks.push(item);
       } else if (item.classList.contains('is-hor')) {
         this.hTracks.push(item);
       }
     });
-
-    // console.log('setup', this.hTracks, this.vTracks);
   }
 
   private animate() {

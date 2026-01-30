@@ -27,18 +27,11 @@ class Menu {
     this.iconRight = document.querySelector('.nav-ui_svg-right') as HTMLElement;
     this.bp = breakpoints()[0] as string;
 
-    console.log('menu', this.bp);
-
-    // const scroller = getScrollController();
-    // console.log('HERE', scroller);
-
     this.setupUI();
     this.setListeners();
   }
 
   private setupUI() {
-    // gsap.set(this.links, {opacity: 0,})
-    // console.log('MENU', this.open, this.close);
     if (this.bp === 'desktop') gsap.set(this.component, { x: '-100%' });
     if (this.bp !== 'desktop') gsap.set(this.component, { y: '-100%' });
     gsap.set([this.linkSpans, this.spanHighlights], { width: 0 });
@@ -77,8 +70,6 @@ class Menu {
         console.log('^^', target, scroller);
 
         if (!target || !scroller) return;
-
-        // console.log('%%', scroller.isHorizontalEnabled());
 
         if (scroller.isHorizontalEnabled()) {
           e.preventDefault();
