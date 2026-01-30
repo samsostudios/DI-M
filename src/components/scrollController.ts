@@ -6,6 +6,11 @@ import { lenisInstance } from '$utils/smoothScroll';
 
 gsap.registerPlugin(ScrollTrigger);
 
+if (typeof window !== 'undefined') {
+  (window as any).gsap = gsap;
+  (window as any).ScrollTrigger = ScrollTrigger;
+}
+
 class ScrollController {
   private container: HTMLElement;
   private track: HTMLElement;
@@ -48,10 +53,12 @@ class ScrollController {
     this.heroSection = document.querySelector('.section_hero') as HTMLElement;
     this.contactSection = document.querySelector('.section_contact') as HTMLElement;
     this.navComponent = document.querySelector('.component_nav-ui') as HTMLElement;
-    this.footerSection = document.querySelector('.footer_component') as HTMLElement;
+    this.footerSection = document.querySelector('.component_footer') as HTMLElement;
     this.absImages = [...document.querySelectorAll('.u-img-fill.set-abs')] as HTMLImageElement[];
 
     this.initResposive();
+
+    console.count('[ScrollController] init');
   }
 
   // RESPONSIVE LIFECYLCE
@@ -210,41 +217,52 @@ class ScrollController {
     if (!this.horizontalTween) return;
 
     const fxSections = [...this.track.querySelectorAll('.section_fx')] as HTMLElement[];
-    // console.log('paralax', fxSections);
+
+    const navX = this.navComponent.getBoundingClientRect().right;
+
+    console.log('PARA', fxSections);
 
     fxSections.forEach((section) => {
       const image = section.querySelector('.fx_img') as HTMLElement | null;
       if (!image) return;
 
+      console.log('PARA', image);
+
       const maxScale = 1.6;
       const minScale = 1.4;
-      const offset = -(minScale - 1) * 100;
-      const beforeWidth = image.getBoundingClientRect().width;
 
-      gsap.set(image, { scale: maxScale });
+      const w = image.offsetWidth;
 
-      const afterWidth = image.getBoundingClientRect().width;
-      const offsetWidth = (afterWidth - beforeWidth) / 2;
+      const xFrom = (maxScale - 1) * (w / 2);
+      const xTo = (minScale - 1) * (w / 2);
+      // const offset = -(minScale - 1) * 100;
+      // const beforeWidth = image.getBoundingClientRect().width;
+
+      gsap.set(image, { willChange: 'transform', scale: maxScale });
+
+      // const afterWidth = image.getBoundingClientRect().width;
+      // const offsetWidth = (afterWidth - beforeWidth) / 2;
 
       // console.log('before', beforeWidth, 'after', afterWidth, 'offset', offsetWidth);
 
-      gsap.set(image, { x: offsetWidth });
+      // gsap.set(image, { x: offsetWidth });
 
       gsap.fromTo(
         image,
-        { xPercent: 0 },
+        { scale: maxScale, x: xFrom },
         {
           scale: minScale,
-          // opacity: 0.2,
-          x: offset,
+          x: xTo,
           ease: 'none',
+          immediateRender: false,
           scrollTrigger: {
             containerAnimation: this.horizontalTween || undefined,
             trigger: section,
-            start: 'left 90%',
-            end: 'right 10%',
+            start: `left right`,
+            end: `right ${navX}`,
             scrub: true,
-            // markers: true,
+            invalidateOnRefresh: true,
+            markers: true,
           },
         },
       );
@@ -348,7 +366,7 @@ class ScrollController {
     };
 
     const navX = this.navComponent.getBoundingClientRect().right;
-    const navY = this.navComponent.getBoundingClientRect().bottom;
+    const navY = this.navComponent.getBoundingClientRect().top;
 
     const yLine = `top+=${Math.round(navY)}`;
 

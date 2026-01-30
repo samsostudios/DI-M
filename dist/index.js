@@ -4308,7 +4308,7 @@
     if (staticProps) _defineProperties(Constructor, staticProps);
     return Constructor;
   }
-  var gsap2, _coreInitted2, _clamp3, _win3, _doc3, _docEl, _body, _isTouch, _pointerType, ScrollTrigger, _root, _normalizer, _eventTypes, _context2, _getGSAP, _startup, _observers, _scrollers, _proxies, _getTime, _bridge, _integrate, _getProxyProp, _isViewport, _addListener, _removeListener, _scrollLeft, _scrollTop, _onScroll, _scrollCacheFunc, _horizontal, _vertical, _getTarget, _isWithin, _getScrollFunc, _getVelocityProp, _getEvent, _getAbsoluteMax, _setScrollTrigger, _initCore3, Observer;
+  var gsap2, _coreInitted2, _clamp3, _win3, _doc3, _docEl, _body, _isTouch, _pointerType, ScrollTrigger2, _root, _normalizer, _eventTypes, _context2, _getGSAP, _startup, _observers, _scrollers, _proxies, _getTime, _bridge, _integrate, _getProxyProp, _isViewport, _addListener, _removeListener, _scrollLeft, _scrollTop, _onScroll, _scrollCacheFunc, _horizontal, _vertical, _getTarget, _isWithin, _getScrollFunc, _getVelocityProp, _getEvent, _getAbsoluteMax, _setScrollTrigger, _initCore3, Observer;
   var init_Observer = __esm({
     "node_modules/gsap/Observer.js"() {
       init_live_reload();
@@ -4324,7 +4324,7 @@
         return value;
       };
       _integrate = function _integrate2() {
-        var core = ScrollTrigger.core, data = core.bridge || {}, scrollers = core._scrollers, proxies = core._proxies;
+        var core = ScrollTrigger2.core, data = core.bridge || {}, scrollers = core._scrollers, proxies = core._proxies;
         scrollers.push.apply(scrollers, _scrollers);
         proxies.push.apply(proxies, _proxies);
         _scrollers = scrollers;
@@ -4459,8 +4459,8 @@
         return Math.abs(max) >= Math.abs(min) ? max : min;
       };
       _setScrollTrigger = function _setScrollTrigger2() {
-        ScrollTrigger = gsap2.core.globals().ScrollTrigger;
-        ScrollTrigger && ScrollTrigger.core && _integrate();
+        ScrollTrigger2 = gsap2.core.globals().ScrollTrigger;
+        ScrollTrigger2 && ScrollTrigger2.core && _integrate();
       };
       _initCore3 = function _initCore4(core) {
         gsap2 = core || _getGSAP();
@@ -4493,7 +4493,7 @@
         var _proto = Observer2.prototype;
         _proto.init = function init4(vars) {
           _coreInitted2 || _initCore3(gsap2) || console.warn("Please gsap.registerPlugin(Observer)");
-          ScrollTrigger || _setScrollTrigger();
+          ScrollTrigger2 || _setScrollTrigger();
           var tolerance = vars.tolerance, dragMinimum = vars.dragMinimum, type = vars.type, target = vars.target, lineHeight = vars.lineHeight, debounce2 = vars.debounce, preventDefault = vars.preventDefault, onStop = vars.onStop, onStopDelay = vars.onStopDelay, ignore = vars.ignore, wheelSpeed = vars.wheelSpeed, event = vars.event, onDragStart = vars.onDragStart, onDragEnd = vars.onDragEnd, onDrag = vars.onDrag, onPress = vars.onPress, onRelease = vars.onRelease, onRight = vars.onRight, onLeft = vars.onLeft, onUp = vars.onUp, onDown = vars.onDown, onChangeX = vars.onChangeX, onChangeY = vars.onChangeY, onChange = vars.onChange, onToggleX = vars.onToggleX, onToggleY = vars.onToggleY, onHover = vars.onHover, onHoverEnd = vars.onHoverEnd, onMove = vars.onMove, ignoreCheck = vars.ignoreCheck, isNormalizer = vars.isNormalizer, onGestureStart = vars.onGestureStart, onGestureEnd = vars.onGestureEnd, onWheel = vars.onWheel, onEnable = vars.onEnable, onDisable = vars.onDisable, onClick = vars.onClick, scrollSpeed = vars.scrollSpeed, capture = vars.capture, allowClicks = vars.allowClicks, lockAxis = vars.lockAxis, onLockAxis = vars.onLockAxis;
           this.target = target = _getTarget(target) || _docEl;
           this.vars = vars;
@@ -4769,7 +4769,7 @@
   });
 
   // node_modules/gsap/ScrollTrigger.js
-  var gsap3, _coreInitted3, _win4, _doc4, _docEl2, _body2, _root2, _resizeDelay, _toArray, _clamp4, _time2, _syncInterval, _refreshing, _pointerIsDown, _transformProp2, _i, _prevWidth, _prevHeight, _autoRefresh, _sort, _suppressOverwrites2, _ignoreResize, _normalizer2, _ignoreMobileResize, _baseScreenHeight, _baseScreenWidth, _fixIOSBug, _context3, _scrollRestoration, _div100vh, _100vh, _isReverted, _clampingMax, _limitCallbacks, _startup2, _getTime2, _time1, _lastScrollTime, _enabled, _parseClamp, _keepClamp, _rafBugFix, _pointerDownHandler, _pointerUpHandler, _passThrough3, _round3, _windowExists5, _getGSAP3, _isViewport3, _getViewportDimension, _getBoundsFunc, _getSizeFunc, _getOffsetsFunc, _maxScroll, _iterateAutoRefresh, _isString3, _isFunction3, _isNumber3, _isObject3, _endAnimation, _callback3, _abs, _left, _top, _right, _bottom, _width, _height, _Right, _Left, _Top, _Bottom, _padding, _margin, _Width, _Height, _px, _getComputedStyle, _makePositionable, _setDefaults3, _getBounds, _getSize, _getLabelRatioArray, _getClosestLabel, _snapDirectional, _getLabelAtDirection, _multiListener, _addListener3, _removeListener3, _wheelListener, _markerDefaults, _defaults2, _keywords, _offsetToPx, _createMarker, _positionMarker, _triggers, _ids, _rafID, _sync, _onScroll3, _setBaseDimensions, _onResize, _listeners2, _emptyArray2, _softRefresh, _dispatch3, _savedStyles, _revertRecorded, _revertAll, _clearScrollMemory, _refreshingAll, _refreshID, _queueRefreshID, _queueRefreshAll, _refresh100vh, _hideAllMarkers, _refreshAll, _lastScroll, _direction, _primary, _updateAll, _propNamesToCopy, _stateProps, _swapPinOut, _swapPinIn, _capsExp2, _setState, _getState, _copyState, _winOffsets, _parsePosition3, _prefixExp, _reparent, _interruptionTracker, _shiftMarker, _getTweenCreator, ScrollTrigger2, _clampScrollAndGetDurationMultiplier, _allowNativePanning, _overflow, _nestedScroll, _inputObserver, _inputExp, _inputIsFocused, _captureInputs, _getScrollNormalizer;
+  var gsap3, _coreInitted3, _win4, _doc4, _docEl2, _body2, _root2, _resizeDelay, _toArray, _clamp4, _time2, _syncInterval, _refreshing, _pointerIsDown, _transformProp2, _i, _prevWidth, _prevHeight, _autoRefresh, _sort, _suppressOverwrites2, _ignoreResize, _normalizer2, _ignoreMobileResize, _baseScreenHeight, _baseScreenWidth, _fixIOSBug, _context3, _scrollRestoration, _div100vh, _100vh, _isReverted, _clampingMax, _limitCallbacks, _startup2, _getTime2, _time1, _lastScrollTime, _enabled, _parseClamp, _keepClamp, _rafBugFix, _pointerDownHandler, _pointerUpHandler, _passThrough3, _round3, _windowExists5, _getGSAP3, _isViewport3, _getViewportDimension, _getBoundsFunc, _getSizeFunc, _getOffsetsFunc, _maxScroll, _iterateAutoRefresh, _isString3, _isFunction3, _isNumber3, _isObject3, _endAnimation, _callback3, _abs, _left, _top, _right, _bottom, _width, _height, _Right, _Left, _Top, _Bottom, _padding, _margin, _Width, _Height, _px, _getComputedStyle, _makePositionable, _setDefaults3, _getBounds, _getSize, _getLabelRatioArray, _getClosestLabel, _snapDirectional, _getLabelAtDirection, _multiListener, _addListener3, _removeListener3, _wheelListener, _markerDefaults, _defaults2, _keywords, _offsetToPx, _createMarker, _positionMarker, _triggers, _ids, _rafID, _sync, _onScroll3, _setBaseDimensions, _onResize, _listeners2, _emptyArray2, _softRefresh, _dispatch3, _savedStyles, _revertRecorded, _revertAll, _clearScrollMemory, _refreshingAll, _refreshID, _queueRefreshID, _queueRefreshAll, _refresh100vh, _hideAllMarkers, _refreshAll, _lastScroll, _direction, _primary, _updateAll, _propNamesToCopy, _stateProps, _swapPinOut, _swapPinIn, _capsExp2, _setState, _getState, _copyState, _winOffsets, _parsePosition3, _prefixExp, _reparent, _interruptionTracker, _shiftMarker, _getTweenCreator, ScrollTrigger3, _clampScrollAndGetDurationMultiplier, _allowNativePanning, _overflow, _nestedScroll, _inputObserver, _inputExp, _inputIsFocused, _captureInputs, _getScrollNormalizer;
   var init_ScrollTrigger = __esm({
     "node_modules/gsap/ScrollTrigger.js"() {
       init_live_reload();
@@ -5077,7 +5077,7 @@
       _listeners2 = {};
       _emptyArray2 = [];
       _softRefresh = function _softRefresh2() {
-        return _removeListener3(ScrollTrigger2, "scrollEnd", _softRefresh2) || _refreshAll(true);
+        return _removeListener3(ScrollTrigger3, "scrollEnd", _softRefresh2) || _refreshAll(true);
       };
       _dispatch3 = function _dispatch4(type) {
         return _listeners2[type] && _listeners2[type].map(function(f) {
@@ -5141,16 +5141,16 @@
         _body2 = _doc4.body;
         _root2 = [_win4, _doc4, _docEl2, _body2];
         if (_lastScrollTime && !force && !_isReverted) {
-          _addListener3(ScrollTrigger2, "scrollEnd", _softRefresh);
+          _addListener3(ScrollTrigger3, "scrollEnd", _softRefresh);
           return;
         }
         _refresh100vh();
-        _refreshingAll = ScrollTrigger2.isRefreshing = true;
+        _refreshingAll = ScrollTrigger3.isRefreshing = true;
         _scrollers.forEach(function(obj) {
           return _isFunction3(obj) && ++obj.cacheID && (obj.rec = obj());
         });
         var refreshInits = _dispatch3("refreshInit");
-        _sort && ScrollTrigger2.sort();
+        _sort && ScrollTrigger3.sort();
         skipRevert || _revertAll();
         _scrollers.forEach(function(obj) {
           if (_isFunction3(obj)) {
@@ -5197,14 +5197,14 @@
         _triggers.forEach(function(t) {
           return _isFunction3(t.vars.onRefresh) && t.vars.onRefresh(t);
         });
-        _refreshingAll = ScrollTrigger2.isRefreshing = false;
+        _refreshingAll = ScrollTrigger3.isRefreshing = false;
         _dispatch3("refresh");
       };
       _lastScroll = 0;
       _direction = 1;
       _updateAll = function _updateAll2(force) {
         if (force === 2 || !_refreshingAll && !_isReverted) {
-          ScrollTrigger2.isUpdating = true;
+          ScrollTrigger3.isUpdating = true;
           _primary && _primary.update(0);
           var l = _triggers.length, time = _getTime2(), recordVelocity = time - _time1 >= 50, scroll = l && _triggers[0].scroll();
           _direction = _lastScroll > scroll ? -1 : 1;
@@ -5228,7 +5228,7 @@
               _triggers[_i] && _triggers[_i].update(0, recordVelocity);
             }
           }
-          ScrollTrigger2.isUpdating = false;
+          ScrollTrigger3.isUpdating = false;
         }
         _rafID = 0;
       };
@@ -5435,16 +5435,16 @@
           return getTween.tween && getTween.tween.kill() && (getTween.tween = 0);
         };
         _addListener3(scroller, "wheel", getScroll.wheelHandler);
-        ScrollTrigger2.isTouch && _addListener3(scroller, "touchmove", getScroll.wheelHandler);
+        ScrollTrigger3.isTouch && _addListener3(scroller, "touchmove", getScroll.wheelHandler);
         return getTween;
       };
-      ScrollTrigger2 = /* @__PURE__ */ function() {
-        function ScrollTrigger3(vars, animation) {
-          _coreInitted3 || ScrollTrigger3.register(gsap3) || console.warn("Please gsap.registerPlugin(ScrollTrigger)");
+      ScrollTrigger3 = /* @__PURE__ */ function() {
+        function ScrollTrigger4(vars, animation) {
+          _coreInitted3 || ScrollTrigger4.register(gsap3) || console.warn("Please gsap.registerPlugin(ScrollTrigger)");
           _context3(this);
           this.init(vars, animation);
         }
-        var _proto = ScrollTrigger3.prototype;
+        var _proto = ScrollTrigger4.prototype;
         _proto.init = function init4(vars, animation) {
           this.progress = this.start = 0;
           this.vars && this.kill(true, true);
@@ -5666,7 +5666,7 @@
               return;
             }
             if (pin && soft && _lastScrollTime) {
-              _addListener3(ScrollTrigger3, "scrollEnd", _softRefresh);
+              _addListener3(ScrollTrigger4, "scrollEnd", _softRefresh);
               return;
             }
             !_refreshingAll && onRefreshInit && onRefreshInit(self);
@@ -6010,7 +6010,7 @@
               self.enabled = true;
               _addListener3(scroller, "resize", _onResize);
               isViewport || _addListener3(scroller, "scroll", _onScroll3);
-              onRefreshInit && _addListener3(ScrollTrigger3, "refreshInit", onRefreshInit);
+              onRefreshInit && _addListener3(ScrollTrigger4, "refreshInit", onRefreshInit);
               if (reset !== false) {
                 self.progress = prevProgress = 0;
                 scroll1 = scroll2 = lastSnap = scrollFunc();
@@ -6048,7 +6048,7 @@
               allowAnimation || scrubTween && scrubTween.pause();
               prevScroll = 0;
               pinCache && (pinCache.uncache = 1);
-              onRefreshInit && _removeListener3(ScrollTrigger3, "refreshInit", onRefreshInit);
+              onRefreshInit && _removeListener3(ScrollTrigger4, "refreshInit", onRefreshInit);
               if (snapDelayedCall) {
                 snapDelayedCall.pause();
                 tweenTo.tween && tweenTo.tween.kill() && (tweenTo.tween = 0);
@@ -6116,15 +6116,15 @@
           }
           pin && _queueRefreshAll();
         };
-        ScrollTrigger3.register = function register(core) {
+        ScrollTrigger4.register = function register(core) {
           if (!_coreInitted3) {
             gsap3 = core || _getGSAP3();
-            _windowExists5() && window.document && ScrollTrigger3.enable();
+            _windowExists5() && window.document && ScrollTrigger4.enable();
             _coreInitted3 = _enabled;
           }
           return _coreInitted3;
         };
-        ScrollTrigger3.defaults = function defaults2(config3) {
+        ScrollTrigger4.defaults = function defaults2(config3) {
           if (config3) {
             for (var p in config3) {
               _defaults2[p] = config3[p];
@@ -6132,7 +6132,7 @@
           }
           return _defaults2;
         };
-        ScrollTrigger3.disable = function disable(reset, kill) {
+        ScrollTrigger4.disable = function disable(reset, kill) {
           _enabled = 0;
           _triggers.forEach(function(trigger) {
             return trigger[kill ? "kill" : "disable"](reset);
@@ -6151,7 +6151,7 @@
             _wheelListener(_removeListener3, _scrollers[i], _scrollers[i + 2]);
           }
         };
-        ScrollTrigger3.enable = function enable() {
+        ScrollTrigger4.enable = function enable() {
           _win4 = window;
           _doc4 = document;
           _docEl2 = _doc4.documentElement;
@@ -6163,7 +6163,7 @@
             _suppressOverwrites2 = gsap3.core.suppressOverwrites || _passThrough3;
             _scrollRestoration = _win4.history.scrollRestoration || "auto";
             _lastScroll = _win4.pageYOffset || 0;
-            gsap3.core.globals("ScrollTrigger", ScrollTrigger3);
+            gsap3.core.globals("ScrollTrigger", ScrollTrigger4);
             if (_body2) {
               _enabled = 1;
               _div100vh = document.createElement("div");
@@ -6172,13 +6172,13 @@
               _refresh100vh();
               _rafBugFix();
               Observer.register(gsap3);
-              ScrollTrigger3.isTouch = Observer.isTouch;
+              ScrollTrigger4.isTouch = Observer.isTouch;
               _fixIOSBug = Observer.isTouch && /(iPad|iPhone|iPod|Mac)/g.test(navigator.userAgent);
               _ignoreMobileResize = Observer.isTouch === 1;
               _addListener3(_win4, "wheel", _onScroll3);
               _root2 = [_win4, _doc4, _docEl2, _body2];
               if (gsap3.matchMedia) {
-                ScrollTrigger3.matchMedia = function(vars) {
+                ScrollTrigger4.matchMedia = function(vars) {
                   var mm = gsap3.matchMedia(), p;
                   for (p in vars) {
                     mm.add(p, vars[p]);
@@ -6251,17 +6251,17 @@
             }
           }
         };
-        ScrollTrigger3.config = function config3(vars) {
+        ScrollTrigger4.config = function config3(vars) {
           "limitCallbacks" in vars && (_limitCallbacks = !!vars.limitCallbacks);
           var ms = vars.syncInterval;
           ms && clearInterval(_syncInterval) || (_syncInterval = ms) && setInterval(_sync, ms);
-          "ignoreMobileResize" in vars && (_ignoreMobileResize = ScrollTrigger3.isTouch === 1 && vars.ignoreMobileResize);
+          "ignoreMobileResize" in vars && (_ignoreMobileResize = ScrollTrigger4.isTouch === 1 && vars.ignoreMobileResize);
           if ("autoRefreshEvents" in vars) {
             _iterateAutoRefresh(_removeListener3) || _iterateAutoRefresh(_addListener3, vars.autoRefreshEvents || "none");
             _ignoreResize = (vars.autoRefreshEvents + "").indexOf("resize") === -1;
           }
         };
-        ScrollTrigger3.scrollerProxy = function scrollerProxy(target, vars) {
+        ScrollTrigger4.scrollerProxy = function scrollerProxy(target, vars) {
           var t = _getTarget(target), i = _scrollers.indexOf(t), isViewport = _isViewport3(t);
           if (~i) {
             _scrollers.splice(i, isViewport ? 6 : 2);
@@ -6270,21 +6270,21 @@
             isViewport ? _proxies.unshift(_win4, vars, _body2, vars, _docEl2, vars) : _proxies.unshift(t, vars);
           }
         };
-        ScrollTrigger3.clearMatchMedia = function clearMatchMedia(query) {
+        ScrollTrigger4.clearMatchMedia = function clearMatchMedia(query) {
           _triggers.forEach(function(t) {
             return t._ctx && t._ctx.query === query && t._ctx.kill(true, true);
           });
         };
-        ScrollTrigger3.isInViewport = function isInViewport(element, ratio, horizontal) {
+        ScrollTrigger4.isInViewport = function isInViewport(element, ratio, horizontal) {
           var bounds = (_isString3(element) ? _getTarget(element) : element).getBoundingClientRect(), offset = bounds[horizontal ? _width : _height] * ratio || 0;
           return horizontal ? bounds.right - offset > 0 && bounds.left + offset < _win4.innerWidth : bounds.bottom - offset > 0 && bounds.top + offset < _win4.innerHeight;
         };
-        ScrollTrigger3.positionInViewport = function positionInViewport(element, referencePoint, horizontal) {
+        ScrollTrigger4.positionInViewport = function positionInViewport(element, referencePoint, horizontal) {
           _isString3(element) && (element = _getTarget(element));
           var bounds = element.getBoundingClientRect(), size = bounds[horizontal ? _width : _height], offset = referencePoint == null ? size / 2 : referencePoint in _keywords ? _keywords[referencePoint] * size : ~referencePoint.indexOf("%") ? parseFloat(referencePoint) * size / 100 : parseFloat(referencePoint) || 0;
           return horizontal ? (bounds.left + offset) / _win4.innerWidth : (bounds.top + offset) / _win4.innerHeight;
         };
-        ScrollTrigger3.killAll = function killAll(allowListeners) {
+        ScrollTrigger4.killAll = function killAll(allowListeners) {
           _triggers.slice(0).forEach(function(t) {
             return t.vars.id !== "ScrollSmoother" && t.kill();
           });
@@ -6296,10 +6296,10 @@
             });
           }
         };
-        return ScrollTrigger3;
+        return ScrollTrigger4;
       }();
-      ScrollTrigger2.version = "3.13.0";
-      ScrollTrigger2.saveStyles = function(targets) {
+      ScrollTrigger3.version = "3.13.0";
+      ScrollTrigger3.saveStyles = function(targets) {
         return targets ? _toArray(targets).forEach(function(target) {
           if (target && target.style) {
             var i = _savedStyles.indexOf(target);
@@ -6308,46 +6308,46 @@
           }
         }) : _savedStyles;
       };
-      ScrollTrigger2.revert = function(soft, media) {
+      ScrollTrigger3.revert = function(soft, media) {
         return _revertAll(!soft, media);
       };
-      ScrollTrigger2.create = function(vars, animation) {
-        return new ScrollTrigger2(vars, animation);
+      ScrollTrigger3.create = function(vars, animation) {
+        return new ScrollTrigger3(vars, animation);
       };
-      ScrollTrigger2.refresh = function(safe) {
-        return safe ? _onResize(true) : (_coreInitted3 || ScrollTrigger2.register()) && _refreshAll(true);
+      ScrollTrigger3.refresh = function(safe) {
+        return safe ? _onResize(true) : (_coreInitted3 || ScrollTrigger3.register()) && _refreshAll(true);
       };
-      ScrollTrigger2.update = function(force) {
+      ScrollTrigger3.update = function(force) {
         return ++_scrollers.cache && _updateAll(force === true ? 2 : 0);
       };
-      ScrollTrigger2.clearScrollMemory = _clearScrollMemory;
-      ScrollTrigger2.maxScroll = function(element, horizontal) {
+      ScrollTrigger3.clearScrollMemory = _clearScrollMemory;
+      ScrollTrigger3.maxScroll = function(element, horizontal) {
         return _maxScroll(element, horizontal ? _horizontal : _vertical);
       };
-      ScrollTrigger2.getScrollFunc = function(element, horizontal) {
+      ScrollTrigger3.getScrollFunc = function(element, horizontal) {
         return _getScrollFunc(_getTarget(element), horizontal ? _horizontal : _vertical);
       };
-      ScrollTrigger2.getById = function(id) {
+      ScrollTrigger3.getById = function(id) {
         return _ids[id];
       };
-      ScrollTrigger2.getAll = function() {
+      ScrollTrigger3.getAll = function() {
         return _triggers.filter(function(t) {
           return t.vars.id !== "ScrollSmoother";
         });
       };
-      ScrollTrigger2.isScrolling = function() {
+      ScrollTrigger3.isScrolling = function() {
         return !!_lastScrollTime;
       };
-      ScrollTrigger2.snapDirectional = _snapDirectional;
-      ScrollTrigger2.addEventListener = function(type, callback) {
+      ScrollTrigger3.snapDirectional = _snapDirectional;
+      ScrollTrigger3.addEventListener = function(type, callback) {
         var a = _listeners2[type] || (_listeners2[type] = []);
         ~a.indexOf(callback) || a.push(callback);
       };
-      ScrollTrigger2.removeEventListener = function(type, callback) {
+      ScrollTrigger3.removeEventListener = function(type, callback) {
         var a = _listeners2[type], i = a && a.indexOf(callback);
         i >= 0 && a.splice(i, 1);
       };
-      ScrollTrigger2.batch = function(targets, vars) {
+      ScrollTrigger3.batch = function(targets, vars) {
         var result = [], varsCopy = {}, interval = vars.interval || 0.016, batchMax = vars.batchMax || 1e9, proxyCallback = function proxyCallback2(type, callback) {
           var elements = [], triggers = [], delay = gsap3.delayedCall(interval, function() {
             callback(elements, triggers);
@@ -6366,7 +6366,7 @@
         }
         if (_isFunction3(batchMax)) {
           batchMax = batchMax();
-          _addListener3(ScrollTrigger2, "refresh", function() {
+          _addListener3(ScrollTrigger3, "refresh", function() {
             return batchMax = vars.batchMax();
           });
         }
@@ -6376,7 +6376,7 @@
             config3[p] = varsCopy[p];
           }
           config3.trigger = target;
-          result.push(ScrollTrigger2.create(config3));
+          result.push(ScrollTrigger3.create(config3));
         });
         return result;
       };
@@ -6545,7 +6545,7 @@
         };
         vars.onEnable = function() {
           _allowNativePanning(target, normalizeScrollX ? false : "x");
-          ScrollTrigger2.addEventListener("refresh", onResize);
+          ScrollTrigger3.addEventListener("refresh", onResize);
           _addListener3(_win4, "resize", onResize);
           if (scrollFuncY.smooth) {
             scrollFuncY.target.style.scrollBehavior = "auto";
@@ -6556,7 +6556,7 @@
         vars.onDisable = function() {
           _allowNativePanning(target, true);
           _removeListener3(_win4, "resize", onResize);
-          ScrollTrigger2.removeEventListener("refresh", onResize);
+          ScrollTrigger3.removeEventListener("refresh", onResize);
           inputObserver.kill();
         };
         vars.lockAxis = vars.lockAxis !== false;
@@ -6581,22 +6581,22 @@
         });
         return self;
       };
-      ScrollTrigger2.sort = function(func) {
+      ScrollTrigger3.sort = function(func) {
         if (_isFunction3(func)) {
           return _triggers.sort(func);
         }
         var scroll = _win4.pageYOffset || 0;
-        ScrollTrigger2.getAll().forEach(function(t) {
+        ScrollTrigger3.getAll().forEach(function(t) {
           return t._sortY = t.trigger ? scroll + t.trigger.getBoundingClientRect().top : t.start + _win4.innerHeight;
         });
         return _triggers.sort(func || function(a, b) {
           return (a.vars.refreshPriority || 0) * -1e6 + (a.vars.containerAnimation ? 1e6 : a._sortY) - ((b.vars.containerAnimation ? 1e6 : b._sortY) + (b.vars.refreshPriority || 0) * -1e6);
         });
       };
-      ScrollTrigger2.observe = function(vars) {
+      ScrollTrigger3.observe = function(vars) {
         return new Observer(vars);
       };
-      ScrollTrigger2.normalizeScroll = function(vars) {
+      ScrollTrigger3.normalizeScroll = function(vars) {
         if (typeof vars === "undefined") {
           return _normalizer2;
         }
@@ -6613,7 +6613,7 @@
         _isViewport3(normalizer.target) && (_normalizer2 = normalizer);
         return normalizer;
       };
-      ScrollTrigger2.core = {
+      ScrollTrigger3.core = {
         // smaller file size way to leverage in ScrollSmoother and Observer
         _getVelocityProp,
         _inputObserver,
@@ -6631,7 +6631,7 @@
           }
         }
       };
-      _getGSAP3() && gsap3.registerPlugin(ScrollTrigger2);
+      _getGSAP3() && gsap3.registerPlugin(ScrollTrigger3);
     }
   });
 
@@ -7884,11 +7884,11 @@
       function raf(time) {
         if (!lenis) return;
         lenis.raf(time);
-        ScrollTrigger2.update();
+        ScrollTrigger3.update();
         requestAnimationFrame(raf);
       }
       requestAnimationFrame(raf);
-      ScrollTrigger2.refresh();
+      ScrollTrigger3.refresh();
     });
   }
   function lenisInstance() {
@@ -7907,7 +7907,7 @@
       init_ScrollTrigger();
       init_lenis();
       init_webflowEnv();
-      gsapWithCSS.registerPlugin(ScrollTrigger2);
+      gsapWithCSS.registerPlugin(ScrollTrigger3);
       lenis = null;
     }
   });
@@ -7922,7 +7922,11 @@
       init_ScrollTrigger();
       init_deviceInfo();
       init_smoothScroll();
-      gsapWithCSS.registerPlugin(ScrollTrigger2);
+      gsapWithCSS.registerPlugin(ScrollTrigger3);
+      if (typeof window !== "undefined") {
+        window.gsap = gsapWithCSS;
+        window.ScrollTrigger = ScrollTrigger3;
+      }
       ScrollController = class {
         container;
         track;
@@ -7959,9 +7963,10 @@
           this.heroSection = document.querySelector(".section_hero");
           this.contactSection = document.querySelector(".section_contact");
           this.navComponent = document.querySelector(".component_nav-ui");
-          this.footerSection = document.querySelector(".footer_component");
+          this.footerSection = document.querySelector(".component_footer");
           this.absImages = [...document.querySelectorAll(".u-img-fill.set-abs")];
           this.initResposive();
+          console.count("[ScrollController] init");
         }
         // RESPONSIVE LIFECYLCE
         initResposive() {
@@ -7993,7 +7998,7 @@
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
               this.initScroll();
-              ScrollTrigger2.refresh();
+              ScrollTrigger3.refresh();
             });
           });
           this.bindResizeDesktopOnly();
@@ -8005,7 +8010,7 @@
           this.resetLayoutStyles();
           this.horizontalCtx?.revert();
           this.horizontalCtx = null;
-          ScrollTrigger2.refresh();
+          ScrollTrigger3.refresh();
         }
         setupHorizontalLayout() {
           const root = document.documentElement;
@@ -8078,7 +8083,7 @@
           this.horizontalTween = null;
           this.rebuildMenuIndex();
           this.initMenuSync();
-          ScrollTrigger2.refresh();
+          ScrollTrigger3.refresh();
         }
         disableVertical() {
           this.killMenuTriggers();
@@ -8089,32 +8094,34 @@
         initParallax() {
           if (!this.horizontalTween) return;
           const fxSections = [...this.track.querySelectorAll(".section_fx")];
+          const navX = this.navComponent.getBoundingClientRect().right;
+          console.log("PARA", fxSections);
           fxSections.forEach((section) => {
             const image = section.querySelector(".fx_img");
             if (!image) return;
+            console.log("PARA", image);
             const maxScale = 1.6;
             const minScale = 1.4;
-            const offset = -(minScale - 1) * 100;
-            const beforeWidth = image.getBoundingClientRect().width;
-            gsapWithCSS.set(image, { scale: maxScale });
-            const afterWidth = image.getBoundingClientRect().width;
-            const offsetWidth = (afterWidth - beforeWidth) / 2;
-            gsapWithCSS.set(image, { x: offsetWidth });
+            const w = image.offsetWidth;
+            const xFrom = (maxScale - 1) * (w / 2);
+            const xTo = (minScale - 1) * (w / 2);
+            gsapWithCSS.set(image, { willChange: "transform", scale: maxScale });
             gsapWithCSS.fromTo(
               image,
-              { xPercent: 0 },
+              { scale: maxScale, x: xFrom },
               {
                 scale: minScale,
-                // opacity: 0.2,
-                x: offset,
+                x: xTo,
                 ease: "none",
+                immediateRender: false,
                 scrollTrigger: {
                   containerAnimation: this.horizontalTween || void 0,
                   trigger: section,
-                  start: "left 90%",
-                  end: "right 10%",
-                  scrub: true
-                  // markers: true,
+                  start: `left right`,
+                  end: `right ${navX}`,
+                  scrub: true,
+                  invalidateOnRefresh: true,
+                  markers: true
                 }
               }
             );
@@ -8184,11 +8191,11 @@
             this.navComponent.classList.add(theme);
           };
           const navX = this.navComponent.getBoundingClientRect().right;
-          const navY = this.navComponent.getBoundingClientRect().bottom;
+          const navY = this.navComponent.getBoundingClientRect().top;
           const yLine = `top+=${Math.round(navY)}`;
           const horizontalMode = !!this.horizontalTween;
           this.menuSections.forEach((section) => {
-            const trig = ScrollTrigger2.create({
+            const trig = ScrollTrigger3.create({
               trigger: section,
               ...horizontalMode ? {
                 containerAnimation: this.horizontalTween,
@@ -8236,7 +8243,7 @@
         bindResizeDesktopOnly() {
           this.unbindResizeDesktopOnly();
           this.onResizeDesktop = () => {
-            ScrollTrigger2.refresh();
+            ScrollTrigger3.refresh();
           };
           window.addEventListener("resize", this.onResizeDesktop, { passive: true });
         }
@@ -8653,7 +8660,7 @@
         heroTag;
         nav;
         scrollGlyph;
-        bypass = false;
+        bypass = true;
         constructor() {
           this.component = document.querySelector(".component_preloader");
           this.loaderTracks = [...document.querySelectorAll(".preloader_track")];
@@ -9120,6 +9127,60 @@
     }
   });
 
+  // src/components/footerNav.ts
+  var footerNav_exports = {};
+  __export(footerNav_exports, {
+    default: () => footerNav_default,
+    footerNav: () => footerNav
+  });
+  var FooterNav, footerNav, footerNav_default;
+  var init_footerNav = __esm({
+    "src/components/footerNav.ts"() {
+      "use strict";
+      init_live_reload();
+      init_smoothScroll();
+      init_scrollController();
+      FooterNav = class {
+        component;
+        links;
+        constructor() {
+          this.component = document.querySelector(".compoent_footer");
+          this.links = [...document.querySelectorAll(".footer_nav-link")];
+          this.setListeners();
+        }
+        setListeners() {
+          this.links.forEach((link) => {
+            link.addEventListener("click", (e) => {
+              const target = link.dataset.menuTarget;
+              const scroller = getScrollController();
+              console.log("FOOTER", target, scroller);
+              if (!target || !scroller) return;
+              if (scroller.isHorizontalEnabled()) {
+                e.preventDefault();
+                scroller.scrollToMenuSection(target, { duration: 3 });
+                return;
+              }
+              e.preventDefault();
+              const el = document.querySelector(`[data-menu-section="${target}"`);
+              console.log("****", el);
+              if (!el) return;
+              const lenis2 = lenisInstance();
+              if (lenis2) {
+                lenis2.scrollTo(el, { duration: 3 });
+              } else {
+                el.scrollIntoView({ behavior: "smooth", block: "start" });
+              }
+            });
+          });
+        }
+      };
+      footerNav = () => {
+        new FooterNav();
+      };
+      footerNav_default = footerNav;
+    }
+  });
+
   // src/index.ts
   init_live_reload();
 
@@ -9190,6 +9251,20 @@
   window.Webflow ||= [];
   window.Webflow.push(() => {
     console.log("/// mainJS ///");
+    window.ScrollTrigger = ScrollTrigger;
+    (() => {
+      const root = document.documentElement;
+      let last = getComputedStyle(root).getPropertyValue("--custom--nav-width-plus-gutter").trim();
+      const mo = new MutationObserver(() => {
+        const next = getComputedStyle(root).getPropertyValue("--custom--nav-width-plus-gutter").trim();
+        if (next !== last) {
+          console.log("\u{1F9E8} var changed:", { from: last, to: next });
+          last = next;
+        }
+      });
+      mo.observe(root, { attributes: true, attributeFilter: ["style", "class"] });
+      console.log("\u2705 watching root style/class for var-driven changes");
+    })();
     initSmoothScroll();
     navHUD_default();
     scrollController_default();
@@ -9197,6 +9272,7 @@
     loadComponent_default(".component_nav", () => Promise.resolve().then(() => (init_menu(), menu_exports)));
     loadComponent_default(".section_hero", () => Promise.resolve().then(() => (init_heroSlider(), heroSlider_exports)));
     loadComponent_default(".section_contact", () => Promise.resolve().then(() => (init_stepForm(), stepForm_exports)));
+    loadComponent_default(".component_footer", () => Promise.resolve().then(() => (init_footerNav(), footerNav_exports)));
   });
 })();
 /*! Bundled license information:

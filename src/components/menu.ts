@@ -107,18 +107,6 @@ class Menu {
           el.scrollIntoView({ behavior: 'smooth', block: 'start' });
           gsap.delayedCall(0.2, () => this.closeMenu());
         }
-
-        // gsap.delayedCall(0.15, () => this.closeMenu());
-
-        // console.log('TARGET', target);
-        // scroller?.scrollToMenuSection(target as string, {
-        //   onComplete: () => {
-        //     {
-        //       console.log('DONE');
-        //       this.closeMenu();
-        //     }
-        //   },
-        // });
       });
     });
   }

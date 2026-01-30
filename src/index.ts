@@ -9,6 +9,25 @@ window.Webflow.push(() => {
 
   // DEBUG
   // debugImages();
+  (window as any).ScrollTrigger = ScrollTrigger;
+
+  (() => {
+    const root = document.documentElement;
+    let last = getComputedStyle(root).getPropertyValue('--custom--nav-width-plus-gutter').trim();
+
+    const mo = new MutationObserver(() => {
+      const next = getComputedStyle(root)
+        .getPropertyValue('--custom--nav-width-plus-gutter')
+        .trim();
+      if (next !== last) {
+        console.log('🧨 var changed:', { from: last, to: next });
+        last = next;
+      }
+    });
+
+    mo.observe(root, { attributes: true, attributeFilter: ['style', 'class'] });
+    console.log('✅ watching root style/class for var-driven changes');
+  })();
 
   initSmoothScroll();
   navHUD();
@@ -18,6 +37,7 @@ window.Webflow.push(() => {
   loadComponent('.component_nav', () => import('$components/menu'));
   loadComponent('.section_hero', () => import('$components/heroSlider'));
   loadComponent('.section_contact', () => import('$components/stepForm'));
+  loadComponent('.component_footer', () => import('$components/footerNav'));
   // loadComponent('.section_hero', () => import('$components/landingPageHero'));
 
   // loadComponent('.section_fx', () => import('$components/fxScrollSection'));
