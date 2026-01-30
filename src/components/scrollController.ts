@@ -263,7 +263,6 @@ class ScrollController {
   private buildMenuIndex(): Map<string, number> {
     const index = new Map<string, number>();
 
-    // choose the selector you want; you mentioned data-menu-section
     this.menuSections = [...this.track.querySelectorAll<HTMLElement>('[data-menu-section]')];
 
     const max = this.getScrollLengthFn ? this.getScrollLengthFn() : 0;
@@ -272,7 +271,6 @@ class ScrollController {
       const id = el.getAttribute('data-menu-section')?.trim();
       if (!id) continue;
 
-      // The vertical scroll amount that moves the track to this element’s left edge
       const target = this.clamp(Math.round(el.offsetLeft), 0, max);
       index.set(id, target);
     }

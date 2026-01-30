@@ -106,14 +106,18 @@ class StepFrom {
   }
 
   private checkSteps(currentStep: HTMLElement) {
-    const inputs = [...currentStep.querySelectorAll('input')];
+    const fields = [
+      ...currentStep.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea'),
+    ];
+
     const errors: HTMLElement[] = [];
     const validatedRadioGroups = new Set<string>();
 
-    inputs.forEach((item: HTMLInputElement) => {
-      // const req = item.required;
+    // console.log('HER$E', fields);
 
-      if (item.type === 'radio') {
+    fields.forEach((item) => {
+      // RADIOS
+      if (item instanceof HTMLInputElement && item.type === 'radio') {
         const groupName = item.name;
         if (!groupName) return;
 
@@ -126,13 +130,14 @@ class StepFrom {
 
         if (!checked) {
           this.showStepError();
-          errors.push(item); // push one representative element for the group
+          errors.push(item);
         }
 
         return;
       }
 
-      if (item.type === 'checkbox') {
+      // CHECKBOX
+      if (item instanceof HTMLInputElement && item.type === 'checkbox') {
         if (!item.checked) {
           this.showStepError();
           errors.push(item);
@@ -140,6 +145,7 @@ class StepFrom {
         return;
       }
 
+      // INPUT / TEXTAREA
       const val = item.value?.trim() ?? '';
       if (val === '') {
         this.showStepError();
