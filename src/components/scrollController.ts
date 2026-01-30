@@ -376,7 +376,7 @@ class ScrollController {
         onLeaveBack: () => clearNavThemes(),
 
         // Optional: if you want to debug
-        markers: true,
+        // markers: true,
       });
 
       this.menuThemeTriggers.push(trig);
