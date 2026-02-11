@@ -17,7 +17,7 @@ window.Webflow.push(() => {
   loadComponent('.component_preloader', () => import('$components/preloader'));
   loadComponent('.component_nav', () => import('$components/menu'));
   loadComponent('.section_hero', () => import('$components/heroSlider'));
-  loadComponent('.section_contact', () => import('$components/stepForm'));
+  // loadComponent('.section_contact', () => import('$components/stepForm'));
   loadComponent('.component_footer', () => import('$components/footerNav'));
 });
 

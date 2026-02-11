@@ -8,6 +8,7 @@ class Preloader {
   private loaderTracks: HTMLElement[];
   private logo: HTMLElement;
   private tags: HTMLElement[];
+  private scrollNavLabel: HTMLElement;
   private bgImg: HTMLElement;
   private hTracks: HTMLElement[] = [];
   private vTracks: HTMLElement[] = [];
@@ -26,6 +27,7 @@ class Preloader {
     this.loaderTracks = [...document.querySelectorAll('.preloader_track')] as HTMLElement[];
     this.logo = document.querySelector('.preloader_logo') as HTMLElement;
     this.tags = [...document.querySelectorAll('.preloader_tag')] as HTMLElement[];
+    this.scrollNavLabel = document.querySelector('#scrollNavLabel') as HTMLElement;
     this.bgImg = document.querySelector('.preloader_img') as HTMLElement;
     this.overlayPanel = document.querySelector('.preloader_reveal') as HTMLElement;
 
@@ -53,6 +55,7 @@ class Preloader {
     gsap.set(this.split.lines, { y: '100%', opacity: 0 });
     gsap.set(this.heroInfo.children, { opacity: 0 });
     gsap.set(this.heroTag, { opacity: 0 });
+    gsap.set(this.scrollNavLabel, { opacity: 1 });
     gsap.set(this.nav, { x: '-100%' });
     gsap.set(this.scrollGlyph, { x: '5rem' });
 
@@ -105,6 +108,7 @@ class Preloader {
 
     tl.to(this.nav, { x: '0%', duration: 2, ease: 'power4.out' });
     tl.to(this.scrollGlyph, { x: 0, duration: 2, ease: 'power4.out' }, '<');
+
     tl.to(
       this.split.lines,
       {
@@ -136,6 +140,7 @@ class Preloader {
       },
       '<',
     );
+    tl.to(this.scrollNavLabel, { duration: 2, opacity: 0, ease: 'power4.out' }, '<');
     console.log('%%', tl.duration());
   }
 }
